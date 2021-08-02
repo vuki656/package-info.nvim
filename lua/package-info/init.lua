@@ -1,13 +1,9 @@
-function check_if_file_package_json(path)
-    return string.match(path, "package.json$")
-end
+local path_utils = require("package-info.utils.path")
 
-local CURRENT_BUFFER = 0
-
-local current_file_path = vim.api.nvim_buf_get_name(CURRENT_BUFFER)
-
-local is_file_package_json = check_if_file_package_json(current_file_path)
+local is_file_package_json = path_utils.is_current_file_package_json()
 
 if is_file_package_json then
-    print("Im a package.json")
+    print("hello")
+else
+    print("no")
 end
