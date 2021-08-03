@@ -16,7 +16,7 @@ Module.parse_package_json = function()
     -- Convert JSON to table
     local json_value = json_parser.decode(string_value)
 
-    return json_value
+    return json_value, buffer_content
 end
 
 return Module
