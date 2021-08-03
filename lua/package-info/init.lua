@@ -30,14 +30,12 @@ local check_line_for_package = function(buffer_line_content, package_name, curre
     return false
 end
 
-if is_file_package_json then
-    local package_json, buffer_content = json_utils.parse_package_json()
+local set_list_versions = function(buffer_content, dependencies)
+    if dependencies == nil then
+        return
+    end
 
-    local development_dependencies = package_json["devDependencies"]
-    -- local production_dependencies = package_json["dependencies"]
-    -- local peer_dependencies = package_json["peerDependencies"]
-
-    for package_name, current_package_version in pairs(development_dependencies) do
+    for package_name, current_package_version in pairs(dependencies) do
         get_latest_package_version(package_name, function(latest_package_version)
             for buffer_line_number, buffer_line_content in pairs(buffer_content) do
                 local is_package_in_line = check_line_for_package(
@@ -52,4 +50,16 @@ if is_file_package_json then
             end
         end)
     end
+end
+
+if is_file_package_json then
+    local package_json, buffer_content = json_utils.parse_package_json()
+
+    local development_dependencies = package_json["devDependencies"]
+    local production_dependencies = package_json["dependencies"]
+    local peer_dependencies = package_json["peerDependencies"]
+
+    set_list_versions(buffer_content, development_dependencies)
+    set_list_versions(buffer_content, production_dependencies)
+    set_list_versions(buffer_content, peer_dependencies)
 end
