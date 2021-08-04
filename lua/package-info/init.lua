@@ -1,5 +1,15 @@
 local json_parser = require("package-info.libs.json_parser")
 
+-- Get currently opened buffer content
+local get_current_buffer_content = function()
+    local CURRENT_BUFFER_INDEX = 0
+    local BUFFER_START_INDEX = 0
+    local BUFFER_END_INDEX = -1
+    local STRICT_INDEXING = false
+
+    return vim.api.nvim_buf_get_lines(CURRENT_BUFFER_INDEX, BUFFER_START_INDEX, BUFFER_END_INDEX, STRICT_INDEXING)
+end
+
 -- Get latest version for a given package
 local get_latest_package_version = function(package_name, callback)
     local command = "npm show " .. package_name .. " version"
@@ -31,7 +41,7 @@ end
 -- For each JSON line check if its content can be found in the dependency list,
 -- if yes, get its position
 local get_dependency_positions = function(json_value)
-    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local buffer_content = get_current_buffer_content()
 
     local dev_dependencies = json_value["devDependencies"] or {}
     local prod_dependencies = json_value["dependencies"] or {}
@@ -56,7 +66,7 @@ end
 
 -- Takes current buffer content and converts it to a JSON table
 local parse_buffer = function()
-    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local buffer_content = get_current_buffer_content()
     local buffer_string_value = table.concat(buffer_content)
     local buffer_json_value = json_parser.decode(buffer_string_value)
 
