@@ -73,19 +73,33 @@ local parse_buffer = function()
     return buffer_json_value
 end
 
-local current_file_path = vim.api.nvim_buf_get_name(0)
-local is_file_package_json = string.match(current_file_path, "package.json$")
+local M = {}
 
-if is_file_package_json then
-    local json_value = parse_buffer()
+M.setup = function()
+    local current_file_path = vim.api.nvim_buf_get_name(0)
+    local is_file_package_json = string.match(current_file_path, "package.json$")
 
-    local dependency_positions = get_dependency_positions(json_value)
+    if is_file_package_json then
+        local json_value = parse_buffer()
 
-    local dev_dependencies = json_value["devDependencies"] or {}
-    local prod_dependencies = json_value["dependencies"] or {}
-    local peer_dependencies = json_value["peerDependencies"] or {}
+        local dependency_positions = get_dependency_positions(json_value)
 
-    set_virtual_text(dev_dependencies, dependency_positions)
-    set_virtual_text(prod_dependencies, dependency_positions)
-    set_virtual_text(peer_dependencies, dependency_positions)
+        local dev_dependencies = json_value["devDependencies"] or {}
+        local prod_dependencies = json_value["dependencies"] or {}
+        local peer_dependencies = json_value["peerDependencies"] or {}
+
+        set_virtual_text(dev_dependencies, dependency_positions)
+        set_virtual_text(prod_dependencies, dependency_positions)
+        set_virtual_text(peer_dependencies, dependency_positions)
+    end
+
+    vim.api.nvim_exec(
+        [[augroup PackageUI
+            autocmd!
+            autocmd BufWinEnter,WinNew * lua require("package-info").setup()
+        augroup end]],
+        false
+    )
 end
+
+return M
