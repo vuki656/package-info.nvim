@@ -1,8 +1,6 @@
-local path_utils = require("package-info.utils.path")
-local json_utils = require("package-info.utils.json")
+local json_parser = require("package-info.libs.json_parser")
 
-local is_file_package_json = path_utils.is_current_file_package_json()
-
+-- Get latest version for a given package
 local get_latest_package_version = function(package_name, callback)
     local command = "npm show " .. package_name .. " version"
 
@@ -15,51 +13,69 @@ local get_latest_package_version = function(package_name, callback)
     })
 end
 
--- Looks if given string contains package name and package version
-local check_line_for_package = function(buffer_line_content, package_name, current_package_version)
-    local USE_PLAIN_STRING = true
-    local START_INDEX = 0
-
-    local is_name_match = string.find(buffer_line_content, package_name, START_INDEX, USE_PLAIN_STRING)
-    local is_version_match = string.find(buffer_line_content, current_package_version, START_INDEX, USE_PLAIN_STRING)
-
-    if is_name_match and is_version_match then
-        return true
-    end
-
-    return false
-end
-
-local set_list_versions = function(buffer_content, dependencies)
-    if dependencies == nil then
-        return
-    end
-
-    for package_name, current_package_version in pairs(dependencies) do
+-- Set latest version as virtual text for each dependency
+local set_virtual_text = function(dependencies, dependency_positions)
+    for package_name in pairs(dependencies) do
         get_latest_package_version(package_name, function(latest_package_version)
-            for buffer_line_number, buffer_line_content in pairs(buffer_content) do
-                local is_package_in_line = check_line_for_package(
-                    buffer_line_content,
-                    package_name,
-                    current_package_version
-                )
-
-                if is_package_in_line then
-                    vim.api.nvim_buf_set_virtual_text(0, 0, buffer_line_number - 1, { { latest_package_version } }, {})
-                end
-            end
+            vim.api.nvim_buf_set_virtual_text(
+                0,
+                0,
+                dependency_positions[package_name],
+                { { latest_package_version } },
+                {}
+            )
         end)
     end
 end
 
+-- For each JSON line check if its content can be found in the dependency list,
+-- if yes, get its position
+local get_dependency_positions = function(json_value)
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+    local dev_dependencies = json_value["devDependencies"] or {}
+    local prod_dependencies = json_value["dependencies"] or {}
+    local peer_dependencies = json_value["peerDependencies"] or {}
+
+    local dependency_positions = {}
+
+    for buffer_line_number, buffer_line_content in pairs(buffer_content) do
+        for match in string.gmatch(buffer_line_content, [["(.-)"]]) do
+            local is_dev_dependency = dev_dependencies[match]
+            local is_prod_dependency = prod_dependencies[match]
+            local is_peer_dependency = peer_dependencies[match]
+
+            if is_dev_dependency or is_prod_dependency or is_peer_dependency then
+                dependency_positions[match] = buffer_line_number - 1
+            end
+        end
+    end
+
+    return dependency_positions
+end
+
+-- Takes current buffer content and converts it to a JSON table
+local parse_buffer = function()
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local buffer_string_value = table.concat(buffer_content)
+    local buffer_json_value = json_parser.decode(buffer_string_value)
+
+    return buffer_json_value
+end
+
+local current_file_path = vim.api.nvim_buf_get_name(0)
+local is_file_package_json = string.match(current_file_path, "package.json$")
+
 if is_file_package_json then
-    local package_json, buffer_content = json_utils.parse_package_json()
+    local json_value = parse_buffer()
 
-    local development_dependencies = package_json["devDependencies"]
-    local production_dependencies = package_json["dependencies"]
-    local peer_dependencies = package_json["peerDependencies"]
+    local dependency_positions = get_dependency_positions(json_value)
 
-    set_list_versions(buffer_content, development_dependencies)
-    set_list_versions(buffer_content, production_dependencies)
-    set_list_versions(buffer_content, peer_dependencies)
+    local dev_dependencies = json_value["devDependencies"] or {}
+    local prod_dependencies = json_value["dependencies"] or {}
+    local peer_dependencies = json_value["peerDependencies"] or {}
+
+    set_virtual_text(dev_dependencies, dependency_positions)
+    set_virtual_text(prod_dependencies, dependency_positions)
+    set_virtual_text(peer_dependencies, dependency_positions)
 end
