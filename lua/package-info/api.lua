@@ -18,6 +18,11 @@ function M:get_outdated_dependencies(callback)
 
             done = true
         end,
+        on_stderr = function(_, stderr)
+            if stderr[0] ~= nil then
+                vim.api.nvim_echo({ { "Package info retrieval failed.", "WarningMsg" } }, {}, {})
+            end
+        end,
     })
 end
 
