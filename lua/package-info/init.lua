@@ -1,14 +1,14 @@
 local json_parser = require("package-info.libs.json_parser")
 
--- Get currently opened buffer content
-local get_current_buffer_content = function()
-    local CURRENT_BUFFER_INDEX = 0
-    local BUFFER_START_INDEX = 0
-    local BUFFER_END_INDEX = -1
-    local STRICT_INDEXING = false
+local HIGHLIGHT_GROUPS = {
+    outdated = "PackageInfoOutdatedVersion",
+    up_to_date = "PackageInfoUpToDateVersion",
+}
 
-    return vim.api.nvim_buf_get_lines(CURRENT_BUFFER_INDEX, BUFFER_START_INDEX, BUFFER_END_INDEX, STRICT_INDEXING)
-end
+local HIGHLIGHT_ICONS = {
+    outdated = "|  ",
+    up_to_date = "|  ",
+}
 
 -- Get latest version for a given package
 local get_latest_package_version = function(package_name, callback)
@@ -25,13 +25,23 @@ end
 
 -- Set latest version as virtual text for each dependency
 local set_virtual_text = function(dependencies, dependency_positions)
-    for package_name in pairs(dependencies) do
+    for package_name, current_package_version in pairs(dependencies) do
         get_latest_package_version(package_name, function(latest_package_version)
+            local highlight = {
+                group = HIGHLIGHT_GROUPS.up_to_date,
+                icon = HIGHLIGHT_ICONS.up_to_date,
+            }
+
+            if latest_package_version ~= current_package_version then
+                highlight.group = HIGHLIGHT_GROUPS.outdated
+                highlight.icon = HIGHLIGHT_ICONS.outdated
+            end
+
             vim.api.nvim_buf_set_virtual_text(
                 0,
                 0,
                 dependency_positions[package_name],
-                { { latest_package_version } },
+                { { highlight.icon .. latest_package_version, highlight.group } },
                 {}
             )
         end)
@@ -41,7 +51,7 @@ end
 -- For each JSON line check if its content can be found in the dependency list,
 -- if yes, get its position
 local get_dependency_positions = function(json_value)
-    local buffer_content = get_current_buffer_content()
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
     local dev_dependencies = json_value["devDependencies"] or {}
     local prod_dependencies = json_value["dependencies"] or {}
@@ -66,7 +76,7 @@ end
 
 -- Takes current buffer content and converts it to a JSON table
 local parse_buffer = function()
-    local buffer_content = get_current_buffer_content()
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     local buffer_string_value = table.concat(buffer_content)
     local buffer_json_value = json_parser.decode(buffer_string_value)
 
@@ -76,6 +86,18 @@ end
 local M = {}
 
 M.setup = function()
+    -- Register autocommand for auto-starting plugin
+    vim.api.nvim_exec(
+        [[augroup PackageUI
+            autocmd!
+            autocmd BufWinEnter,WinNew * lua require("package-info").setup()
+        augroup end]],
+        false
+    )
+
+    vim.cmd("highlight PackageInfoOutdatedVersion guifg=#ef596f gui=italic")
+    vim.cmd("highlight PackageInfoUpToDateVersion guifg=#89ca78 gui=italic")
+
     local current_file_path = vim.api.nvim_buf_get_name(0)
     local is_file_package_json = string.match(current_file_path, "package.json$")
 
@@ -92,14 +114,6 @@ M.setup = function()
         set_virtual_text(prod_dependencies, dependency_positions)
         set_virtual_text(peer_dependencies, dependency_positions)
     end
-
-    vim.api.nvim_exec(
-        [[augroup PackageUI
-            autocmd!
-            autocmd BufWinEnter,WinNew * lua require("package-info").setup()
-        augroup end]],
-        false
-    )
 end
 
 return M
