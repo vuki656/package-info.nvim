@@ -1,4 +1,5 @@
 local config = require("package-info.config")
+local CONSTANTS = require("package-info.utils.constants")
 local API = require("package-info.api")
 
 local M = {}
@@ -8,12 +9,12 @@ M.set_virtual_text = function(dependencies, dependency_positions)
     for package_name, current_package_version in pairs(dependencies) do
         API:get_latest_package_version(package_name, function(latest_package_version)
             local highlight = {
-                group = config.highlight_groups.up_to_date,
+                group = CONSTANTS.HIGHLIGHT_GROUPS.up_to_date,
                 icon = config.options.icons.style.up_to_date,
             }
 
             if latest_package_version ~= current_package_version then
-                highlight.group = config.highlight_groups.outdated
+                highlight.group = CONSTANTS.HIGHLIGHT_GROUPS.outdated
                 highlight.icon = config.options.icons.style.outdated
             end
 
