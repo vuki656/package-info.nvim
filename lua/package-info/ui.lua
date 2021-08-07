@@ -8,12 +8,15 @@ local M = {}
 M.set_virtual_text = function(dependencies, dependency_positions)
     for package_name, current_package_version in pairs(dependencies) do
         API:get_latest_package_version(package_name, function(latest_package_version)
+            -- Remove ^ from version
+            local cleaned_version = string.gsub(current_package_version, "%^", "", 1)
+
             local highlight = {
                 group = CONSTANTS.HIGHLIGHT_GROUPS.up_to_date,
                 icon = config.options.icons.style.up_to_date,
             }
 
-            if latest_package_version ~= current_package_version then
+            if latest_package_version ~= cleaned_version then
                 highlight.group = CONSTANTS.HIGHLIGHT_GROUPS.outdated
                 highlight.icon = config.options.icons.style.outdated
             end
