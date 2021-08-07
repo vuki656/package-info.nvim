@@ -12,6 +12,7 @@ M.DEFAULT_OPTIONS = {
             outdated = "|  ",
         },
     },
+    autostart = false
 }
 
 M.HIGHLIGHT_GROUPS = {

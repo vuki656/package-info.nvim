@@ -10,13 +10,15 @@ end
 
 -- Register autocommand for auto-starting plugin
 M.register_auto_start = function()
-    vim.api.nvim_exec(
-        [[augroup PackageUI
-            autocmd!
-            autocmd BufWinEnter,WinNew * lua require("package-info").start()
-        augroup end]],
-        false
-    )
+    if M.options.autostart then
+        vim.api.nvim_exec(
+            [[augroup PackageUI
+                autocmd!
+                autocmd BufWinEnter,WinNew * lua require("package-info").start()
+            augroup end]],
+            false
+        )
+    end
 end
 
 -- Set highlight groups
