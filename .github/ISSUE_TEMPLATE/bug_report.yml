@@ -1,0 +1,91 @@
+name: Bug Report
+title: "[BUG] "
+description: Report a problem in package-info
+labels: [bug]
+body:
+  - type: checkboxes
+    id: issue-prerequisite
+    attributes:
+      label: Issues
+      options:
+        - label: I have checked [existing issues](https://github.com/vuki656/package-info.nvim/issues?q=is%3Aissue) and there are no issues with the same problem.
+          required: true
+
+  - type: checkboxes
+    id: latest-version
+    attributes:
+      label: Plugin Version
+      options:
+        - label: "I am using the latest version of the plugin"
+          required: true
+
+  - type: checkboxes
+    id: latest-neovim
+    attributes:
+      label: Neovim Version
+      options:
+        - label: "I am using the 0.5 neovim version"
+          required: true
+
+  - type: input
+    attributes:
+      label: "Neovim Version"
+      description: "`nvim --version`:"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: branch
+    attributes:
+      label: "Branch"
+      description: "Package-info branch you are on."
+      options:
+        - "master"
+        - "develop"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Actual behavior"
+      description: "A description of actual behavior. May optionally include images or videos."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Expected behavior"
+      description: "A description of the behavior you expected."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Steps to reproduce"
+      description: "Write in detail the steps to reproduce the bug."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Other information"
+      description: "Other information that could be helpful with debugging."
+
+  - type: dropdown
+    id: help
+    attributes:
+      label: "Help"
+      description: "Would you be able to resolve this issue by submitting a pull request?"
+      options:
+        - "Yes"
+        - "Yes, but I don't know how to start. I would need guidance (check question below)"
+        - "No, sorry."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Implementation help"
+      description: "If you selected yes in the last question please specify what you would need help with in order to implement this."
+    validations:
+      required: false
