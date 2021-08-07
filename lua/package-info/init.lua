@@ -1,12 +1,14 @@
+local API = require("package-info.api")
+
 local buffer_parser = require("package-info.buffer_parser")
 local ui = require("package-info.ui")
 local config = require("package-info.config")
-local API = require("package-info.api")
+local helpers = require("package-info.utils.helpers")
 
 local M = {}
 
 M.display = function()
-    local is_file_package_json = string.match(vim.api.nvim_buf_get_name(0), "package.json$")
+    local is_file_package_json = helpers.is_file_package_json()
 
     if is_file_package_json then
         local json_value = buffer_parser.parse_buffer()

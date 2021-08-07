@@ -1,5 +1,7 @@
-local config = require("package-info.config")
 local CONSTANTS = require("package-info.utils.constants")
+
+local config = require("package-info.config")
+local helpers = require("package-info.utils.helpers")
 
 -- Determine if package is outdated and return meta about it accordingly
 local get_package_metadata = function(current_package_version, outdated_dependencies, package_name)
@@ -28,6 +30,12 @@ local M = {}
 
 -- Set latest version as virtual text for each dependency
 M.set_virtual_text = function(dependencies, dependency_positions, outdated_dependencies)
+    local is_file_package_json = helpers.is_file_package_json()
+
+    if not is_file_package_json then
+        return
+    end
+
     for package_name, current_package_version in pairs(dependencies) do
         local package_metadata = get_package_metadata(current_package_version, outdated_dependencies, package_name)
 
