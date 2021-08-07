@@ -25,13 +25,11 @@ M.set_virtual_text = function(dependencies, dependency_positions)
                 highlight.icon = ""
             end
 
-            vim.api.nvim_buf_set_virtual_text(
-                0,
-                0,
-                dependency_positions[package_name],
-                { { highlight.icon .. latest_package_version, highlight.group } },
-                {}
-            )
+            vim.api.nvim_buf_set_extmark(0, config.namespace_id, dependency_positions[package_name], 0, {
+                virt_text = { { highlight.icon .. latest_package_version, highlight.group } },
+                virt_text_pos = "eol",
+                priority = 200,
+            })
         end)
     end
 end

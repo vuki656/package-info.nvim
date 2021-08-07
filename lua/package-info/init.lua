@@ -4,7 +4,7 @@ local config = require("package-info.config")
 
 local M = {}
 
-M.start = function()
+M.display = function()
     local is_file_package_json = string.match(vim.api.nvim_buf_get_name(0), "package.json$")
 
     if is_file_package_json then
@@ -19,6 +19,10 @@ M.start = function()
         ui.set_virtual_text(prod_dependencies, dependency_positions)
         ui.set_virtual_text(peer_dependencies, dependency_positions)
     end
+end
+
+M.clear = function()
+    vim.api.nvim_buf_clear_namespace(0, config.namespace_id, 0, -1)
 end
 
 M.setup = function(options)

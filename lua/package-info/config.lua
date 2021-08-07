@@ -14,7 +14,7 @@ M.register_auto_start = function()
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
-                autocmd BufWinEnter,WinNew * lua require("package-info").start()
+                autocmd BufWinEnter,WinNew * lua require("package-info").display()
             augroup end]],
             false
         )
@@ -23,6 +23,8 @@ end
 
 -- Set highlight groups
 M.register_highlights = function()
+    M.namespace_id = vim.api.nvim_create_namespace("package-ui")
+
     helpers.register_highlight_group(CONSTANTS.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
     helpers.register_highlight_group(CONSTANTS.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
 end
