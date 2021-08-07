@@ -1,6 +1,7 @@
 local buffer_parser = require("package-info.buffer_parser")
 local ui = require("package-info.ui")
 local config = require("package-info.config")
+local API = require("package-info.api")
 
 local M = {}
 
@@ -15,9 +16,11 @@ M.display = function()
         local prod_dependencies = json_value["dependencies"] or {}
         local peer_dependencies = json_value["peerDependencies"] or {}
 
-        ui.set_virtual_text(dev_dependencies, dependency_positions)
-        ui.set_virtual_text(prod_dependencies, dependency_positions)
-        ui.set_virtual_text(peer_dependencies, dependency_positions)
+        API:get_outdated_dependencies(function(outdated_dependencies)
+            ui.set_virtual_text(dev_dependencies, dependency_positions, outdated_dependencies)
+            ui.set_virtual_text(prod_dependencies, dependency_positions, outdated_dependencies)
+            ui.set_virtual_text(peer_dependencies, dependency_positions, outdated_dependencies)
+        end)
     end
 end
 

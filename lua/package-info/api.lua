@@ -1,14 +1,22 @@
+local json_parser = require("package-info.libs.json_parser")
+
 local M = {}
 
 -- Get latest version for a given package
-function M:get_latest_package_version(package_name, callback)
-    local command = "npm show " .. package_name .. " version"
+function M:get_outdated_dependencies(callback)
+    local command = "npm outdated --json"
+    local done = false -- TODO: Create issue
 
     vim.fn.jobstart(command, {
         on_stdout = function(_, stdout)
-            local latest_package_version = table.concat(stdout)
+            if done == false then
+                local string_value = table.concat(stdout)
+                local json_value = json_parser.decode(string_value)
 
-            callback(latest_package_version)
+                callback(json_value)
+            end
+
+            done = true
         end,
     })
 end
