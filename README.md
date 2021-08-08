@@ -33,8 +33,6 @@ use { "vuki656/package-info.nvim" }
 
 ## ⚙️ Configuration
 
-Package Info comes with the following defaults:
-
 ### Usage
 
 ```lua
