@@ -4,6 +4,7 @@ local buffer_parser = require("package-info.buffer_parser")
 local ui = require("package-info.ui")
 local config = require("package-info.config")
 local helpers = require("package-info.utils.helpers")
+local actions = require("package-info.actions")
 
 local M = {}
 
@@ -34,6 +35,11 @@ M.setup = function(options)
     config.setup_options(options)
     config.register_auto_start()
     config.register_highlights()
+end
+
+
+M.delete = function()
+    actions.on_delete()
 end
 
 return M
