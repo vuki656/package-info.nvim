@@ -7,7 +7,7 @@ local helpers = require("package-info.utils.helpers")
 
 local M = {}
 
-M.display = function()
+M.show = function()
     local is_file_package_json = helpers.is_file_package_json()
 
     if is_file_package_json then
@@ -26,7 +26,7 @@ M.display = function()
     end
 end
 
-M.clear = function()
+M.hide = function()
     vim.api.nvim_buf_clear_namespace(0, config.namespace_id, 0, -1)
 end
 
