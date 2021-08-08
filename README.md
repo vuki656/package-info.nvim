@@ -8,12 +8,13 @@ Displays latest package versions in your `package.json` file as virtual text.
 
 - Display latest package versions as virtual text
 
-## ✨ Planned Features
+## 🚀 Planned Features
 
-- Upgrade package on current line
-- Delete package on current line
-- Install custom package version trough input popup
-- Install new packages trough search popup
+- Install new packages trough search popup [#26](https://github.com/vuki656/package-info.nvim/issues/26)
+- Upgrade package on current line [#21](https://github.com/vuki656/package-info.nvim/issues/21)
+- Install custom package version trough popup [#24](https://github.com/vuki656/package-info.nvim/issues/24)
+- Delete package on current line [#23](https://github.com/vuki656/package-info.nvim/issues/23)
+- Set package manager [#22](https://github.com/vuki656/package-info.nvim/issues/22)
 
 ## ⚡️ Requirements
 
@@ -32,9 +33,15 @@ use { "vuki656/package-info.nvim" }
 
 ## ⚙️ Configuration
 
-### Setup
-
 Package Info comes with the following defaults:
+
+### Usage
+
+```lua
+require('package-info').setup()
+```
+
+### Defaults
 
 ```lua
 {
@@ -53,30 +60,25 @@ Package Info comes with the following defaults:
 }
 ```
 
-## 🚀 Usage
+## ⌨️  Keybindings
 
-### Keybindings
+**Package info has no default Keybindings**.
 
-Package info comes with the following default commands:
-
-- `<leader>pus` => Show latest package versions
-- `<leader>puc` => Clear package info versions
-
-Remapping
+You can copy the ones below:
 
 ```lua
 -- Display latest versions as virtual text
-vim.api.nvim_set_keymap("n", "<leader>xxx", "<cmd>lua require('package-info').display()<cr>",
+vim.api.nvim_set_keymap("n", "<leader>ns", "<cmd>lua require('package-info').show()<cr>",
   { silent = true, noremap = true }
 )
 
 -- Clear package info virtual text
-vim.api.nvim_set_keymap("n", "<leader>xxx", "<cmd>lua require('package-info').clear()<cr>",
+vim.api.nvim_set_keymap("n", "<leader>nc", "<cmd>lua require('package-info').hide()<cr>",
   { silent = true, noremap = true }
 )
 ```
 
-### Notes
+## 📝 Notes
 
 - Display might be slow on a project with a lot of packages. This is due to the
 `npm outdated` command taking a long time. Nothing can be done regarding
