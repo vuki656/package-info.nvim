@@ -14,7 +14,7 @@ M.register_auto_start = function()
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
-                autocmd BufWinEnter,WinNew * lua require("package-info").display()
+                autocmd BufWinEnter,WinNew * lua require("package-info").show()
             augroup end]],
             false
         )
