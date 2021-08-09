@@ -68,6 +68,13 @@ body:
 
   - type: textarea
     attributes:
+      label: "Package info config"
+      description: Everything you put into `require("package-info").setup()`
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
       label: "Other information"
       description: "Other information that could be helpful with debugging."
 
