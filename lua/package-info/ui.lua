@@ -36,9 +36,6 @@ M.set_virtual_text = function(dependencies, dependency_positions, outdated_depen
         return
     end
 
-    -- Clear any existing package-info highlights before setting new one
-    vim.api.nvim_buf_clear_namespace(0, config.namespace_id, 0, -1)
-
     for package_name, current_package_version in pairs(dependencies) do
         local package_metadata = get_package_metadata(current_package_version, outdated_dependencies, package_name)
 
