@@ -1,16 +1,39 @@
-local CONSTANTS = require("package-info.utils.constants")
-local helpers = require("package-info.utils.helpers")
+-- FILE DESCRIPTION: User passed config options
 
-local M = {}
+local constants = require("package-info.constants")
+local globals = require("package-info.globals")
 
--- Clone options and replace empty ones with default ones
-M.setup_options = function(options)
-    M.options = vim.tbl_deep_extend("force", {}, CONSTANTS.DEFAULT_OPTIONS, options or {})
+----------------------------------------------------------------------------
+---------------------------------- HELPERS ---------------------------------
+----------------------------------------------------------------------------
+
+local DEFAULT_OPTIONS = {
+    colors = {
+        up_to_date = "#3C4048",
+        outdated = "#d19a66",
+    },
+    icons = {
+        enable = true,
+        style = {
+            up_to_date = "|  ",
+            outdated = "|  ",
+        },
+    },
+    autostart = true,
+}
+
+local register_highlight_group = function(group, color)
+    vim.cmd("highlight " .. group .. " guifg=" .. color)
+end
+
+local register_highlight_groups = function(colors)
+    register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, colors.outdated)
+    register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, colors.up_to_date)
 end
 
 -- Register autocommand for auto-starting plugin
-M.register_auto_start = function()
-    if M.options.autostart then
+local register_autostart = function(should_autostart)
+    if should_autostart then
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
@@ -21,12 +44,24 @@ M.register_auto_start = function()
     end
 end
 
--- Set highlight groups
-M.register_highlights = function()
-    M.namespace_id = vim.api.nvim_create_namespace("package-ui")
+-- Clone options and replace empty ones with default ones
+local register_user_options = function(options)
+    return vim.tbl_deep_extend("force", {}, DEFAULT_OPTIONS, options or {})
+end
 
-    helpers.register_highlight_group(CONSTANTS.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
-    helpers.register_highlight_group(CONSTANTS.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
+----------------------------------------------------------------------------
+---------------------------------- MODULE ----------------------------------
+----------------------------------------------------------------------------
+
+local M = {}
+
+M.setup = function(options)
+    M.options = register_user_options(options)
+
+    register_autostart(M.options.autostart)
+    register_highlight_groups(M.options.colors)
+
+    globals.namespace.register()
 end
 
 return M

@@ -1,27 +1,18 @@
+-- FILE DESCRIPTION: Functionality related to deleting dependency on current line
+
 local Menu = require("nui.menu")
 
-local buffer_parser = require("package-info.buffer_parser")
+local utils = require("package-info.utils")
+
+----------------------------------------------------------------------------
+---------------------------------- HELPERS ---------------------------------
+----------------------------------------------------------------------------
+
 
 local DELETE_ACTIONS = {
     confirm = "Confirm",
     cancel = "Cancel",
 }
-
-local check_package = function(package_name)
-    local json_value = buffer_parser.parse_buffer()
-
-    local dev_dependencies = json_value["devDependencies"] or {}
-    local prod_dependencies = json_value["dependencies"] or {}
-    local peer_dependencies = json_value["peerDependencies"] or {}
-
-    if dev_dependencies[package_name] or prod_dependencies[package_name] or peer_dependencies[package_name] then
-        return true
-    end
-
-    return false
-end
-
-local M = {}
 
 local display_menu = function(package_name)
     local menu = Menu({
@@ -70,19 +61,17 @@ local display_menu = function(package_name)
     menu:mount()
 end
 
-M.on_delete = function()
+----------------------------------------------------------------------------
+------------------------------ RETURN FUNCTION -----------------------------
+----------------------------------------------------------------------------
+
+return function()
     local current_line = vim.fn.getline(".")
-    local package_name = string.match(current_line, [["(.-)"]]) or ""
+    local package_name = utils.buffer.get_package_from_line(current_line, true)
 
-    local is_package = check_package(package_name)
-
-    if package_name == "" then
+    if not package_name then
         vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
-    elseif is_package == false then
-        vim.api.nvim_echo({ { "No package found on current line.", "WarningMsg" } }, {}, {})
     else
         display_menu(package_name)
     end
 end
-
-return M
