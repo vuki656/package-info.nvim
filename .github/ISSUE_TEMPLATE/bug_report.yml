@@ -1,7 +1,7 @@
 name: Bug Report
 title: "[BUG] "
 description: Report a problem in package-info
-labels: [bug]
+labels: [🐛 Bug]
 body:
   - type: checkboxes
     id: issue-prerequisite

@@ -1,7 +1,7 @@
 name: Feature request
 title: "[FEATURE REQUEST] "
 description: Request a new feature for package-info
-labels: [enhancement]
+labels: [🙏 Feature Request]
 body:
   - type: checkboxes
     id: issue-prerequisite
