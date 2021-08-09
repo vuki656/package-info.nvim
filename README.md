@@ -28,7 +28,10 @@ want icons
 ### [packer](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-use { "vuki656/package-info.nvim" }
+use({
+    "vuki656/package-info.nvim",
+    requires = "MunifTanjim/nui.nvim",
+})
 ```
 
 ## ⚙️ Configuration
