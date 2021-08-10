@@ -82,7 +82,7 @@ vim.api.nvim_set_keymap("n", "<leader>nc", "<cmd>lua require('package-info').hid
 `npm outdated` command taking a long time. Nothing can be done regarding
 that on the plugin side.
 
-- Idea was inspired by [akinso](https://github.com/akinsho) and his [dependency-assist.nvim](Dependency-assist.nvim)
+- Idea was inspired by [akinsho](https://github.com/akinsho) and his [dependency-assist.nvim](Dependency-assist.nvim)
 
 - Readme template stolen from [folke](https://github.com/folke)
 
