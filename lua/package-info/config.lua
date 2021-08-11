@@ -34,11 +34,6 @@ local register_highlight_group = function(group, color)
     vim.cmd("highlight " .. group .. " " .. highlight_param .. "=" .. color)
 end
 
-local register_highlight_groups = function(colors)
-    register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, colors.outdated)
-    register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, colors.up_to_date)
-end
-
 -- Register autocommand for auto-starting plugin
 local register_autostart = function(should_autostart)
     if should_autostart then
@@ -67,11 +62,13 @@ M.setup = function(options)
     M.options = register_user_options(options)
 
     register_autostart(M.options.autostart)
-    register_highlight_groups(M.options.colors)
 
     globals.namespace.register()
 end
 
-M.highlight_groups = register_highlight_groups -- XXX Weird hack
+M.register_highlight_groups = function()
+    register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
+    register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
+end
 
 return M
