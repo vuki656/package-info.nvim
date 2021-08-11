@@ -12,16 +12,15 @@ local utils = require("package-info.utils")
 ---------------------------------- HELPERS ---------------------------------
 ----------------------------------------------------------------------------
 
--- Checks if opened buffer is package.json file
-local check_if_package_json = function()
+-- Checks if the open buffer refers to a non-empty package.json file
+local is_valid_package_json = function()
     local current_buffer_name = vim.api.nvim_buf_get_name(0)
-    local result = string.match(current_buffer_name, "package.json$")
-
-    if result then
-        return true
-    end
-
-    return false
+		-- Check name
+		local is_package_json = string.match(current_buffer_name, "package.json$")
+		-- Check if empty
+		local buffer_size = vim.fn.getfsize(current_buffer_name)
+		-- Ensure package.json is non-empty
+		return is_package_json and buffer_size > 0
 end
 
 -- Determine if package is outdated and return meta about it accordingly
@@ -48,9 +47,8 @@ local get_package_metadata = function(current_package_version, outdated_dependen
 end
 
 local set_virtual_text = function(dependencies, outdated_dependencies)
-    local is_file_package_json = check_if_package_json()
-
-    if not is_file_package_json then
+    -- may be an unnecessary check
+		if not is_valid_package_json() then
         return
     end
 
@@ -101,15 +99,15 @@ end
 
 -- Contains functionality needed in order to set the virtual text
 return function()
-    local is_file_package_json = check_if_package_json()
+		if not is_valid_package_json() then
+				return
+		end
 
-    if is_file_package_json then
-        local dev_dependencies, prod_dependencies, peer_dependencies = utils.buffer.get_dependencies()
+		local dev_dependencies, prod_dependencies, peer_dependencies = utils.buffer.get_dependencies()
 
-        get_outdated_dependencies(function(outdated_dependencies)
-            set_virtual_text(dev_dependencies, outdated_dependencies)
-            set_virtual_text(prod_dependencies, outdated_dependencies)
-            set_virtual_text(peer_dependencies, outdated_dependencies)
-        end)
-    end
+		get_outdated_dependencies(function(outdated_dependencies)
+				set_virtual_text(dev_dependencies, outdated_dependencies)
+				set_virtual_text(prod_dependencies, outdated_dependencies)
+				set_virtual_text(peer_dependencies, outdated_dependencies)
+		end)
 end
