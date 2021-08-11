@@ -8,7 +8,6 @@ local utils = require("package-info.utils")
 ---------------------------------- HELPERS ---------------------------------
 ----------------------------------------------------------------------------
 
-
 local DELETE_ACTIONS = {
     confirm = "Confirm",
     cancel = "Cancel",
