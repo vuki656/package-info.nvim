@@ -111,5 +111,6 @@ return function()
             set_virtual_text(prod_dependencies, outdated_dependencies)
             set_virtual_text(peer_dependencies, outdated_dependencies)
         end)
+        config.highlight_groups(config.options.colors) -- XXX Weird hack
     end
 end

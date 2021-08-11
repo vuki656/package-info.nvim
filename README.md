@@ -61,6 +61,20 @@ require('package-info').setup()
 }
 ```
 
+#### 256 Color Terminals
+
+If the vim option `termguicolors` is false, package-info switches to 256 color mode.
+In this mode [cterm color numbers](https://jonasjacek.github.io/colors/) are used
+instead of truecolor hex codes and the color defaults are:
+
+```lua
+colors = {
+    up_to_date = "237", -- cterm Grey237
+    outdated = "173", -- cterm LightSalmon3
+}
+
+```
+
 ## ⌨️  Keybindings
 
 **Package info has no default Keybindings**.
