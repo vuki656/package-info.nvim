@@ -72,7 +72,6 @@ colors = {
     up_to_date = "237", -- cterm Grey237
     outdated = "173", -- cterm LightSalmon3
 }
-
 ```
 
 ## ⌨️  Keybindings

@@ -8,6 +8,10 @@ local globals = require("package-info.globals")
 ----------------------------------------------------------------------------
 
 local DEFAULT_OPTIONS = {
+    colors = {
+        up_to_date = "#3C4048",
+        outdated = "#d19a66",
+    },
     icons = {
         enable = true,
         style = {
@@ -17,25 +21,17 @@ local DEFAULT_OPTIONS = {
     },
     autostart = true,
 }
-if vim.o.termguicolors then
-    -- Hex rgb colors for truecolor terminals
-    HIGHLIGHT_PARAM = "guifg"
+local highlight_param = "guifg"
+if not vim.o.termguicolors then
+    highlight_param = "ctermfg"
     DEFAULT_OPTIONS.colors = {
-        up_to_date = "#3C4048",
-        outdated = "#d19a66",
-    }
-else
-    -- Numbered colors for 256 color terminals
-    HIGHLIGHT_PARAM = "ctermfg"
-    -- https://jonasjacek.github.io/colors/
-    DEFAULT_OPTIONS.colors = {
-        up_to_date = "237", -- cterm Grey237
-        outdated = "173", -- cterm LightSalmon3
+        up_to_date = "237",
+        outdated = "173",
     }
 end
 
 local register_highlight_group = function(group, color)
-    vim.cmd("highlight " .. group .. " " .. HIGHLIGHT_PARAM .. "=" .. color)
+    vim.cmd("highlight " .. group .. " " .. highlight_param .. "=" .. color)
 end
 
 local register_highlight_groups = function(colors)
