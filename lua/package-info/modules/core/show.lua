@@ -15,11 +15,9 @@ local utils = require("package-info.utils")
 -- Checks if the open buffer refers to a non-empty package.json file
 local is_valid_package_json = function()
     local current_buffer_name = vim.api.nvim_buf_get_name(0)
-		-- Check name
 		local is_package_json = string.match(current_buffer_name, "package.json$")
-		-- Check if empty
 		local buffer_size = vim.fn.getfsize(current_buffer_name)
-		-- Ensure package.json is non-empty
+
 		return is_package_json and buffer_size > 0
 end
 
@@ -47,7 +45,6 @@ local get_package_metadata = function(current_package_version, outdated_dependen
 end
 
 local set_virtual_text = function(dependencies, outdated_dependencies)
-    -- may be an unnecessary check
 		if not is_valid_package_json() then
         return
     end
