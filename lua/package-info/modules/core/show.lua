@@ -104,7 +104,6 @@ return function()
     local is_file_package_json = check_if_package_json()
 
     if is_file_package_json then
-        config.register_highlight_groups()
         local dev_dependencies, prod_dependencies, peer_dependencies = utils.buffer.get_dependencies()
 
         get_outdated_dependencies(function(outdated_dependencies)

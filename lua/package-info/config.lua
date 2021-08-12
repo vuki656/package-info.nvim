@@ -34,6 +34,15 @@ local register_highlight_group = function(group, color)
     vim.cmd("highlight " .. group .. " " .. highlight_param .. "=" .. color)
 end
 
+local register_colorscheme_autocmd = function()
+    vim.cmd([[
+      augroup PackageInfoHighlight
+        autocmd!
+        autocmd ColorScheme * lua require('package-info').register_highlight_groups()
+      augroup END
+    ]])
+end
+
 -- Register autocommand for auto-starting plugin
 local register_autostart = function(should_autostart)
     if should_autostart then
@@ -57,18 +66,17 @@ end
 ----------------------------------------------------------------------------
 
 local M = {}
-
-M.setup = function(options)
-    M.options = register_user_options(options)
-
-    register_autostart(M.options.autostart)
-
-    globals.namespace.register()
-end
-
 M.register_highlight_groups = function()
     register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
     register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
 end
 
+M.setup = function(options)
+    M.options = register_user_options(options)
+
+    register_autostart(M.options.autostart)
+    register_colorscheme_autocmd()
+    M.register_highlight_groups()
+    globals.namespace.register()
+end
 return M
