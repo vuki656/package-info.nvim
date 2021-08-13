@@ -23,4 +23,8 @@ M.delete = function()
     manager_module.delete()
 end
 
+M.upgrade = function()
+    manager_module.upgrade()
+end
+
 return M
