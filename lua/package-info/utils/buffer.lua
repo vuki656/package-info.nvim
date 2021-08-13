@@ -44,12 +44,18 @@ M.get_package_from_line = function(line, should_validate_prop)
 
         if is_package_valid then
             return package_name
-        else
-            return nil
         end
+
+        return nil
     end
 
     return package_name
+end
+
+M.get_package_from_current_line = function()
+    local current_line = vim.fn.getline(".")
+
+    return M.get_package_from_line(current_line, true)
 end
 
 M.get_dependency_positions = function()
