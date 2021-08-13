@@ -62,7 +62,13 @@ local set_virtual_text = function(dependencies, outdated_dependencies)
         local virtual_text = package_metadata.icon .. package_metadata.version
         local position = dependency_positions[package_name]
 
-        vim.api.nvim_buf_set_extmark(0, globals.namespace.id, position, 0, {
+        -- TODO: take the created it and map it alongside buffer positions, so when deleting package
+        -- the extmark can be deleted as well
+        -- If this doesn't fix the shifting problem, then extmarks should be redrawn WITHOUT refetching
+        -- package versions
+        -- NOTE: DELETE EXTMARK FIRST THEN DELETE THE PACKAGE
+        -- NOTE: you will prob need to redraw extmarks as when content shifts, extmarks and their position doesent
+        local created_extmark_id = vim.api.nvim_buf_set_extmark(0, globals.namespace.id, position, 0, {
             virt_text = { { virtual_text, package_metadata.group } },
             virt_text_pos = "eol",
             priority = 200,

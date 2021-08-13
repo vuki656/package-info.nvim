@@ -1,4 +1,4 @@
--- FILE DESCRIPTION: Functionality related to deleting dependency on current line
+-- FILE DESCRIPTION: Functionality related to upgrading dependency on current line
 
 local UI = require("package-info.ui")
 local utils = require("package-info.utils")
@@ -11,15 +11,15 @@ return function()
     local package_name = utils.buffer.get_package_from_current_line()
 
     if package_name then
+        -- TODO: possibly doesn't work
         UI.prompt.display({
-            title = "Delete [" .. package_name .. "] Package",
+            title = "Upgrade [" .. package_name .. "] Package",
             on_submit = function()
-                vim.fn.jobstart("yarn remove " .. package_name, {
+                vim.fn.jobstart("yarn upgrade " .. package_name .. "@latest", {
                     on_stdout = function()
-                        vim.api.nvim_echo({ { package_name .. " deleted successfully" } }, {}, {})
+                        vim.api.nvim_echo({ { package_name .. " upgraded successfully" } }, {}, {})
                         vim.cmd("e")
-                        -- TODO: redraw versions or delete extmark
-                        -- nvim_buf_del_extmark({buffer}, {ns_id}, {id})         *nvim_buf_del_extmark()*
+                        -- TODO: redraw versions or update that one extmark
                     end,
                 })
             end,
