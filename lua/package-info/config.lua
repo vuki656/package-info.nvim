@@ -38,7 +38,7 @@ local register_colorscheme_autocmd = function()
     vim.cmd([[
       augroup PackageInfoHighlight
         autocmd!
-        autocmd ColorScheme * lua require('package-info').register_highlight_groups()
+        autocmd ColorScheme * lua require('package-info.config').register_highlight_groups()
       augroup END
     ]])
 end

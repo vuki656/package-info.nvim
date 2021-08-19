@@ -23,8 +23,4 @@ M.delete = function()
     manager_module.delete()
 end
 
-M.register_highlight_groups = function()
-    config.register_highlight_groups()
-end
-
 return M
