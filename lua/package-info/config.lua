@@ -32,19 +32,20 @@ M.options = {
 M.__get_command = {
     --- Returns the delete command based on package manager
     -- @param package-name - string
-    delete = function (package_name)
+    delete = function(package_name)
         if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return 'yarn remove ' .. package_name
+            return "yarn remove " .. package_name
         end
 
         if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return 'npm uninstall ' .. package_name
+            return "npm uninstall " .. package_name
         end
-    end
+    end,
 }
 
 M.__namespace = {
     id = "",
+    --- Registers the namespace for the plugin
     register = function()
         M.__namespace.id = vim.api.nvim_create_namespace("package-ui")
     end,
@@ -55,13 +56,14 @@ M.__state = {
 }
 
 --- Clone options and replace empty ones with default ones
+-- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.__register_user_options = function(user_options)
     if
         user_options.package_manager ~= constants.PACKAGE_MANAGERS.yarn
-        or user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
+        and user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
     then
         vim.api.nvim_echo(
-            { { "Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.", "WarningMsg" } },
+            { { "Package Info: Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.", "WarningMsg" } },
             {},
             {}
         )
