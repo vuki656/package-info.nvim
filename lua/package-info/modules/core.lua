@@ -81,6 +81,10 @@ end
 --- Checks if the package exists in either dev or prod dependency list
 -- @param package_name - string
 M.__is_valid_package = function(package_name)
+    if package_name == nil then
+        return false
+    end
+
     local dependencies = M.__get_dependencies()
 
     local is_dev_dependency = dependencies.dev[package_name]
