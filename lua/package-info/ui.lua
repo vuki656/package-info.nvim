@@ -2,6 +2,8 @@ local Menu = require("nui.menu")
 local Input = require("nui.input")
 
 local constants = require("package-info.constants")
+local utils = require("package-info.utils")
+local logger = require("package-info.logger")
 
 local PROMPT_ACTIONS = {
     confirm = "Confirm",
@@ -66,6 +68,14 @@ M.display_prompt = function(options)
                 vim.fn.jobstart(options.command, {
                     on_stdout = function(_, stdout)
                         if table.concat(stdout) == "" then
+                            local has_error = utils.has_errors(stdout)
+
+                            if has_error then
+                                logger.error("Error running " .. options.command .. ". Try running manually.")
+
+                                return
+                            end
+
                             options.callback()
                         end
                     end,

@@ -5,6 +5,7 @@ local json_parser = require("package-info.libs.json_parser")
 local constants = require("package-info.constants")
 local config = require("package-info.config")
 local logger = require("package-info.logger")
+local utils = require("package-info.utils")
 local ui = require("package-info.ui")
 
 local M = {}
@@ -35,12 +36,21 @@ end
 -- @param callback - function that will receive outdated packages in JSON format
 M.__get_outdated_dependencies = function(callback)
     local value = ""
+    local command = "npm outdated --json"
 
-    vim.fn.jobstart("npm outdated --json", {
+    vim.fn.jobstart(command, {
         on_stdout = function(_, stdout)
             value = value .. table.concat(stdout)
 
             if table.concat(stdout) == "" then
+                local has_error = utils.has_errors(stdout)
+
+                if has_error then
+                    logger.error("Error running " .. command .. ". Try running manually.")
+
+                    return
+                end
+
                 local json_value = json_parser.decode(value)
 
                 callback(json_value)
@@ -266,6 +276,14 @@ M.install = function()
             vim.fn.jobstart(command, {
                 on_stdout = function(_, stdout)
                     if table.concat(stdout) == "" then
+                        local has_error = utils.has_errors(stdout)
+
+                        if has_error then
+                            logger.error("Error running " .. command .. ". Try running manually.")
+
+                            return
+                        end
+
                         logger.info(dependency_name .. " installed successfully")
                         vim.cmd(":e")
                         config.loading.stop()

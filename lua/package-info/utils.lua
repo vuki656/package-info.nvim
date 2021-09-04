@@ -1,0 +1,10 @@
+M = {}
+
+--- Checks if given string contains "error"
+-- For now probably acceptable, but should be more precise
+-- @param value - string to check
+M.has_errors = function(value)
+    return string.find(value, "error") ~= nil
+end
+
+return M
