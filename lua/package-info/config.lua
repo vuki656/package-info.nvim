@@ -90,6 +90,53 @@ M.state = {
     displayed = M.options.autostart or false,
 }
 
+M.loading = {
+    animation = {
+        "⠋",
+        "⠙",
+        "⠹",
+        "⠸",
+        "⠼",
+        "⠴",
+        "⠦",
+        "⠧",
+        "⠇",
+        "⠏",
+    },
+    index = 1,
+    log = "",
+    spinner = "",
+    is_running = false,
+    fetch = function()
+        return M.loading.spinner .. " " .. M.loading.log
+    end,
+    start = function(message)
+        M.loading.log = message
+        M.loading.is_running = true
+        M.loading.update()
+    end,
+    stop = function()
+        M.loading.is_running = false
+        M.loading.log = ""
+        M.loading.spinner = ""
+    end,
+    update = function()
+        if M.loading.is_running then
+            M.loading.spinner = M.loading.animation[M.loading.index]
+
+            M.loading.index = M.loading.index + 1
+
+            if M.loading.index == 10 then
+                M.loading.index = 1
+            end
+
+            vim.fn.timer_start(100, function ()
+                M.loading.update()
+            end)
+        end
+    end,
+}
+
 --- Clone options and replace empty ones with default ones
 -- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.__register_user_options = function(user_options)
