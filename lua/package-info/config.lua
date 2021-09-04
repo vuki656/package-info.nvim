@@ -130,7 +130,7 @@ M.loading = {
                 M.loading.index = 1
             end
 
-            vim.fn.timer_start(100, function ()
+            vim.fn.timer_start(100, function()
                 M.loading.update()
             end)
         end
