@@ -158,6 +158,8 @@ M.show = function()
         return
     end
 
+    config.loading.start("Fetching latest versions")
+
     local dependencies = M.__get_dependencies()
 
     M.__get_outdated_dependencies(function(outdated_dependencies_json)
@@ -165,6 +167,7 @@ M.show = function()
         M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
 
         config.state.displayed = true
+        config.loading.stop()
     end)
 end
 
@@ -183,12 +186,15 @@ M.delete = function()
     if not is_valid then
         logger.error("No package under current line.")
     else
+        config.loading.start("Deleting " .. package_name .. " package")
+
         ui.display_prompt({
             command = config.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             callback = function()
                 logger.info(package_name .. " deleted successfully")
                 vim.cmd(":e")
+                config.loading.stop()
 
                 if config.state.displayed then
                     M.hide()
@@ -208,12 +214,15 @@ M.update = function()
     if not is_valid then
         logger.error("No package under current line.")
     else
+        config.loading.start("Updating " .. package_name .. " package")
+
         ui.display_prompt({
             command = config.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             callback = function()
                 logger.info(package_name .. " updated successfully")
                 vim.cmd(":e")
+                config.loading.stop()
 
                 if config.state.displayed then
                     M.hide()
@@ -235,11 +244,14 @@ M.install = function()
 
             local command = config.get_command.install(dependency_type, dependency_name)
 
+            config.loading.start("Updating " .. dependency_name .. " package")
+
             vim.fn.jobstart(command, {
                 on_stdout = function(_, stdout)
                     if table.concat(stdout) == "" then
                         logger.info(dependency_name .. " installed successfully")
                         vim.cmd(":e")
+                        config.loading.stop()
 
                         if config.state.displayed then
                             M.hide()

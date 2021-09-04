@@ -62,11 +62,34 @@ require('package-info').setup()
 }
 ```
 
+### ⏰ Loading Hook
+
+- `package-info` provides a hook to display a loading message
+
+![Package Info Loading Hook](./media/loading.gif)
+
+#### Usage
+
+- It can be used anywhere in `neovim` by invoking `return require('package-info').get_status()`
+
+```lua
+local package = require("package-info")
+
+-- Galaxyline
+section.left[10] = {
+    PackageInfoStatus = {
+        provider = function()
+            return package.get_status()
+        end,
+    },
+}
+```
+
 #### 256 Color Terminals
 
-If the vim option `termguicolors` is false, package-info switches to 256 color mode.
-In this mode [cterm color numbers](https://jonasjacek.github.io/colors/) are used
-instead of truecolor hex codes and the color defaults are:
+- If the vim option `termguicolors` is false, package-info switches to 256 color mode.
+- In this mode [cterm color numbers](https://jonasjacek.github.io/colors/) are used
+  instead of truecolor hex codes and the color defaults are:
 
 ```lua
 colors = {

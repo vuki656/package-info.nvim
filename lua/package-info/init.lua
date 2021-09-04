@@ -30,4 +30,8 @@ M.install = function()
     core.install()
 end
 
+M.get_status = function()
+    return config.loading.fetch()
+end
+
 return M
