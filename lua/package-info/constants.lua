@@ -9,7 +9,7 @@ M.HIGHLIGHT_GROUPS = {
 
 M.PACKAGE_MANAGERS = {
     yarn = "yarn",
-    npm = "npm"
+    npm = "npm",
 }
 
 return M
