@@ -22,10 +22,25 @@ M.options = {
         },
     },
     autostart = true,
+    package_manager = "yarn",
 
     __highlight_params = {
         fg = "guifg",
     },
+}
+
+M.__get_command = {
+    --- Returns the delete command based on package manager
+    -- @param package-name - string
+    delete = function (package_name)
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+            return 'yarn remove ' .. package_name
+        end
+
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            return 'npm uninstall ' .. package_name
+        end
+    end
 }
 
 M.__namespace = {
@@ -41,6 +56,19 @@ M.__state = {
 
 --- Clone options and replace empty ones with default ones
 M.__register_user_options = function(user_options)
+    if
+        user_options.package_manager ~= constants.PACKAGE_MANAGERS.yarn
+        or user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
+    then
+        vim.api.nvim_echo(
+            { { "Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.", "WarningMsg" } },
+            {},
+            {}
+        )
+
+        M.package_manager = constants.PACKAGE_MANAGERS.yarn
+    end
+
     return vim.tbl_deep_extend("force", {}, M.options, user_options or {})
 end
 

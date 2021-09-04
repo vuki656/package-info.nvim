@@ -10,9 +10,9 @@ Displays latest package versions in your `package.json` file as virtual text.
 
 ## 🚀 Planned Features
 
-- Install new packages trough search popup [#26](https://github.com/vuki656/package-info.nvim/issues/26)
+- Install new packages through search popup [#26](https://github.com/vuki656/package-info.nvim/issues/26)
 - Upgrade package on current line [#21](https://github.com/vuki656/package-info.nvim/issues/21)
-- Install custom package version trough popup [#24](https://github.com/vuki656/package-info.nvim/issues/24)
+- Install custom package version through popup [#24](https://github.com/vuki656/package-info.nvim/issues/24)
 - Delete package on current line [#23](https://github.com/vuki656/package-info.nvim/issues/23)
 - Set package manager [#22](https://github.com/vuki656/package-info.nvim/issues/22)
 
@@ -58,6 +58,7 @@ require('package-info').setup()
         },
     },
     autostart = true -- Whether to autostart when `package.json` is opened
+    package_manager = `yarn` -- Used for `delete`, `upgrade` etc...
 }
 ```
 
