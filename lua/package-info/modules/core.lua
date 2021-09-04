@@ -2,8 +2,9 @@
 
 local json_parser = require("package-info.libs.json_parser")
 
-local config = require("package-info.config")
 local constants = require("package-info.constants")
+local config = require("package-info.config")
+local logger = require("package-info.logger")
 local ui = require("package-info.ui")
 
 local M = {}
@@ -180,13 +181,13 @@ M.delete = function()
     local is_valid = M.__is_valid_package(package_name)
 
     if not is_valid then
-        vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
+        logger.error("No package under current line.")
     else
-        ui.display_menu({
+        ui.display_prompt({
             command = config.__get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             callback = function()
-                vim.api.nvim_echo({ { package_name .. " deleted successfully" } }, {}, {})
+                logger.info(package_name .. " deleted successfully")
                 vim.cmd(":e")
 
                 if config.__state.displayed then
@@ -205,13 +206,13 @@ M.update = function()
     local is_valid = M.__is_valid_package(package_name)
 
     if not is_valid then
-        vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
+        logger.error("No package under current line.")
     else
-        ui.display_menu({
+        ui.display_prompt({
             command = config.__get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             callback = function()
-                vim.api.nvim_echo({ { package_name .. " updated successfully" } }, {}, {})
+                logger.info(package_name .. " updated successfully")
                 vim.cmd(":e")
 
                 if config.__state.displayed then
@@ -221,6 +222,34 @@ M.update = function()
             end,
         })
     end
+end
+
+M.install = function()
+    ui.display_install_menu(function(dependency_type)
+        ui.display_install_input(function(dependency_name)
+            if dependency_name == "" then
+                logger.error("No package specified")
+
+                return
+            end
+
+            local command = config.__get_command.install(dependency_type, dependency_name)
+
+            vim.fn.jobstart(command, {
+                on_stdout = function(_, stdout)
+                    if table.concat(stdout) == "" then
+                        logger.info(dependency_name .. " installed successfully")
+                        vim.cmd(":e")
+
+                        if config.__state.displayed then
+                            M.hide()
+                            M.show()
+                        end
+                    end
+                end,
+            })
+        end)
+    end)
 end
 
 return M

@@ -2,7 +2,7 @@
 
 local config = require("package-info.config")
 
-local core_module = require("package-info.modules.core")
+local core = require("package-info.modules.core")
 
 local M = {}
 
@@ -11,19 +11,23 @@ M.setup = function(options)
 end
 
 M.show = function()
-    core_module.show()
+    core.show()
 end
 
 M.hide = function()
-    core_module.hide()
+    core.hide()
 end
 
 M.delete = function()
-    core_module.delete()
+    core.delete()
 end
 
 M.update = function()
-    core_module.update()
+    core.update()
+end
+
+M.install = function()
+    core.install()
 end
 
 return M

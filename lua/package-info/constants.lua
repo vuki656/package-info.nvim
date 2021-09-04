@@ -12,4 +12,9 @@ M.PACKAGE_MANAGERS = {
     npm = "npm",
 }
 
+M.DEPENDENCY_TYPE = {
+    prod = "prod",
+    dev = "dev",
+}
+
 return M
