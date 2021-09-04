@@ -22,14 +22,42 @@ M.options = {
         },
     },
     autostart = true,
+    package_manager = "yarn",
 
     __highlight_params = {
         fg = "guifg",
     },
 }
 
+M.__get_command = {
+    --- Returns the delete command based on package manager
+    -- @param package-name - string
+    delete = function(package_name)
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+            return "yarn remove " .. package_name
+        end
+
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            return "npm uninstall " .. package_name
+        end
+    end,
+
+    --- Returns the update command based on package manager
+    -- @param package-name - string
+    update = function(package_name)
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+            return "yarn upgrade --latest " .. package_name
+        end
+
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            return "npm install " .. package_name .. "@latest"
+        end
+    end,
+}
+
 M.__namespace = {
     id = "",
+    --- Registers the namespace for the plugin
     register = function()
         M.__namespace.id = vim.api.nvim_create_namespace("package-ui")
     end,
@@ -40,7 +68,21 @@ M.__state = {
 }
 
 --- Clone options and replace empty ones with default ones
+-- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.__register_user_options = function(user_options)
+    if
+        user_options.package_manager ~= constants.PACKAGE_MANAGERS.yarn
+        and user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
+    then
+        vim.api.nvim_echo(
+            { { "Package Info: Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.", "WarningMsg" } },
+            {},
+            {}
+        )
+
+        M.package_manager = constants.PACKAGE_MANAGERS.yarn
+    end
+
     return vim.tbl_deep_extend("force", {}, M.options, user_options or {})
 end
 

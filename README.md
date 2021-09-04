@@ -10,9 +10,9 @@ Displays latest package versions in your `package.json` file as virtual text.
 
 ## 🚀 Planned Features
 
-- Install new packages trough search popup [#26](https://github.com/vuki656/package-info.nvim/issues/26)
+- Install new packages through search popup [#26](https://github.com/vuki656/package-info.nvim/issues/26)
 - Upgrade package on current line [#21](https://github.com/vuki656/package-info.nvim/issues/21)
-- Install custom package version trough popup [#24](https://github.com/vuki656/package-info.nvim/issues/24)
+- Install custom package version through popup [#24](https://github.com/vuki656/package-info.nvim/issues/24)
 - Delete package on current line [#23](https://github.com/vuki656/package-info.nvim/issues/23)
 - Set package manager [#22](https://github.com/vuki656/package-info.nvim/issues/22)
 
@@ -21,7 +21,7 @@ Displays latest package versions in your `package.json` file as virtual text.
 - Neovim >= 0.5.0
 - Npm
 - [Patched font](https://github.com/ryanoasis/nerd-fonts/tree/gh-pages) if you
-want icons
+  want icons
 
 ## 📦 Installation
 
@@ -58,6 +58,7 @@ require('package-info').setup()
         },
     },
     autostart = true -- Whether to autostart when `package.json` is opened
+    package_manager = `yarn` -- Can be `npm` or `yarn`. Used for `delete`, `upgrade` etc...
 }
 ```
 
@@ -74,7 +75,7 @@ colors = {
 }
 ```
 
-## ⌨️  Keybindings
+## ⌨️ Keybindings
 
 **Package info has no default Keybindings**.
 
@@ -90,18 +91,28 @@ vim.api.nvim_set_keymap("n", "<leader>ns", "<cmd>lua require('package-info').sho
 vim.api.nvim_set_keymap("n", "<leader>nc", "<cmd>lua require('package-info').hide()<cr>",
   { silent = true, noremap = true }
 )
+
+
+-- Delete package on current line
+vim.api.nvim_set_keymap("n", "<leader>nd", "<cmd>lua require('package-info').delete()<cr>",
+  { silent = true, noremap = true }
+)
+
+-- Update package on current line
+vim.api.nvim_set_keymap("n", "<leader>nu", "<cmd>lua require('package-info').update()<cr>",
+  { silent = true, noremap = true }
+)
 ```
 
 ## 📝 Notes
 
 - Display might be slow on a project with a lot of packages. This is due to the
-`npm outdated` command taking a long time. Nothing can be done regarding
-that on the plugin side.
+  `npm outdated` command taking a long time. Nothing can be done regarding
+  that on the plugin side.
 
 - Idea was inspired by [akinso](https://github.com/akinsho) and his [dependency-assist.nvim](Dependency-assist.nvim)
 
 - Readme template stolen from [folke](https://github.com/folke)
 
 - This is my first `neovim` plugin so please don't hesitate to
-open an issue an tell me if you find any stupid stuff in the code :D.
-
+  open an issue an tell me if you find any stupid stuff in the code :D.

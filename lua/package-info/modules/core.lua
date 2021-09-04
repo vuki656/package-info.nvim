@@ -183,7 +183,7 @@ M.delete = function()
         vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
     else
         ui.display_menu({
-            command = "yarn remove " .. package_name,
+            command = config.__get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             callback = function()
                 vim.api.nvim_echo({ { package_name .. " deleted successfully" } }, {}, {})
@@ -208,7 +208,7 @@ M.update = function()
         vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
     else
         ui.display_menu({
-            command = "yarn upgrade --latest " .. package_name,
+            command = config.__get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             callback = function()
                 vim.api.nvim_echo({ { package_name .. " updated successfully" } }, {}, {})
