@@ -157,8 +157,8 @@ M.show = function()
     if not M.__is_valid_package_json() then
         return
     end
-
-    config.loading.start("Fetching latest versions")
+    
+    config.loading.start("|  Fetching latest versions")
 
     local dependencies = M.__get_dependencies()
 
@@ -186,7 +186,7 @@ M.delete = function()
     if not is_valid then
         logger.error("No package under current line.")
     else
-        config.loading.start("Deleting " .. package_name .. " package")
+        config.loading.start("|  Deleting " .. package_name .. " package")
 
         ui.display_prompt({
             command = config.get_command.delete(package_name),
@@ -214,7 +214,7 @@ M.update = function()
     if not is_valid then
         logger.error("No package under current line.")
     else
-        config.loading.start("Updating " .. package_name .. " package")
+        config.loading.start("| ﯁ Updating " .. package_name .. " package")
 
         ui.display_prompt({
             command = config.get_command.update(package_name),
@@ -244,7 +244,7 @@ M.install = function()
 
             local command = config.get_command.install(dependency_type, dependency_name)
 
-            config.loading.start("Updating " .. dependency_name .. " package")
+            config.loading.start("|  Installing " .. dependency_name .. " package")
 
             vim.fn.jobstart(command, {
                 on_stdout = function(_, stdout)

@@ -88,6 +88,7 @@ M.namespace = {
 
 M.state = {
     displayed = M.options.autostart or false,
+    last_run = ""
 }
 
 M.loading = {

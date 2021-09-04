@@ -10,8 +10,8 @@ M.setup = function(options)
     config.setup(options)
 end
 
-M.show = function()
-    core.show()
+M.show = function(options)
+    core.show(options)
 end
 
 M.hide = function()
