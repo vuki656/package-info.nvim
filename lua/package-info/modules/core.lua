@@ -208,7 +208,7 @@ M.update = function()
         vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
     else
         ui.display_menu({
-            command = config.__get_command.upgrade(package_name),
+            command = config.__get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             callback = function()
                 vim.api.nvim_echo({ { package_name .. " updated successfully" } }, {}, {})

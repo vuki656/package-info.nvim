@@ -41,6 +41,18 @@ M.__get_command = {
             return "npm uninstall " .. package_name
         end
     end,
+
+    --- Returns the update command based on package manager
+    -- @param package-name - string
+    update = function(package_name)
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+            return "yarn upgrade --latest " .. package_name
+        end
+
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            return "npm install " .. package_name .. "@latest"
+        end
+    end,
 }
 
 M.__namespace = {

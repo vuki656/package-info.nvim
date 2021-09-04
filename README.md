@@ -58,7 +58,7 @@ require('package-info').setup()
         },
     },
     autostart = true -- Whether to autostart when `package.json` is opened
-    package_manager = `yarn` -- Used for `delete`, `upgrade` etc...
+    package_manager = `yarn` -- Can be `npm` or `yarn`. Used for `delete`, `upgrade` etc...
 }
 ```
 
