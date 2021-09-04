@@ -7,4 +7,9 @@ M.HIGHLIGHT_GROUPS = {
     up_to_date = "PackageInfoUpToDateVersion",
 }
 
+M.PACKAGE_MANAGERS = {
+    yarn = "yarn",
+    npm = "npm"
+}
+
 return M

@@ -2,9 +2,9 @@
 
 local json_parser = require("package-info.libs.json_parser")
 
-local globals = require("package-info.globals")
 local config = require("package-info.config")
 local constants = require("package-info.constants")
+local ui = require("package-info.ui")
 
 local M = {}
 
@@ -144,7 +144,7 @@ M.__set_virtual_text = function(dependencies, outdated_dependencies)
         local virtual_text = package_metadata.icon .. package_metadata.version
         local position = dependency_positions[package_name]
 
-        vim.api.nvim_buf_set_extmark(0, globals.namespace.id, position, 0, {
+        vim.api.nvim_buf_set_extmark(0, config.__namespace.id, position, 0, {
             virt_text = { { virtual_text, package_metadata.group } },
             virt_text_pos = "eol",
             priority = 200,
@@ -162,11 +162,65 @@ M.show = function()
     M.__get_outdated_dependencies(function(outdated_dependencies_json)
         M.__set_virtual_text(dependencies.dev, outdated_dependencies_json)
         M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
+
+        config.__state.displayed = true
     end)
 end
 
 M.hide = function()
-    vim.api.nvim_buf_clear_namespace(0, globals.namespace.id, 0, -1)
+    vim.api.nvim_buf_clear_namespace(0, config.__namespace.id, 0, -1)
+
+    config.__state.displayed = false
+end
+
+M.delete = function()
+    local current_line = vim.fn.getline(".")
+
+    local package_name = M.__get_package_name_from_line(current_line)
+    local is_valid = M.__is_valid_package(package_name)
+
+    if not is_valid then
+        vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
+    else
+        ui.display_menu({
+            command = "yarn remove " .. package_name,
+            title = " Delete [" .. package_name .. "] Package ",
+            callback = function()
+                vim.api.nvim_echo({ { package_name .. " deleted successfully" } }, {}, {})
+                vim.cmd(":e")
+
+                if config.__state.displayed then
+                    M.hide()
+                    M.show()
+                end
+            end,
+        })
+    end
+end
+
+M.update = function()
+    local current_line = vim.fn.getline(".")
+
+    local package_name = M.__get_package_name_from_line(current_line)
+    local is_valid = M.__is_valid_package(package_name)
+
+    if not is_valid then
+        vim.api.nvim_echo({ { "No package under current line.", "WarningMsg" } }, {}, {})
+    else
+        ui.display_menu({
+            command = "yarn upgrade --latest " .. package_name,
+            title = " Update [" .. package_name .. "] Package ",
+            callback = function()
+                vim.api.nvim_echo({ { package_name .. " updated successfully" } }, {}, {})
+                vim.cmd(":e")
+
+                if config.__state.displayed then
+                    M.hide()
+                    M.show()
+                end
+            end,
+        })
+    end
 end
 
 return M

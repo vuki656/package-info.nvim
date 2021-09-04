@@ -2,7 +2,7 @@
 
 local config = require("package-info.config")
 
-local core_module = require("package-info._modules.core")
+local core_module = require("package-info.modules.core")
 
 local M = {}
 
@@ -18,8 +18,12 @@ M.hide = function()
     core_module.hide()
 end
 
--- M.delete = function()
---     manager_module.delete()
--- end
+M.delete = function()
+    core_module.delete()
+end
+
+M.update = function()
+    core_module.update()
+end
 
 return M
