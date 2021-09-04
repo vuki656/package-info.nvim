@@ -1,7 +1,6 @@
--- DESCRIPTION: sets up the user given configuration
+-- DESCRIPTION: sets up the user given config, and plugin config
 
 local constants = require("package-info.constants")
-local globals = require("package-info.globals")
 
 ----------------------------------------------------------------------------
 ---------------------------------- MODULE ----------------------------------
@@ -27,6 +26,17 @@ M.options = {
     __highlight_params = {
         fg = "guifg",
     },
+}
+
+M.__namespace = {
+    id = "",
+    register = function()
+        M.__namespace.id = vim.api.nvim_create_namespace("package-ui")
+    end,
+}
+
+M.__state = {
+    displayed = M.options.autostart or false,
 }
 
 --- Clone options and replace empty ones with default ones
@@ -86,8 +96,7 @@ M.setup = function(user_options)
     M.__register_autostart()
     M.__register_256color_support()
     M.__register_highlight_groups()
-
-    globals.namespace.register()
+    M.__namespace.register()
 end
 
 return M
