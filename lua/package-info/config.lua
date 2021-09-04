@@ -1,13 +1,15 @@
--- FILE DESCRIPTION: User passed config options
+-- DESCRIPTION: sets up the user given config, and plugin config
 
 local constants = require("package-info.constants")
-local globals = require("package-info.globals")
 
 ----------------------------------------------------------------------------
----------------------------------- HELPERS ---------------------------------
+---------------------------------- MODULE ----------------------------------
 ----------------------------------------------------------------------------
 
-local DEFAULT_OPTIONS = {
+local M = {}
+
+--- Default options
+M.options = {
     colors = {
         up_to_date = "#3C4048",
         outdated = "#d19a66",
@@ -20,32 +22,31 @@ local DEFAULT_OPTIONS = {
         },
     },
     autostart = true,
+
+    __highlight_params = {
+        fg = "guifg",
+    },
 }
-local highlight_param = "guifg"
-if not vim.o.termguicolors then
-    highlight_param = "ctermfg"
-    DEFAULT_OPTIONS.colors = {
-        up_to_date = "237",
-        outdated = "173",
-    }
+
+M.__namespace = {
+    id = "",
+    register = function()
+        M.__namespace.id = vim.api.nvim_create_namespace("package-ui")
+    end,
+}
+
+M.__state = {
+    displayed = M.options.autostart or false,
+}
+
+--- Clone options and replace empty ones with default ones
+M.__register_user_options = function(user_options)
+    return vim.tbl_deep_extend("force", {}, M.options, user_options or {})
 end
 
-local register_highlight_group = function(group, color)
-    vim.cmd("highlight " .. group .. " " .. highlight_param .. "=" .. color)
-end
-
-local register_colorscheme_autocmd = function()
-    vim.cmd([[
-      augroup PackageInfoHighlight
-        autocmd!
-        autocmd ColorScheme * lua require('package-info.config').register_highlight_groups()
-      augroup END
-    ]])
-end
-
--- Register autocommand for auto-starting plugin
-local register_autostart = function(should_autostart)
-    if should_autostart then
+--- Register autocommand for auto-starting plugin
+M.__register_autostart = function()
+    if M.options.autostart then
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
@@ -56,27 +57,46 @@ local register_autostart = function(should_autostart)
     end
 end
 
--- Clone options and replace empty ones with default ones
-local register_user_options = function(options)
-    return vim.tbl_deep_extend("force", {}, DEFAULT_OPTIONS, options or {})
+--- If terminal doesn't support true color, fallback to 256 config
+M.__register_256color_support = function()
+    if not vim.o.termguicolors then
+        vim.cmd([[
+          augroup PackageUIHighlight
+            autocmd!
+            autocmd ColorScheme * lua require('package-info.config').__register_highlight_groups()
+          augroup END
+        ]])
+
+        M.options.colors = {
+            up_to_date = "237",
+            outdated = "173",
+        }
+
+        M.options.__highlight_params.fg = "ctermfg"
+    end
 end
 
-----------------------------------------------------------------------------
----------------------------------- MODULE ----------------------------------
-----------------------------------------------------------------------------
-
-local M = {}
-M.register_highlight_groups = function()
-    register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
-    register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
+--- Register given highlight group
+-- @param group - highlight group
+-- @param color - color to use with the highlight group
+M.__register_highlight_group = function(group, color)
+    vim.cmd("highlight " .. group .. " " .. M.options.__highlight_params.fg .. "=" .. color)
 end
 
-M.setup = function(options)
-    M.options = register_user_options(options)
-
-    register_autostart(M.options.autostart)
-    register_colorscheme_autocmd()
-    M.register_highlight_groups()
-    globals.namespace.register()
+--- Register all highlight groups
+M.__register_highlight_groups = function()
+    M.__register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
+    M.__register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
 end
+
+--- Take all user options and setup the config
+-- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
+M.setup = function(user_options)
+    M.__register_user_options(user_options)
+    M.__register_autostart()
+    M.__register_256color_support()
+    M.__register_highlight_groups()
+    M.__namespace.register()
+end
+
 return M
