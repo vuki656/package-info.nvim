@@ -88,7 +88,16 @@ M.namespace = {
 
 M.state = {
     displayed = M.options.autostart or false,
-    last_run = ""
+    last_run = nil,
+    should_skip = function()
+        local hour_in_seconds = 3600
+
+        if M.state.last_run == nil then
+            return false
+        end
+
+        return os.time() < M.state.last_run + hour_in_seconds
+    end,
 }
 
 M.loading = {
@@ -154,12 +163,12 @@ M.__register_user_options = function(user_options)
 end
 
 --- Register autocommand for auto-starting plugin
-M.__register_autostart = function()
-    if M.options.autostart then
+M.__register_autostart = function(autostart)
+    if autostart then
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
-                autocmd BufWinEnter,WinNew * lua require("package-info").show()
+                autocmd BufWinEnter * lua require("package-info").show()
             augroup end]],
             false
         )
@@ -202,7 +211,7 @@ end
 -- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.setup = function(user_options)
     M.__register_user_options(user_options)
-    M.__register_autostart()
+    M.__register_autostart(user_options.autostart)
     M.__register_256color_support()
     M.__register_highlight_groups()
     M.namespace.register()

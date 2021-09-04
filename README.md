@@ -62,6 +62,21 @@ require('package-info').setup()
 }
 ```
 
+-- **NOTE:** if `autostart` is on, `package-info` will run the first `fetch`, and then won't run the `fetch`
+operation for another hour to prevent unnecessary calls.
+
+If you want to force the refetch you can use the following command:
+
+```lua
+-- Display latest versions as virtual text
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>ns",
+    "<cmd>lua require('package-info').show({ force = true })<cr>",
+    { silent = true, noremap = true }
+)
+```
+
 ### ⏰ Loading Hook
 
 - `package-info` provides a hook to display a loading message
@@ -106,7 +121,7 @@ You can copy the ones below:
 
 ```lua
 -- Display latest versions as virtual text
-vim.api.nvim_set_keymap("n", "<leader>ns", "<cmd>lua require('package-info').show()<cr>",
+vim.api.nvim_set_keymap("n", "<leader>ns", "<cmd>lua require('package-info').show({ force = true })<cr>",
   { silent = true, noremap = true }
 )
 
