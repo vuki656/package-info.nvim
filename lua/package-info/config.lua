@@ -77,6 +77,16 @@ M.get_command = {
             end
         end
     end,
+
+    reinstall = function()
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+            return "yarn"
+        end
+
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            return "npm install"
+        end
+    end,
 }
 
 M.namespace = {

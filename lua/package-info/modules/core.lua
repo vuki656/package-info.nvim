@@ -299,4 +299,28 @@ M.install = function()
     end)
 end
 
+M.reinstall = function()
+    config.loading.start("| ﰇ Reinstalling dependencies")
+
+    local command = config.get_command.reinstall()
+
+    vim.fn.jobstart("rm -rf node_modules && " .. command, {
+        on_stdout = function(_, stdout)
+            if table.concat(stdout) == "" then
+                local has_error = utils.has_errors(stdout)
+
+                if has_error then
+                    logger.error("Error running " .. command .. ". Try running manually.")
+
+                    return
+                end
+
+                logger.info("Dependencies reinstalled successfully")
+                vim.cmd(":e")
+                config.loading.stop()
+            end
+        end,
+    })
+end
+
 return M
