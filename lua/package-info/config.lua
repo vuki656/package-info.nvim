@@ -24,6 +24,7 @@ M.options = {
     },
     autostart = true,
     package_manager = "yarn",
+    hide_up_to_date = false,
 
     __highlight_params = {
         fg = "guifg",
@@ -140,7 +141,7 @@ M.loading = {
                 M.loading.index = 1
             end
 
-            vim.fn.timer_start(100, function()
+            vim.fn.timer_start(80, function()
                 M.loading.update()
             end)
         end
@@ -154,17 +155,17 @@ M.__register_user_options = function(user_options)
         user_options.package_manager ~= constants.PACKAGE_MANAGERS.yarn
         and user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
     then
-        logger.error("Package Info: Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.")
+        logger.error("Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.")
 
         M.package_manager = constants.PACKAGE_MANAGERS.yarn
     end
 
-    return vim.tbl_deep_extend("force", {}, M.options, user_options or {})
+    M.options = vim.tbl_deep_extend("force", {}, M.options, user_options or {})
 end
 
 --- Register autocommand for auto-starting plugin
-M.__register_autostart = function(autostart)
-    if autostart then
+M.__register_autostart = function()
+    if M.options.autostart then
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
@@ -211,7 +212,7 @@ end
 -- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.setup = function(user_options)
     M.__register_user_options(user_options)
-    M.__register_autostart(user_options.autostart)
+    M.__register_autostart()
     M.__register_256color_support()
     M.__register_highlight_groups()
     M.namespace.register()

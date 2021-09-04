@@ -58,6 +58,7 @@ require('package-info').setup()
         },
     },
     autostart = true -- Whether to autostart when `package.json` is opened
+    hide_up_to_date = true -- It only shows outdated versions as virtual text
     package_manager = `yarn` -- Can be `npm` or `yarn`. Used for `delete`, `upgrade` etc...
 }
 ```
@@ -83,7 +84,7 @@ vim.api.nvim_set_keymap(
 
 ![Package Info Loading Hook](./media/loading.gif)
 
-#### Usage
+#### Config
 
 - It can be used anywhere in `neovim` by invoking `return require('package-info').get_status()`
 

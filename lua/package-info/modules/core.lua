@@ -145,6 +145,10 @@ M.__set_virtual_text = function(dependencies, outdated_dependencies)
         local virtual_text = package_metadata.icon .. package_metadata.version
         local position = dependency_positions[package_name]
 
+        if current_package_version == package_metadata.version and config.options.hide_up_to_date then
+            virtual_text = ""
+        end
+
         vim.api.nvim_buf_set_extmark(0, config.namespace.id, position, 0, {
             virt_text = { { virtual_text, package_metadata.group } },
             virt_text_pos = "eol",
@@ -165,8 +169,6 @@ M.show = function(options)
     local should_skip = config.state.should_skip()
 
     if should_skip and options.force == false then
-        print("ran")
-
         M.__set_virtual_text(dependencies.dev, M.__outdated_dependencies_json)
         M.__set_virtual_text(dependencies.prod, M.__outdated_dependencies_json)
 

@@ -1,7 +1,7 @@
 local M = {}
 
 M.__print = function(message, highlight_group)
-    vim.api.nvim_echo({ { message, highlight_group or "" } }, {}, {})
+    vim.api.nvim_echo({ { "PackageInfo: " .. message, highlight_group or "" } }, {}, {})
 end
 
 M.error = function(message)
