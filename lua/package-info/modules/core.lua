@@ -145,7 +145,7 @@ M.__set_virtual_text = function(dependencies, outdated_dependencies)
         local virtual_text = package_metadata.icon .. package_metadata.version
         local position = dependency_positions[package_name]
 
-        vim.api.nvim_buf_set_extmark(0, config.__namespace.id, position, 0, {
+        vim.api.nvim_buf_set_extmark(0, config.namespace.id, position, 0, {
             virt_text = { { virtual_text, package_metadata.group } },
             virt_text_pos = "eol",
             priority = 200,
@@ -164,14 +164,14 @@ M.show = function()
         M.__set_virtual_text(dependencies.dev, outdated_dependencies_json)
         M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
 
-        config.__state.displayed = true
+        config.state.displayed = true
     end)
 end
 
 M.hide = function()
-    vim.api.nvim_buf_clear_namespace(0, config.__namespace.id, 0, -1)
+    vim.api.nvim_buf_clear_namespace(0, config.namespace.id, 0, -1)
 
-    config.__state.displayed = false
+    config.state.displayed = false
 end
 
 M.delete = function()
@@ -184,13 +184,13 @@ M.delete = function()
         logger.error("No package under current line.")
     else
         ui.display_prompt({
-            command = config.__get_command.delete(package_name),
+            command = config.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             callback = function()
                 logger.info(package_name .. " deleted successfully")
                 vim.cmd(":e")
 
-                if config.__state.displayed then
+                if config.state.displayed then
                     M.hide()
                     M.show()
                 end
@@ -209,13 +209,13 @@ M.update = function()
         logger.error("No package under current line.")
     else
         ui.display_prompt({
-            command = config.__get_command.update(package_name),
+            command = config.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             callback = function()
                 logger.info(package_name .. " updated successfully")
                 vim.cmd(":e")
 
-                if config.__state.displayed then
+                if config.state.displayed then
                     M.hide()
                     M.show()
                 end
@@ -233,7 +233,7 @@ M.install = function()
                 return
             end
 
-            local command = config.__get_command.install(dependency_type, dependency_name)
+            local command = config.get_command.install(dependency_type, dependency_name)
 
             vim.fn.jobstart(command, {
                 on_stdout = function(_, stdout)
@@ -241,7 +241,7 @@ M.install = function()
                         logger.info(dependency_name .. " installed successfully")
                         vim.cmd(":e")
 
-                        if config.__state.displayed then
+                        if config.state.displayed then
                             M.hide()
                             M.show()
                         end

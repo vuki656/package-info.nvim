@@ -30,7 +30,7 @@ M.options = {
     },
 }
 
-M.__get_command = {
+M.get_command = {
     --- Returns the delete command based on package manager
     -- @param package-name - string
     delete = function(package_name)
@@ -78,15 +78,15 @@ M.__get_command = {
     end,
 }
 
-M.__namespace = {
+M.namespace = {
     id = "",
     --- Registers the namespace for the plugin
     register = function()
-        M.__namespace.id = vim.api.nvim_create_namespace("package-ui")
+        M.namespace.id = vim.api.nvim_create_namespace("package-ui")
     end,
 }
 
-M.__state = {
+M.state = {
     displayed = M.options.autostart or false,
 }
 
@@ -157,7 +157,7 @@ M.setup = function(user_options)
     M.__register_autostart()
     M.__register_256color_support()
     M.__register_highlight_groups()
-    M.__namespace.register()
+    M.namespace.register()
 end
 
 return M
