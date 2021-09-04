@@ -1,6 +1,7 @@
 -- DESCRIPTION: sets up the user given config, and plugin config
 
 local constants = require("package-info.constants")
+local logger = require("package-info.logger")
 
 ----------------------------------------------------------------------------
 ---------------------------------- MODULE ----------------------------------
@@ -53,6 +54,28 @@ M.__get_command = {
             return "npm install " .. package_name .. "@latest"
         end
     end,
+
+    install = function(type, package_name)
+        if type == constants.DEPENDENCY_TYPE.dev then
+            if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+                return "yarn add -D " .. package_name
+            end
+
+            if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+                return "npm install --save-dev " .. package_name
+            end
+        end
+
+        if type == constants.DEPENDENCY_TYPE.prod then
+            if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+                return "yarn add " .. package_name
+            end
+
+            if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+                return "npm install " .. package_name
+            end
+        end
+    end,
 }
 
 M.__namespace = {
@@ -74,11 +97,7 @@ M.__register_user_options = function(user_options)
         user_options.package_manager ~= constants.PACKAGE_MANAGERS.yarn
         and user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
     then
-        vim.api.nvim_echo(
-            { { "Package Info: Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.", "WarningMsg" } },
-            {},
-            {}
-        )
+        logger.error("Package Info: Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.")
 
         M.package_manager = constants.PACKAGE_MANAGERS.yarn
     end
