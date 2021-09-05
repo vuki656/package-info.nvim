@@ -327,4 +327,32 @@ M.reinstall = function()
     })
 end
 
+M.change_version = function()
+    -- Extract getting and validating to fn
+    local current_line = vim.fn.getline(".")
+
+    local package_name = M.__get_package_name_from_line(current_line)
+    local is_valid = M.__is_valid_package(package_name)
+
+    if not is_valid then
+        logger.error("No package under current line.")
+    else
+        config.loading.start("|  Fetching " .. package_name .. " versions")
+
+        ui.display_change_version_menu({
+            package_name = package_name,
+            callback = function(chosen_version)
+                logger.info(package_name .. " version changed to " .. chosen_version .. " successfully")
+                vim.cmd(":e")
+                config.loading.stop()
+
+                if config.state.displayed then
+                    M.hide()
+                    M.show()
+                end
+            end,
+        })
+    end
+end
+
 return M

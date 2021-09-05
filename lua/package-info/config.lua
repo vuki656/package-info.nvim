@@ -31,6 +31,7 @@ M.options = {
     },
 }
 
+-- TODO: this can be key value store based on package manager
 M.get_command = {
     --- Returns the delete command based on package manager
     -- @param package-name - string
@@ -87,6 +88,16 @@ M.get_command = {
             return "npm install"
         end
     end,
+
+    change_version = function(package)
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+            return "yarn upgrade " .. package
+        end
+
+        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            return "npm install " .. package
+        end
+    end,
 }
 
 M.namespace = {
@@ -98,7 +109,7 @@ M.namespace = {
 }
 
 M.state = {
-    displayed = M.options.autostart or false,
+    displayed = false,
     last_run = nil,
     should_skip = function()
         local hour_in_seconds = 3600

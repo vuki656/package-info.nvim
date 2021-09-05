@@ -34,6 +34,10 @@ M.reinstall = function()
     core.reinstall()
 end
 
+M.change_version = function()
+    core.change_version()
+end
+
 M.get_status = function()
     return config.loading.fetch()
 end
