@@ -171,6 +171,20 @@ M.__set_virtual_text = function(dependencies, outdated_dependencies)
     end
 end
 
+--- Gets package from current line and validates it
+M.__get_package_and_validate = function()
+    local current_line = vim.fn.getline(".")
+
+    local package_name = M.__get_package_name_from_line(current_line)
+    local is_valid = M.__is_valid_package(package_name)
+
+    if is_valid then
+        return package_name
+    else
+        return nil
+    end
+end
+
 M.show = function(options)
     options = options or { force = false }
 
@@ -209,14 +223,9 @@ M.hide = function()
 end
 
 M.delete = function()
-    local current_line = vim.fn.getline(".")
+    local package_name = M.__get_package_and_validate()
 
-    local package_name = M.__get_package_name_from_line(current_line)
-    local is_valid = M.__is_valid_package(package_name)
-
-    if not is_valid then
-        logger.error("No package under current line.")
-    else
+    if package_name then
         config.loading.start("|  Deleting " .. package_name .. " package")
 
         ui.display_prompt({
@@ -237,14 +246,9 @@ M.delete = function()
 end
 
 M.update = function()
-    local current_line = vim.fn.getline(".")
+    local package_name = M.__get_package_and_validate()
 
-    local package_name = M.__get_package_name_from_line(current_line)
-    local is_valid = M.__is_valid_package(package_name)
-
-    if not is_valid then
-        logger.error("No package under current line.")
-    else
+    if package_name then
         config.loading.start("| ﯁ Updating " .. package_name .. " package")
 
         ui.display_prompt({
@@ -328,15 +332,9 @@ M.reinstall = function()
 end
 
 M.change_version = function()
-    -- Extract getting and validating to fn
-    local current_line = vim.fn.getline(".")
+    local package_name = M.__get_package_and_validate()
 
-    local package_name = M.__get_package_name_from_line(current_line)
-    local is_valid = M.__is_valid_package(package_name)
-
-    if not is_valid then
-        logger.error("No package under current line.")
-    else
+    if package_name then
         config.loading.start("|  Fetching " .. package_name .. " versions")
 
         ui.display_change_version_menu({

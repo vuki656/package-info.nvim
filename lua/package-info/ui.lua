@@ -169,8 +169,6 @@ end
 -- @param options.callback - function to use after the action has finished
 -- @param options.package_name - string used to identify the package
 M.display_change_version_menu = function(options)
-    print(vim.inspect(config.state.displayed))
-
     local fetch_command = "npm view " .. options.package_name .. " versions --json"
     local output = ""
 
