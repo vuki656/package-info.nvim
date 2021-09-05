@@ -23,7 +23,7 @@ M.options = {
         },
     },
     autostart = true,
-    package_manager = "yarn",
+    package_manager = constants.PACKAGE_MANAGERS.yarn,
     hide_up_to_date = false,
 
     __highlight_params = {
@@ -31,7 +31,6 @@ M.options = {
     },
 }
 
--- TODO: this can be key value store based on package manager
 M.get_command = {
     --- Returns the delete command based on package manager
     -- @param package-name - string
@@ -57,6 +56,9 @@ M.get_command = {
         end
     end,
 
+    --- Returns the install command based on package manager
+    -- @param type - one of constants.PACKAGE_MANAGERS
+    -- @param package_name - string used to denote the package
     install = function(type, package_name)
         if type == constants.DEPENDENCY_TYPE.dev then
             if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
@@ -79,6 +81,7 @@ M.get_command = {
         end
     end,
 
+    --- Returns the reinstall command based on package manager
     reinstall = function()
         if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
             return "yarn"
@@ -89,6 +92,8 @@ M.get_command = {
         end
     end,
 
+    --- Returns the change version command based on package manager
+    -- @param package_name - string used to denote the package and version to be installed
     change_version = function(package)
         if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
             return "yarn upgrade " .. package
@@ -102,7 +107,6 @@ M.get_command = {
 
 M.namespace = {
     id = "",
-    --- Registers the namespace for the plugin
     register = function()
         M.namespace.id = vim.api.nvim_create_namespace("package-ui")
     end,
@@ -169,18 +173,26 @@ M.loading = {
     end,
 }
 
+-- Check if yarn.lock or package-lock.json exist and set package manager accordingly
+M.__detect_package_manager = function()
+    local package_lock = io.open("package-lock.json", "r")
+    local yarn_lock = io.open("yarn.lock", "r")
+
+    if package_lock ~= nil then
+        M.options.package_manager = constants.PACKAGE_MANAGERS.npm
+        io.close(package_lock)
+    end
+
+    if yarn_lock ~= nil then
+        M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
+        io.close(yarn_lock)
+    end
+end
+
 --- Clone options and replace empty ones with default ones
 -- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.__register_user_options = function(user_options)
-    if
-        user_options.package_manager ~= constants.PACKAGE_MANAGERS.yarn
-        and user_options.package_manager ~= constants.PACKAGE_MANAGERS.npm
-    then
-        logger.error("Invalid package manager. Can be `npm` or `yarn`. Using default `yarn`.")
-
-        M.package_manager = constants.PACKAGE_MANAGERS.yarn
-    end
-
+    M.__detect_package_manager()
     M.options = vim.tbl_deep_extend("force", {}, M.options, user_options or {})
 end
 

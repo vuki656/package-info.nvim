@@ -59,7 +59,11 @@ require('package-info').setup()
     },
     autostart = true -- Whether to autostart when `package.json` is opened
     hide_up_to_date = true -- It only shows outdated versions as virtual text
-    package_manager = `yarn` -- Can be `npm` or `yarn`. Used for `delete`, `upgrade` etc...
+    -- Can be `npm` or `yarn`. Used for `delete`, `upgrade` etc...
+    -- The plugin will try to auto-detect the package manager based on
+    -- `yarn.lock` or `package-lock.json`. If none are found it will use the
+    -- provided one, if nothing is provided it will use `yarn`
+    package_manager = `yarn` 
 }
 ```
 
