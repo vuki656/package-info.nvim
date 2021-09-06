@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/logo.png" width=315>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/logo.png" width=315>
 
 ## All the `npm`/`yarn` commands I don't want to type
 
@@ -35,7 +35,7 @@
 
 ### Display Latest Package Version
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/display.gif" width=500>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/display.gif" width=500>
 
 Runs `npm outdated --json` in the background and then compares the output with versions in `package.json` and displays them as virtual text.
 
@@ -68,7 +68,7 @@ vim.api.nvim_set_keymap(
 
 ### Delete Package
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/delete.gif" width=500>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/delete.gif" width=500>
 
 Runs `yarn remove` or `npm uninstall` in the background and reloads the buffer.
 
@@ -89,7 +89,7 @@ vim.api.nvim_set_keymap(
 
 ### Install Different Version
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/change.gif" width=500>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/change.gif" width=500>
 
 Runs `npm install package@version` or `yarn upgrade package@version` in the background and reloads the buffer.
 
@@ -110,7 +110,7 @@ vim.api.nvim_set_keymap(
 
 ### Install New Package
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/install.gif" width=500>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/install.gif" width=500>
 
 Runs `npm install package` or `yarn add package` in the background and reloads the buffer.
 
@@ -131,7 +131,7 @@ vim.api.nvim_set_keymap(
 
 ### Reinstall Dependencies
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/reinstall.gif" width=500>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/reinstall.gif" width=500>
 
 Runs `rm -rf node_modules && yarn` or `rm -rf node_modules && npm install` in the background and reloads the buffer.
 
@@ -152,7 +152,7 @@ vim.api.nvim_set_keymap(
 
 ### Loading Hook
 
-<img src="https://github.com/vuki656/vuki656/blob/master/media/loading.gif" width=500>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/loading.gif" width=500>
 
 Function that can be placed anywhere to display the loading status from the plugin.
 
