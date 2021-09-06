@@ -1,12 +1,69 @@
-# ✍️ Package Info
+<div align="center">
 
-Displays latest package versions in your `package.json` file as virtual text.
+<img src="media/logo.png" width=315 style="border-radius:5px">
 
-![Package Info Screenshot](./media/screen.png)
+## All the `npm`/`yarn` commands I don't want to type
+
+</div>
+
+<div align="center">
+
+![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua&logoColor=white)
+
+</div>
+
+<div align="center">
+
+![License](https://img.shields.io/badge/License-GPL%20v3-brightgreen?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Beta-informational?style=flat-square)
+![Neovim](https://img.shields.io/badge/Neovim-0.5+-green.svg?style=flat-square&logo=Neovim&logoColor=white)
+
+</div>
 
 ## ✨ Features
 
 - Display latest package versions as virtual text
+- Upgrade package on current line to latest version
+- Delete package on current line
+- Install a different version of a package on current line
+- Install new package
+- Reinstall dependencies
+- Automatic package manager detection
+- Loading animation hook (to be placed in status bar or anywhere else)
+
+<div align="center">
+
+### Display Latest Package Version
+
+Runs `npm outdated --json` in the background and then compares the output with versions in `package.json`
+
+<!-- ![Display](./media/display.gif) -->
+<img src="media/display.gif" width=500 style="border-radius:5px">
+
+</div>
+
+#### Keybindings
+
+```lua
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>ns",
+    "<cmd>lua require('package-info').show()<cr>",
+    { silent = true, noremap = true }
+)
+```
+
+- **NOTE:** after the first outdated dependency fetch, it will show the cached results for the next hour instead of re-fetching every time.
+- If you would like to force re-fetching every time you can provide `force = true` like in the example below:
+
+```lua
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>ns",
+    "<cmd>lua require('package-info').show({ force = true })<cr>",
+    { silent = true, noremap = true }
+)
+```
 
 ## 🚀 Planned Features
 
@@ -58,12 +115,12 @@ require('package-info').setup()
         },
     },
     autostart = true -- Whether to autostart when `package.json` is opened
-    hide_up_to_date = true -- It only shows outdated versions as virtual text
-    -- Can be `npm` or `yarn`. Used for `delete`, `upgrade` etc...
+    hide_up_to_date = true -- It hides up to date versions when displaying virtual text
+    -- Can be `npm` or `yarn`. Used for `delete`, `install` etc...
     -- The plugin will try to auto-detect the package manager based on
     -- `yarn.lock` or `package-lock.json`. If none are found it will use the
     -- provided one, if nothing is provided it will use `yarn`
-    package_manager = `yarn` 
+    package_manager = `yarn`
 }
 ```
 
@@ -150,12 +207,11 @@ vim.api.nvim_set_keymap("n", "<leader>nu", "<cmd>lua require('package-info').upd
 ## 📝 Notes
 
 - Display might be slow on a project with a lot of packages. This is due to the
-  `npm outdated` command taking a long time. Nothing can be done regarding
-  that on the plugin side.
+  `npm outdated` command taking a long time. Nothing can be done about that
 
 - Idea was inspired by [akinso](https://github.com/akinsho) and his [dependency-assist.nvim](Dependency-assist.nvim)
 
 - Readme template stolen from [folke](https://github.com/folke)
 
 - This is my first `neovim` plugin so please don't hesitate to
-  open an issue an tell me if you find any stupid stuff in the code :D.
+  open an issue an tell me if you find anything stupid in the code :D.
