@@ -281,6 +281,9 @@ vim.api.nvim_set_keymap("n", "<leader>np", ":lua require('package-info').change_
 
 ## 📝 Notes
 
+- If you want to test out new features use the `develop` branch. `master` should be stable and tested by me. I test features
+  on develop for a couple of days before merging them to master
+
 - Display might be slow on a project with a lot of packages. This is due to the
   `npm outdated` command taking a long time. Nothing can be done about that
 
