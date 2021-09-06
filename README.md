@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="media/logo.png" width=315>
+<img src="https://github.com/vuki656/vuki656/blob/master/media/logo.png" width=315>
 
 ## All the `npm`/`yarn` commands I don't want to type
 
@@ -35,13 +35,13 @@
 
 ### Display Latest Package Version
 
-Runs `npm outdated --json` in the background and then compares the output with versions in `package.json`
+<img src="https://github.com/vuki656/vuki656/blob/master/media/display.gif" width=500>
 
-<img src="media/display.gif" width=500>
+Runs `npm outdated --json` in the background and then compares the output with versions in `package.json` and displays them as virtual text.
 
 </div>
 
-#### Keybindings
+#### Keybinding
 
 ```lua
 vim.api.nvim_set_keymap(
@@ -64,20 +64,134 @@ vim.api.nvim_set_keymap(
 )
 ```
 
-## 🚀 Planned Features
+<div align="center">
 
-- Install new packages through search popup [#26](https://github.com/vuki656/package-info.nvim/issues/26)
-- Upgrade package on current line [#21](https://github.com/vuki656/package-info.nvim/issues/21)
-- Install custom package version through popup [#24](https://github.com/vuki656/package-info.nvim/issues/24)
-- Delete package on current line [#23](https://github.com/vuki656/package-info.nvim/issues/23)
-- Set package manager [#22](https://github.com/vuki656/package-info.nvim/issues/22)
+### Delete Package
+
+<img src="https://github.com/vuki656/vuki656/blob/master/media/delete.gif" width=500>
+
+Runs `yarn remove` or `npm uninstall` in the background and reloads the buffer.
+
+</div>
+
+#### Keybinding
+
+```lua
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>nd",
+    "<cmd>lua require('package-info').delete()<cr>",
+    { silent = true, noremap = true }
+)
+```
+
+<div align="center">
+
+### Install Different Version
+
+<img src="https://github.com/vuki656/vuki656/blob/master/media/change.gif" width=500>
+
+Runs `npm install package@version` or `yarn upgrade package@version` in the background and reloads the buffer.
+
+</div>
+
+#### Keybinding
+
+```lua
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>np",
+    "<cmd>lua require('package-info').change_version()<cr>",
+    { silent = true, noremap = true }
+)
+```
+
+<div align="center">
+
+### Install New Package
+
+<img src="https://github.com/vuki656/vuki656/blob/master/media/install.gif" width=500>
+
+Runs `npm install package` or `yarn add package` in the background and reloads the buffer.
+
+</div>
+
+#### Keybinding
+
+```lua
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>ni",
+    "<cmd>lua require('package-info').install()<cr>",
+    { silent = true, noremap = true }
+)
+```
+
+<div align="center">
+
+### Reinstall Dependencies
+
+<img src="https://github.com/vuki656/vuki656/blob/master/media/reinstall.gif" width=500>
+
+Runs `rm -rf node_modules && yarn` or `rm -rf node_modules && npm install` in the background and reloads the buffer.
+
+</div>
+
+#### Keybinding
+
+```lua
+vim.api.nvim_set_keymap(
+    "n",
+    "<leader>nr",
+    "<cmd>lua require('package-info').reinstall()<cr>",
+    { silent = true, noremap = true }
+)
+```
+
+<div align="center">
+
+### Loading Hook
+
+<img src="https://github.com/vuki656/vuki656/blob/master/media/loading.gif" width=500>
+
+Function that can be placed anywhere to display the loading status from the plugin.
+
+</div>
+
+#### Usage
+
+- It can be used anywhere in `neovim` by invoking `return require('package-info').get_status()`
+
+```lua
+local package = require("package-info")
+
+-- Galaxyline
+section.left[10] = {
+    PackageInfoStatus = {
+        provider = function()
+            return package.get_status()
+        end,
+    },
+}
+
+-- Feline
+components.right.active[5] = {
+    provider = function()
+        return package.get_status()
+    end,
+    hl = {
+        style = "bold",
+    },
+    left_sep = "  ",
+    right_sep = " ",
+}
+```
 
 ## ⚡️ Requirements
 
 - Neovim >= 0.5.0
 - Npm
-- [Patched font](https://github.com/ryanoasis/nerd-fonts/tree/gh-pages) if you
-  want icons
+- [Patched font](https://github.com/ryanoasis/nerd-fonts/tree/gh-pages) if you want icons
 
 ## 📦 Installation
 
@@ -123,44 +237,6 @@ require('package-info').setup()
 }
 ```
 
--- **NOTE:** if `autostart` is on, `package-info` will run the first `fetch`, and then won't run the `fetch`
-operation for another hour to prevent unnecessary calls.
-
-If you want to force the refetch you can use the following command:
-
-```lua
--- Display latest versions as virtual text
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>ns",
-    "<cmd>lua require('package-info').show({ force = true })<cr>",
-    { silent = true, noremap = true }
-)
-```
-
-### ⏰ Loading Hook
-
-- `package-info` provides a hook to display a loading message
-
-![Package Info Loading Hook](./media/loading.gif)
-
-#### Config
-
-- It can be used anywhere in `neovim` by invoking `return require('package-info').get_status()`
-
-```lua
-local package = require("package-info")
-
--- Galaxyline
-section.left[10] = {
-    PackageInfoStatus = {
-        provider = function()
-            return package.get_status()
-        end,
-    },
-}
-```
-
 #### 256 Color Terminals
 
 - If the vim option `termguicolors` is false, package-info switches to 256 color mode.
@@ -174,33 +250,33 @@ colors = {
 }
 ```
 
-## ⌨️ Keybindings
+## ⌨️ All Keybindings
 
 **Package info has no default Keybindings**.
 
 You can copy the ones below:
 
 ```lua
--- Display latest versions as virtual text
-vim.api.nvim_set_keymap("n", "<leader>ns", "<cmd>lua require('package-info').show({ force = true })<cr>",
-  { silent = true, noremap = true }
-)
+-- Show package versions
+vim.api.nvim_set_keymap("n", "<leader>ns", ":lua require('package-info').show()<CR>", { silent = true, noremap = true })
 
--- Clear package info virtual text
-vim.api.nvim_set_keymap("n", "<leader>nc", "<cmd>lua require('package-info').hide()<cr>",
-  { silent = true, noremap = true }
-)
+-- Hide package versions
+vim.api.nvim_set_keymap("n", "<leader>nc", ":lua require('package-info').hide()<CR>", { silent = true, noremap = true })
 
+-- Update package on line
+vim.api.nvim_set_keymap("n", "<leader>nu", ":lua require('package-info').update()<CR>", { silent = true, noremap = true })
 
--- Delete package on current line
-vim.api.nvim_set_keymap("n", "<leader>nd", "<cmd>lua require('package-info').delete()<cr>",
-  { silent = true, noremap = true }
-)
+-- Delete package on line
+vim.api.nvim_set_keymap("n", "<leader>nd", ":lua require('package-info').delete()<CR>", { silent = true, noremap = true })
 
--- Update package on current line
-vim.api.nvim_set_keymap("n", "<leader>nu", "<cmd>lua require('package-info').update()<cr>",
-  { silent = true, noremap = true }
-)
+-- Install a new package
+vim.api.nvim_set_keymap("n", "<leader>ni", ":lua require('package-info').install()<CR>", { silent = true, noremap = true })
+
+-- Reinstall dependencies
+vim.api.nvim_set_keymap("n", "<leader>nr", ":lua require('package-info').reinstall()<CR>", { silent = true, noremap = true })
+
+-- Install a different package version
+vim.api.nvim_set_keymap("n", "<leader>np", ":lua require('package-info').change_version()<CR>", { silent = true, noremap = true })
 ```
 
 ## 📝 Notes
@@ -208,9 +284,8 @@ vim.api.nvim_set_keymap("n", "<leader>nu", "<cmd>lua require('package-info').upd
 - Display might be slow on a project with a lot of packages. This is due to the
   `npm outdated` command taking a long time. Nothing can be done about that
 
-- Idea was inspired by [akinso](https://github.com/akinsho) and his [dependency-assist.nvim](Dependency-assist.nvim)
+- Idea was inspired by [akinso](https://github.com/akinsho) and his [dependency-assist.nvim](https://github.com/akinsho/dependency-assist.nvim)
 
 - Readme template stolen from [folke](https://github.com/folke)
 
-- This is my first `neovim` plugin so please don't hesitate to
-  open an issue an tell me if you find anything stupid in the code :D.
+- This is my first `neovim` plugin so please don't hesitate to open an issue an tell me if you find anything stupid in the code :D.

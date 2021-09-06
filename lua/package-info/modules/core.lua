@@ -186,39 +186,39 @@ M.__get_package_and_validate = function()
 end
 
 M.show = function(options)
-    options = options or { force = false }
+    -- options = options or { force = false }
 
-    if not M.__is_valid_package_json() then
-        return
-    end
+    -- if not M.__is_valid_package_json() then
+    --     return
+    -- end
 
-    local dependencies = M.__get_dependencies()
+    -- local dependencies = M.__get_dependencies()
 
-    local should_skip = config.state.should_skip()
+    -- local should_skip = config.state.should_skip()
 
-    if should_skip and options.force == false then
-        M.hide()
+    -- if should_skip and options.force == false then
+    --     M.hide()
 
-        M.__set_virtual_text(dependencies.dev, M.__outdated_dependencies_json)
-        M.__set_virtual_text(dependencies.prod, M.__outdated_dependencies_json)
+    --     M.__set_virtual_text(dependencies.dev, M.__outdated_dependencies_json)
+    --     M.__set_virtual_text(dependencies.prod, M.__outdated_dependencies_json)
 
-        return
-    end
+    --     return
+    -- end
 
-    config.loading.start("|  Fetching latest versions")
+    -- config.loading.start("|  Fetching latest versions")
 
-    M.__get_outdated_dependencies(function(outdated_dependencies_json)
-        M.hide()
+    -- M.__get_outdated_dependencies(function(outdated_dependencies_json)
+    --     M.hide()
 
-        M.__set_virtual_text(dependencies.dev, outdated_dependencies_json)
-        M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
+    --     M.__set_virtual_text(dependencies.dev, outdated_dependencies_json)
+    --     M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
 
-        -- Store result in state so it can be used as cache in subsequent runs
-        M.__outdated_dependencies_json = outdated_dependencies_json
-        config.state.last_run = os.time()
-        config.state.displayed = true
-        config.loading.stop()
-    end)
+    --     -- Store result in state so it can be used as cache in subsequent runs
+    --     M.__outdated_dependencies_json = outdated_dependencies_json
+    --     config.state.last_run = os.time()
+    --     config.state.displayed = true
+    --     config.loading.stop()
+    -- end)
 end
 
 M.hide = function()
