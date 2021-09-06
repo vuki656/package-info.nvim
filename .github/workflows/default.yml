@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   stylua:
-    name: Lint
+    name: Lint Code
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -12,3 +12,13 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --color always --check .
+
+  markdownlint:
+    name: Lint Documentation
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Lint changelog file
+        uses: avto-dev/markdown-lint@v1
+        with:
+          config: "../../.markdownlint.json"
+          args: "../../README.md"
