@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="media/logo.png" width=315 style="border-radius:5px">
+<img src="media/logo.png" width=315>
 
 ## All the `npm`/`yarn` commands I don't want to type
 
@@ -37,8 +37,7 @@
 
 Runs `npm outdated --json` in the background and then compares the output with versions in `package.json`
 
-<!-- ![Display](./media/display.gif) -->
-<img src="media/display.gif" width=500 style="border-radius:5px">
+<img src="media/display.gif" width=500>
 
 </div>
 

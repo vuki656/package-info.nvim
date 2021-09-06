@@ -1,7 +1,6 @@
 -- DESCRIPTION: sets up the user given config, and plugin config
 
 local constants = require("package-info.constants")
-local logger = require("package-info.logger")
 
 ----------------------------------------------------------------------------
 ---------------------------------- MODULE ----------------------------------
@@ -202,7 +201,7 @@ M.__register_autostart = function()
         vim.api.nvim_exec(
             [[augroup PackageUI
                 autocmd!
-                autocmd VimEnter * lua require("package-info").show()
+                autocmd BufEnter * lua require("package-info").show()
             augroup end]],
             false
         )

@@ -144,7 +144,7 @@ M.__get_package_metadata = function(current_package_version, outdated_dependenci
 end
 
 --- Sets virtual text for `devDependencies` and `dependencies`
--- @param dependencies - json/table from dev or prod dependencies
+-- @param dependencies - json/table of dev or prod dependencies
 -- @param outdated_dependencies - outdated project dependencies in JSON format
 M.__set_virtual_text = function(dependencies, outdated_dependencies)
     if not M.__is_valid_package_json() then
@@ -197,6 +197,8 @@ M.show = function(options)
     local should_skip = config.state.should_skip()
 
     if should_skip and options.force == false then
+        M.hide()
+
         M.__set_virtual_text(dependencies.dev, M.__outdated_dependencies_json)
         M.__set_virtual_text(dependencies.prod, M.__outdated_dependencies_json)
 
@@ -206,9 +208,12 @@ M.show = function(options)
     config.loading.start("|  Fetching latest versions")
 
     M.__get_outdated_dependencies(function(outdated_dependencies_json)
+        M.hide()
+
         M.__set_virtual_text(dependencies.dev, outdated_dependencies_json)
         M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
 
+        -- Store result in state so it can be used as cache in subsequent runs
         M.__outdated_dependencies_json = outdated_dependencies_json
         config.state.last_run = os.time()
         config.state.displayed = true
