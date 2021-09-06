@@ -198,13 +198,13 @@ end
 --- Register autocommand for auto-starting plugin
 M.__register_autostart = function()
     if M.options.autostart then
-        vim.api.nvim_exec(
-            [[augroup PackageUI
-                autocmd!
-                autocmd BufEnter * lua require("package-info").show()
-            augroup end]],
-            false
-        )
+        -- vim.api.nvim_exec(
+        --     [[augroup PackageUI
+        --         autocmd!
+        --         autocmd BufEnter * lua require("package-info").show()
+        --     augroup end]],
+        --     false
+        -- )
     end
 end
 

@@ -1,8 +1,10 @@
 -- FILE DESCRIPTION: Plugin entry point
 
 local config = require("package-info.config")
+local utils = require("package-info.utils")
 
 local core = require("package-info.modules.core")
+local core2 = require("package-info.modules.core2")
 
 local M = {}
 
@@ -11,19 +13,19 @@ M.setup = function(options)
 end
 
 M.show = function(options)
-    core.show(options)
+    core2.show()
 end
 
 M.hide = function()
-    core.hide()
+    core2.hide()
 end
 
 M.delete = function()
-    core.delete()
+    core2.delete()
 end
 
 M.update = function()
-    core.update()
+    core2.update()
 end
 
 M.install = function()
@@ -39,7 +41,7 @@ M.change_version = function()
 end
 
 M.get_status = function()
-    return config.loading.fetch()
+    return utils.loading.fetch()
 end
 
 return M
