@@ -13,6 +13,15 @@ local M = {}
 ----------------------------- PRIVATE ----------------------------------------
 ------------------------------------------------------------------------------
 
+--- Checks if the currently opened file is package.json and has content
+M.__is_valid_package_json = function()
+    local current_buffer_name = vim.api.nvim_buf_get_name(0)
+    local is_package_json = string.match(current_buffer_name, "package.json$")
+    local buffer_size = vim.fn.getfsize(current_buffer_name)
+
+    return is_package_json and buffer_size > 0
+end
+
 --- Gets the package name from the given buffer line
 -- @param line - string representing a buffer line
 M.__get_package_name_from_line = function(line)
@@ -181,6 +190,10 @@ end
 ------------------------------------------------------------------------------
 
 M.show = function()
+    if not M.__is_valid_package_json() then
+        return
+    end
+
     utils.loading.start("|  Fetching latest versions")
 
     M.__get_outdated_dependencies(function(outdated_dependencies)
