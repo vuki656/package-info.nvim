@@ -3,7 +3,7 @@
 local config = require("package-info.config")
 local utils = require("package-info.utils")
 
-local core = require("package-info.modules.core3")
+local core = require("package-info.modules.core")
 
 local M = {}
 

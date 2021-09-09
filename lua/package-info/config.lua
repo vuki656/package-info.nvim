@@ -92,7 +92,7 @@ M.__register_plugin_loading = function()
     vim.api.nvim_exec(
         [[augroup package-info-autogroup
              autocmd!
-             autocmd BufEnter * lua require("package-info.modules.core3").load_plugin()
+             autocmd BufEnter * lua require("package-info.modules.core").load_plugin()
          augroup end]],
         false
     )
