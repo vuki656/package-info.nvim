@@ -39,6 +39,7 @@ M.namespace = {
 }
 
 M.state = {
+    buffer_id = nil,
     displayed = false,
     last_run = nil,
     should_skip = function()
@@ -49,6 +50,9 @@ M.state = {
         end
 
         return os.time() < M.state.last_run + hour_in_seconds
+    end,
+    store_buffer_id = function()
+        M.state.buffer_id = vim.fn.bufnr()
     end,
 }
 

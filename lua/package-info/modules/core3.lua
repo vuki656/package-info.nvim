@@ -30,7 +30,13 @@ M.__is_valid_package_json = function()
     local is_package_json = string.match(current_buffer_name, "package.json$")
     local buffer_size = vim.fn.getfsize(current_buffer_name)
 
-    return is_package_json and buffer_size > 0
+    local is_valid = is_package_json and buffer_size > 0
+
+    if is_valid then
+        config.state.store_buffer_id()
+    end
+
+    return is_valid
 end
 
 --- Strips ^ from version
@@ -40,7 +46,7 @@ end
 
 --- Loads current buffer into state
 M.__parse_buffer = function()
-    local buffer_raw_value = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local buffer_raw_value = vim.api.nvim_buf_get_lines(config.state.buffer_id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = json_parser.decode(buffer_string_value)
 
@@ -119,7 +125,7 @@ end
 --- Clears package-info virtual text from current buffer
 M.__clear_virtual_text = function()
     if config.state.displayed then
-        vim.api.nvim_buf_clear_namespace(0, config.namespace.id, 0, -1)
+        vim.api.nvim_buf_clear_namespace(config.state.buffer_id, config.namespace.id, 0, -1)
     end
 end
 
@@ -165,7 +171,7 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, package_name
         package_metadata.icon = ""
     end
 
-    vim.api.nvim_buf_set_extmark(0, config.namespace.id, line_number - 1, 0, {
+    vim.api.nvim_buf_set_extmark(config.state.buffer_id, config.namespace.id, line_number - 1, 0, {
         virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
         virt_text_pos = "eol",
         priority = 200,
