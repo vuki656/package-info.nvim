@@ -18,7 +18,7 @@ M.show = function(options)
 end
 
 M.hide = function()
-    core2.hide()
+    core3.hide()
 end
 
 M.delete = function()
@@ -34,7 +34,7 @@ M.install = function()
 end
 
 M.reinstall = function()
-    core.reinstall()
+    core3.reinstall()
 end
 
 M.change_version = function()

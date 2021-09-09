@@ -83,11 +83,11 @@ M.get_command = {
     --- Returns the reinstall command based on package manager
     reinstall = function()
         if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn"
+            return "rm -rf node_modules && yarn"
         end
 
         if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "npm install"
+            return "rm -rf node_modules && npm install"
         end
     end,
 
