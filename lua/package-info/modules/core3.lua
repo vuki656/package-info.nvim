@@ -1,9 +1,12 @@
+local Menu = require("nui.menu")
+
 local json_parser = require("package-info.libs.json_parser")
 
 local constants = require("package-info.constants")
 local config = require("package-info.config")
 local utils = require("package-info.utils")
 local ui = require("package-info.ui")
+local logger = require("package-info.logger")
 
 local M = {
     __dependencies = {},
@@ -107,6 +110,8 @@ M.__get_package_name_from_current_line = function()
     if is_valid then
         return package_name
     else
+        logger.error("No valid package on current line")
+
         return nil
     end
 end
@@ -259,7 +264,50 @@ M.reinstall = function()
 
             utils.loading.stop()
         end,
+        on_error = function()
+            utils.loading.stop()
+        end,
     })
+end
+
+M.change_version = function()
+    local package_name = M.__get_package_name_from_current_line()
+
+    if package_name then
+        utils.loading.start("|  Fetching " .. package_name .. " versions")
+
+        local fetch_command = config.get_command.version_list(package_name)
+
+        utils.job({
+            json = true,
+            command = fetch_command,
+            on_success = function(versions)
+                utils.loading.stop()
+
+                local menu_items = {}
+
+                -- Iterate versions from the end to show the latest versions first and skip unstable
+                for index = #versions, 1, -1 do
+                    local version = versions[index]
+
+                    if not config.options.hide_unstable_versions and not string.match(version, "-") then
+                        table.insert(menu_items, Menu.item(version))
+                    end
+                end
+
+                ui.display_change_version_menu({
+                    package_name = package_name,
+                    menu_items = menu_items,
+                    on_success = function()
+                        M.__reload()
+                    end,
+                })
+            end,
+            on_error = function()
+                utils.loading.stop()
+            end,
+        })
+    end
 end
 
 M.hide = function()

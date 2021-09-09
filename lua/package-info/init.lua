@@ -38,7 +38,7 @@ M.reinstall = function()
 end
 
 M.change_version = function()
-    core.change_version()
+    core3.change_version()
 end
 
 M.get_status = function()
