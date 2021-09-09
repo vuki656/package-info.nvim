@@ -17,7 +17,7 @@ M.__get_outdated_dependencies = function(callback)
     utils.job({
         json = true,
         command = "npm outdated --json",
-        callback = callback,
+        on_success = callback,
     })
 end
 
@@ -147,11 +147,13 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, package_name
     end
 
     if outdated_dependencies[package_name] then
-        package_metadata = {
-            group = constants.HIGHLIGHT_GROUPS.outdated,
-            icon = config.options.icons.style.outdated,
-            text = M.__clean_version(outdated_dependencies[package_name].latest),
-        }
+        if outdated_dependencies[package_name].latest ~= M.__dependencies[package_name].version.current then
+            package_metadata = {
+                group = constants.HIGHLIGHT_GROUPS.outdated,
+                icon = config.options.icons.style.outdated,
+                text = M.__clean_version(outdated_dependencies[package_name].latest),
+            }
+        end
     end
 
     if not config.options.icons.enable then
@@ -211,6 +213,27 @@ M.delete = function()
         ui.display_prompt({
             command = config.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
+            on_submit = function()
+                M.__reload()
+
+                utils.loading.stop()
+            end,
+            on_cancel = function()
+                utils.loading.stop()
+            end,
+        })
+    end
+end
+
+M.update = function()
+    local package_name = M.__get_package_name_from_current_line()
+
+    if package_name then
+        utils.loading.start("| ﯁ Updating " .. package_name .. " package")
+
+        ui.display_prompt({
+            command = config.get_command.update(package_name),
+            title = " Update [" .. package_name .. "] Package ",
             on_submit = function()
                 M.__reload()
 

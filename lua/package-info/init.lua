@@ -26,7 +26,7 @@ M.delete = function()
 end
 
 M.update = function()
-    core2.update()
+    core3.update()
 end
 
 M.install = function()
