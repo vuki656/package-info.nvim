@@ -83,13 +83,14 @@ end
 -- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.__register_user_options = function(user_options)
     M.__detect_package_manager()
+
     M.options = vim.tbl_deep_extend("force", {}, M.options, user_options or {})
 end
 
 --- Register autocommand for loading plugin
 M.__register_plugin_loading = function()
     vim.api.nvim_exec(
-        [[augroup PackageUI
+        [[augroup package-info-autogroup
              autocmd!
              autocmd BufEnter * lua require("package-info.modules.core3").load_plugin()
          augroup end]],
@@ -101,7 +102,7 @@ end
 M.__register_autostart = function()
     if M.options.autostart then
         vim.api.nvim_exec(
-            [[augroup PackageUI
+            [[augroup package-info-autogroup
                 autocmd!
                 autocmd BufEnter * lua require("package-info").show()
             augroup end]],
@@ -114,7 +115,7 @@ end
 M.__register_256color_support = function()
     if not vim.o.termguicolors then
         vim.cmd([[
-          augroup PackageUIHighlight
+          augroup package-info-autogroup
             autocmd!
             autocmd ColorScheme * lua require('package-info.config').__register_highlight_groups()
           augroup END
