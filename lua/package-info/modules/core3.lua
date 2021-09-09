@@ -251,6 +251,34 @@ M.update = function()
     end
 end
 
+M.install = function()
+    ui.display_install_menu(function(dependency_type)
+        ui.display_install_input(function(dependency_name)
+            if dependency_name == "" then
+                logger.error("No package specified")
+
+                return
+            end
+
+            local command = config.get_command.install(dependency_type, dependency_name)
+
+            utils.loading.start("|  Installing " .. dependency_name .. " package")
+
+            utils.job({
+                command = command,
+                on_success = function()
+                    M.__reload()
+
+                    utils.loading.stop()
+                end,
+                on_error = function()
+                    utils.loading.stop()
+                end,
+            })
+        end)
+    end)
+end
+
 M.reinstall = function()
     utils.loading.start("| ﰇ Reinstalling dependencies")
 

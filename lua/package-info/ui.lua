@@ -94,7 +94,7 @@ M.display_install_menu = function(callback)
         },
         size = {
             width = 50,
-            height = 2,
+            height = 3,
         },
         highlight = "Normal:Normal",
         focusable = true,
