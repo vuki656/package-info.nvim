@@ -33,7 +33,7 @@ M.__is_valid_package_json = function()
     local is_valid = is_package_json and buffer_size > 0
 
     if is_valid then
-        config.state.store_buffer_id()
+        config.state.buffer.save()
     end
 
     return is_valid
@@ -46,7 +46,7 @@ end
 
 --- Loads current buffer into state
 M.__parse_buffer = function()
-    local buffer_raw_value = vim.api.nvim_buf_get_lines(config.state.buffer_id, 0, 0 - 1, false)
+    local buffer_raw_value = vim.api.nvim_buf_get_lines(config.state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = json_parser.decode(buffer_string_value)
 
@@ -125,7 +125,7 @@ end
 --- Clears package-info virtual text from current buffer
 M.__clear_virtual_text = function()
     if config.state.displayed then
-        vim.api.nvim_buf_clear_namespace(config.state.buffer_id, config.namespace.id, 0, -1)
+        vim.api.nvim_buf_clear_namespace(config.state.buffer.id, config.namespace.id, 0, -1)
     end
 end
 
@@ -171,7 +171,7 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, package_name
         package_metadata.icon = ""
     end
 
-    vim.api.nvim_buf_set_extmark(config.state.buffer_id, config.namespace.id, line_number - 1, 0, {
+    vim.api.nvim_buf_set_extmark(config.state.buffer.id, config.namespace.id, line_number - 1, 0, {
         virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
         virt_text_pos = "eol",
         priority = 200,
@@ -192,6 +192,8 @@ M.__display_virtual_text = function(outdated_dependencies)
     end
 
     M.__outdated_dependencies = outdated_dependencies
+
+    config.state.displayed = true
 end
 
 M.load_plugin = function()
@@ -205,7 +207,7 @@ end
 M.show = function(options)
     options = options or { force = false }
 
-    if config.state.should_skip() and options.force == false then
+    if config.state.last_run.should_skip() and options.force == false then
         M.__display_virtual_text()
         M.__reload()
 
@@ -221,8 +223,7 @@ M.show = function(options)
 
         utils.loading.stop()
 
-        config.state.update_last_run()
-        config.state.displayed = true
+        config.state.last_run.update()
     end)
 end
 
