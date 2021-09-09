@@ -14,7 +14,7 @@ M.setup = function(options)
 end
 
 M.show = function(options)
-    core3.show()
+    core3.show(options)
 end
 
 M.hide = function()
@@ -30,7 +30,7 @@ M.update = function()
 end
 
 M.install = function()
-    core.install()
+    core3.install()
 end
 
 M.reinstall = function()
