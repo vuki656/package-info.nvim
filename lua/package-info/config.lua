@@ -31,87 +31,6 @@ M.options = {
     },
 }
 
-M.get_command = {
-    --- Returns the delete command based on package manager
-    -- @param package-name - string
-    delete = function(package_name)
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn remove " .. package_name
-        end
-
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "npm uninstall " .. package_name
-        end
-    end,
-
-    --- Returns the update command based on package manager
-    -- @param package-name - string
-    update = function(package_name)
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn upgrade --latest " .. package_name
-        end
-
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "npm install " .. package_name .. "@latest"
-        end
-    end,
-
-    --- Returns the install command based on package manager
-    -- @param type - one of constants.PACKAGE_MANAGERS
-    -- @param package_name - string used to denote the package
-    install = function(type, package_name)
-        if type == constants.DEPENDENCY_TYPE.dev then
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-                return "yarn add -D " .. package_name
-            end
-
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-                return "npm install --save-dev " .. package_name
-            end
-        end
-
-        if type == constants.DEPENDENCY_TYPE.prod then
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-                return "yarn add " .. package_name
-            end
-
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-                return "npm install " .. package_name
-            end
-        end
-    end,
-
-    --- Returns the reinstall command based on package manager
-    reinstall = function()
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "rm -rf node_modules && yarn"
-        end
-
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "rm -rf node_modules && npm install"
-        end
-    end,
-
-    --- Returns the change version command based on package manager
-    -- @param package_name - string used to denote the package installed
-    -- @param version - string used to denote the version installed
-    change_version = function(package_name, version)
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn upgrade " .. package_name .. "@" .. version
-        end
-
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "npm install " .. package_name .. "@" .. version
-        end
-    end,
-
-    --- Returns available package versions
-    -- @param package_name - string used to denote the package
-    version_list = function(package_name)
-        return "npm view " .. package_name .. " versions --json"
-    end,
-}
-
 M.namespace = {
     id = "",
     register = function()
@@ -130,53 +49,6 @@ M.state = {
         end
 
         return os.time() < M.state.last_run + hour_in_seconds
-    end,
-}
-
-M.loading = {
-    animation = {
-        "⠋",
-        "⠙",
-        "⠹",
-        "⠸",
-        "⠼",
-        "⠴",
-        "⠦",
-        "⠧",
-        "⠇",
-        "⠏",
-    },
-    index = 1,
-    log = "",
-    spinner = "",
-    is_running = false,
-    fetch = function()
-        return M.loading.spinner .. " " .. M.loading.log
-    end,
-    start = function(message)
-        M.loading.log = message
-        M.loading.is_running = true
-        M.loading.update()
-    end,
-    stop = function()
-        M.loading.is_running = false
-        M.loading.log = ""
-        M.loading.spinner = ""
-    end,
-    update = function()
-        if M.loading.is_running then
-            M.loading.spinner = M.loading.animation[M.loading.index]
-
-            M.loading.index = M.loading.index + 1
-
-            if M.loading.index == 10 then
-                M.loading.index = 1
-            end
-
-            vim.fn.timer_start(80, function()
-                M.loading.update()
-            end)
-        end
     end,
 }
 
@@ -213,6 +85,7 @@ M.__register_autostart = function()
         false
     )
 
+    -- TODO: implement
     if M.options.autostart then
         -- vim.api.nvim_exec(
         --     [[augroup PackageUI
