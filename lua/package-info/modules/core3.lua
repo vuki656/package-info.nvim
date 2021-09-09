@@ -129,9 +129,18 @@ M.__clear_virtual_text = function()
     end
 end
 
+--- Reloads the buffer if it's package.json
+M.__reload_buffer = function()
+    local current_buffer_number = vim.fn.bufnr()
+
+    if current_buffer_number == config.state.buffer.id then
+        vim.cmd(":e")
+    end
+end
+
 --- Rereads the current buffer value and reloads the buffer
 M.__reload = function()
-    vim.cmd(":e")
+    M.__reload_buffer()
 
     M.__parse_buffer()
 
@@ -140,7 +149,7 @@ M.__reload = function()
         M.__display_virtual_text()
     end
 
-    vim.cmd(":e")
+    M.__reload_buffer()
 end
 
 --- Draws virtual text on given buffer line
@@ -205,6 +214,10 @@ M.load_plugin = function()
 end
 
 M.show = function(options)
+    if not M.__is_valid_package_json() then
+        return
+    end
+
     options = options or { force = false }
 
     if config.state.last_run.should_skip() and options.force == false then
