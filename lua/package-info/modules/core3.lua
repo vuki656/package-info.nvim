@@ -246,6 +246,22 @@ M.update = function()
     end
 end
 
+M.reinstall = function()
+    utils.loading.start("| ﰇ Reinstalling dependencies")
+
+    local command = config.get_command.reinstall()
+
+    utils.job({
+        json = false,
+        command = command,
+        on_success = function()
+            M.__reload()
+
+            utils.loading.stop()
+        end,
+    })
+end
+
 M.hide = function()
     M.__clear_virtual_text()
 
