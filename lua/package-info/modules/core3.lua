@@ -344,7 +344,8 @@ M.change_version = function()
                     local version = versions[index]
 
                     --  Skip unstable version e.g next@11.1.0-canary
-                    if not config.options.hide_unstable_versions and not string.match(version, "-") then
+                    if config.options.hide_unstable_versions and string.match(version, "-") then
+                    else
                         table.insert(menu_items, Menu.item(version))
                     end
                 end
