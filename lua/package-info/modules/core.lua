@@ -1,14 +1,28 @@
--- DESCRIPTION: holds logic for buffer parsing and displaying virtual text
+local Menu = require("nui.menu")
 
 local json_parser = require("package-info.libs.json_parser")
 
 local constants = require("package-info.constants")
 local config = require("package-info.config")
-local logger = require("package-info.logger")
 local utils = require("package-info.utils")
 local ui = require("package-info.ui")
+local logger = require("package-info.logger")
 
-local M = {}
+local M = {
+    __dependencies = {},
+    __outdated_dependencies = {},
+    __buffer = {},
+}
+
+--- Gets outdated dependency json
+-- @param callback - function to invoke after
+M.__get_outdated_dependencies = function(callback)
+    utils.job({
+        json = true,
+        command = utils.get_command.outdated(),
+        on_success = callback,
+    })
+end
 
 --- Checks if the currently opened file is package.json and has content
 M.__is_valid_package_json = function()
@@ -16,167 +30,51 @@ M.__is_valid_package_json = function()
     local is_package_json = string.match(current_buffer_name, "package.json$")
     local buffer_size = vim.fn.getfsize(current_buffer_name)
 
-    return is_package_json and buffer_size > 0
+    local is_valid = is_package_json and buffer_size > 0
+
+    if is_valid then
+        config.state.buffer.save()
+    end
+
+    return is_valid
 end
 
---- Parse current buffer and return its value
-M.__get_buffer_content = function()
-    local buffer_raw_value = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+--- Strips ^ from version
+M.__clean_version = function(string)
+    return string:gsub("%^", "")
+end
+
+--- Loads current buffer into state
+M.__parse_buffer = function()
+    local buffer_raw_value = vim.api.nvim_buf_get_lines(config.state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = json_parser.decode(buffer_string_value)
 
-    return {
-        raw = buffer_raw_value,
-        string = buffer_string_value,
-        json = buffer_json_value,
-    }
-end
+    local dev_dependencies = buffer_json_value["devDependencies"] or {}
+    local prod_dependencies = buffer_json_value["dependencies"] or {}
+    local all_dependencies = vim.tbl_extend("error", {}, dev_dependencies, prod_dependencies)
 
---- Fetches outdated npm dependencies for the project
--- @param callback - function that will receive outdated packages in JSON format
-M.__get_outdated_dependencies = function(callback)
-    local value = ""
-    local command = "npm outdated --json"
+    local dependencies = {}
 
-    vim.fn.jobstart(command, {
-        on_stdout = function(_, stdout)
-            value = value .. table.concat(stdout)
+    for name, version in pairs(all_dependencies) do
+        dependencies[name] = {
+            version = {
+                current = M.__clean_version(version),
+                latest = nil,
+            },
+            position = nil,
+        }
+    end
 
-            if table.concat(stdout) == "" then
-                local has_error = utils.has_errors(stdout)
-
-                if has_error then
-                    logger.error("Error running " .. command .. ". Try running manually.")
-
-                    return
-                end
-
-                local json_value = json_parser.decode(value)
-
-                callback(json_value)
-            end
-        end,
-    })
-end
-
---- Gets dependencies from the package.json in JSON format
-M.__get_dependencies = function()
-    local buffer_content = M.__get_buffer_content()
-
-    local dev_dependencies = buffer_content.json["devDependencies"] or {}
-    local prod_dependencies = buffer_content.json["dependencies"] or {}
-
-    return {
-        prod = prod_dependencies,
-        dev = dev_dependencies,
-    }
+    M.__buffer = buffer_raw_value
+    M.__dependencies = dependencies
 end
 
 --- Gets the package name from the given buffer line
 -- @param line - string representing a buffer line
 M.__get_package_name_from_line = function(line)
-    return string.match(line, [["(.-)"]])
-end
-
---- Checks if the package exists in either dev or prod dependency list
--- @param package_name - string
-M.__is_valid_package = function(package_name)
-    if package_name == nil then
-        return false
-    end
-
-    local dependencies = M.__get_dependencies()
-
-    local is_dev_dependency = dependencies.dev[package_name]
-    local is_prod_dependency = dependencies.prod[package_name]
-
-    if is_dev_dependency or is_prod_dependency then
-        return true
-    end
-
-    return false
-end
-
---- Maps each dependency to its location in the buffer
-M.__get_dependency_positions = function()
-    local buffer_content = M.__get_buffer_content()
-
-    local dependency_positions = {}
-
-    for buffer_line_number, buffer_line_content in pairs(buffer_content.raw) do
-        local package_name = M.__get_package_name_from_line(buffer_line_content)
-        local is_valid = M.__is_valid_package(package_name)
-
-        if is_valid then
-            dependency_positions[package_name] = buffer_line_number - 1
-        end
-    end
-
-    return dependency_positions
-end
-
---- Gets metadata used for setting the version virtual text
--- @param current_package_version - string
--- @param outdated_dependencies - json/table
--- @param package_name - string
-M.__get_package_metadata = function(current_package_version, outdated_dependencies, package_name)
-    local package_metadata = {
-        group = constants.HIGHLIGHT_GROUPS.up_to_date,
-        icon = config.options.icons.style.up_to_date,
-        version = current_package_version,
-    }
-
-    local is_outdated = outdated_dependencies[package_name]
-
-    if is_outdated then
-        package_metadata = {
-            version = outdated_dependencies[package_name].latest,
-            group = constants.HIGHLIGHT_GROUPS.outdated,
-            icon = config.options.icons.style.outdated,
-        }
-    end
-
-    if not config.options.icons.enable then
-        package_metadata.icon = ""
-    end
-
-    return package_metadata
-end
-
---- Sets virtual text for `devDependencies` and `dependencies`
--- @param dependencies - json/table of dev or prod dependencies
--- @param outdated_dependencies - outdated project dependencies in JSON format
-M.__set_virtual_text = function(dependencies, outdated_dependencies)
-    if not M.__is_valid_package_json() then
-        return
-    end
-
-    local dependency_positions = M.__get_dependency_positions()
-
-    for package_name, current_package_version in pairs(dependencies) do
-        local package_metadata = M.__get_package_metadata(current_package_version, outdated_dependencies, package_name)
-
-        local virtual_text = package_metadata.icon .. package_metadata.version
-        local position = dependency_positions[package_name]
-
-        if current_package_version == package_metadata.version and config.options.hide_up_to_date then
-            virtual_text = ""
-        end
-
-        vim.api.nvim_buf_set_extmark(0, config.namespace.id, position, 0, {
-            virt_text = { { virtual_text, package_metadata.group } },
-            virt_text_pos = "eol",
-            priority = 200,
-        })
-    end
-end
-
---- Gets package from current line and validates it
-M.__get_package_and_validate = function()
-    local current_line = vim.fn.getline(".")
-
-    local package_name = M.__get_package_name_from_line(current_line)
-    local is_valid = M.__is_valid_package(package_name)
+    local package_name = string.match(line, [["(.-)"]])
+    local is_valid = M.__is_valid_package_name(package_name)
 
     if is_valid then
         return package_name
@@ -185,89 +83,200 @@ M.__get_package_and_validate = function()
     end
 end
 
-M.show = function(options)
-    options = options or { force = false }
+--- Gets the package version from the given buffer line
+-- Expects '"name": "2.3.4"', and gets the second match for value in between parentheses
+-- @param line - string representing a buffer line
+M.__get_package_version_from_line = function(line)
+    local value = {}
 
+    for chunk in string.gmatch(line, [["(.-)"]]) do
+        table.insert(value, chunk)
+    end
+
+    return value[2]:gsub("%^", "")
+end
+
+--- Verifies that the given package is on the package list
+-- @param package_name - string package to check
+M.__is_valid_package_name = function(package_name)
+    if M.__dependencies[package_name] then
+        return true
+    else
+        return false
+    end
+end
+
+--- Gets package from current line
+M.__get_package_name_from_current_line = function()
+    local current_line = vim.fn.getline(".")
+
+    local package_name = M.__get_package_name_from_line(current_line)
+    local is_valid = M.__is_valid_package_name(package_name)
+
+    if is_valid then
+        return package_name
+    else
+        logger.error("No valid package on current line")
+
+        return nil
+    end
+end
+
+--- Clears package-info virtual text from current buffer
+M.__clear_virtual_text = function()
+    if config.state.displayed then
+        vim.api.nvim_buf_clear_namespace(config.state.buffer.id, config.namespace.id, 0, -1)
+    end
+end
+
+--- Reloads the buffer if it's package.json
+M.__reload_buffer = function()
+    local current_buffer_number = vim.fn.bufnr()
+
+    if current_buffer_number == config.state.buffer.id then
+        vim.cmd(":e")
+    end
+end
+
+--- Rereads the current buffer value and reloads the buffer
+M.__reload = function()
+    M.__reload_buffer()
+
+    M.__parse_buffer()
+
+    if config.state.displayed then
+        M.__clear_virtual_text()
+        M.__display_virtual_text()
+    end
+
+    M.__reload_buffer()
+end
+
+--- Draws virtual text on given buffer line
+-- @param outdated_dependencies - table of outdated dependancies
+M.__set_virtual_text = function(outdated_dependencies, line_number, package_name)
+    local package_metadata = {
+        group = constants.HIGHLIGHT_GROUPS.up_to_date,
+        icon = config.options.icons.style.up_to_date,
+        text = M.__dependencies[package_name].version.current,
+    }
+
+    if config.options.hide_up_to_date then
+        package_metadata.text = ""
+        package_metadata.icon = ""
+    end
+
+    if outdated_dependencies[package_name] then
+        if outdated_dependencies[package_name].latest ~= M.__dependencies[package_name].version.current then
+            package_metadata = {
+                group = constants.HIGHLIGHT_GROUPS.outdated,
+                icon = config.options.icons.style.outdated,
+                text = M.__clean_version(outdated_dependencies[package_name].latest),
+            }
+        end
+    end
+
+    if not config.options.icons.enable then
+        package_metadata.icon = ""
+    end
+
+    vim.api.nvim_buf_set_extmark(config.state.buffer.id, config.namespace.id, line_number - 1, 0, {
+        virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
+        virt_text_pos = "eol",
+        priority = 200,
+    })
+end
+
+--- Handles virtual text displaying
+-- @param outdated_dependencies - table of outdated dependancies
+M.__display_virtual_text = function(outdated_dependencies)
+    outdated_dependencies = outdated_dependencies or M.__outdated_dependencies
+
+    for line_number, line_content in ipairs(M.__buffer) do
+        local package_name = M.__get_package_name_from_line(line_content)
+
+        if package_name then
+            M.__set_virtual_text(outdated_dependencies, line_number, package_name)
+        end
+    end
+
+    M.__outdated_dependencies = outdated_dependencies
+
+    config.state.displayed = true
+end
+
+M.load_plugin = function()
     if not M.__is_valid_package_json() then
         return
     end
 
-    local dependencies = M.__get_dependencies()
+    M.__parse_buffer()
+end
 
-    local should_skip = config.state.should_skip()
+M.show = function(options)
+    if not M.__is_valid_package_json() then
+        return
+    end
 
-    if should_skip and options.force == false then
-        M.hide()
+    options = options or { force = false }
 
-        M.__set_virtual_text(dependencies.dev, M.__outdated_dependencies_json)
-        M.__set_virtual_text(dependencies.prod, M.__outdated_dependencies_json)
+    if config.state.last_run.should_skip() and options.force == false then
+        M.__display_virtual_text()
+        M.__reload()
 
         return
     end
 
-    config.loading.start("|  Fetching latest versions")
+    utils.loading.start("|  Fetching latest versions")
 
-    M.__get_outdated_dependencies(function(outdated_dependencies_json)
-        M.hide()
+    M.__get_outdated_dependencies(function(outdated_dependencies)
+        M.__parse_buffer()
+        M.__display_virtual_text(outdated_dependencies)
+        M.__reload()
 
-        M.__set_virtual_text(dependencies.dev, outdated_dependencies_json)
-        M.__set_virtual_text(dependencies.prod, outdated_dependencies_json)
+        utils.loading.stop()
 
-        -- Store result in state so it can be used as cache in subsequent runs
-        M.__outdated_dependencies_json = outdated_dependencies_json
-        config.state.last_run = os.time()
-        config.state.displayed = true
-        config.loading.stop()
+        config.state.last_run.update()
     end)
 end
 
-M.hide = function()
-    vim.api.nvim_buf_clear_namespace(0, config.namespace.id, 0, -1)
-
-    config.state.displayed = false
-end
-
 M.delete = function()
-    local package_name = M.__get_package_and_validate()
+    local package_name = M.__get_package_name_from_current_line()
 
     if package_name then
-        config.loading.start("|  Deleting " .. package_name .. " package")
+        utils.loading.start("|  Deleting " .. package_name .. " package")
 
         ui.display_prompt({
-            command = config.get_command.delete(package_name),
+            command = utils.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
-            callback = function()
-                logger.info(package_name .. " deleted successfully")
-                vim.cmd(":e")
-                config.loading.stop()
+            on_submit = function()
+                M.__reload()
 
-                if config.state.displayed then
-                    M.hide()
-                    M.show()
-                end
+                utils.loading.stop()
+            end,
+            on_cancel = function()
+                utils.loading.stop()
             end,
         })
     end
 end
 
 M.update = function()
-    local package_name = M.__get_package_and_validate()
+    local package_name = M.__get_package_name_from_current_line()
 
     if package_name then
-        config.loading.start("| ﯁ Updating " .. package_name .. " package")
+        utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
         ui.display_prompt({
-            command = config.get_command.update(package_name),
+            command = utils.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
-            callback = function()
-                logger.info(package_name .. " updated successfully")
-                vim.cmd(":e")
-                config.loading.stop()
+            on_submit = function()
+                M.__reload()
 
-                if config.state.displayed then
-                    M.hide()
-                    M.show()
-                end
+                utils.loading.stop()
+            end,
+            on_cancel = function()
+                utils.loading.stop()
             end,
         })
     end
@@ -282,30 +291,17 @@ M.install = function()
                 return
             end
 
-            local command = config.get_command.install(dependency_type, dependency_name)
+            utils.loading.start("|  Installing " .. dependency_name .. " package")
 
-            config.loading.start("|  Installing " .. dependency_name .. " package")
+            utils.job({
+                command = utils.get_command.install(dependency_type, dependency_name),
+                on_success = function()
+                    M.__reload()
 
-            vim.fn.jobstart(command, {
-                on_stdout = function(_, stdout)
-                    if table.concat(stdout) == "" then
-                        local has_error = utils.has_errors(stdout)
-
-                        if has_error then
-                            logger.error("Error running " .. command .. ". Try running manually.")
-
-                            return
-                        end
-
-                        logger.info(dependency_name .. " installed successfully")
-                        vim.cmd(":e")
-                        config.loading.stop()
-
-                        if config.state.displayed then
-                            M.hide()
-                            M.show()
-                        end
-                    end
+                    utils.loading.stop()
+                end,
+                on_error = function()
+                    utils.loading.stop()
                 end,
             })
         end)
@@ -313,49 +309,66 @@ M.install = function()
 end
 
 M.reinstall = function()
-    config.loading.start("| ﰇ Reinstalling dependencies")
+    utils.loading.start("| ﰇ Reinstalling dependencies")
 
-    local command = config.get_command.reinstall()
+    utils.job({
+        json = false,
+        command = utils.get_command.reinstall(),
+        on_success = function()
+            M.__reload()
 
-    vim.fn.jobstart("rm -rf node_modules && " .. command, {
-        on_stdout = function(_, stdout)
-            if table.concat(stdout) == "" then
-                local has_error = utils.has_errors(stdout)
-
-                if has_error then
-                    logger.error("Error running " .. command .. ". Try running manually.")
-
-                    return
-                end
-
-                logger.info("Dependencies reinstalled successfully")
-                vim.cmd(":e")
-                config.loading.stop()
-            end
+            utils.loading.stop()
+        end,
+        on_error = function()
+            utils.loading.stop()
         end,
     })
 end
 
 M.change_version = function()
-    local package_name = M.__get_package_and_validate()
+    local package_name = M.__get_package_name_from_current_line()
 
     if package_name then
-        config.loading.start("|  Fetching " .. package_name .. " versions")
+        utils.loading.start("|  Fetching " .. package_name .. " versions")
 
-        ui.display_change_version_menu({
-            package_name = package_name,
-            callback = function(chosen_version)
-                logger.info(package_name .. " version changed to " .. chosen_version .. " successfully")
-                vim.cmd(":e")
-                config.loading.stop()
+        utils.job({
+            json = true,
+            command = utils.get_command.version_list(package_name),
+            on_success = function(versions)
+                utils.loading.stop()
 
-                if config.state.displayed then
-                    M.hide()
-                    M.show()
+                local menu_items = {}
+
+                -- Iterate versions from the end to show the latest versions first
+                for index = #versions, 1, -1 do
+                    local version = versions[index]
+
+                    --  Skip unstable version e.g next@11.1.0-canary
+                    if config.options.hide_unstable_versions and string.match(version, "-") then
+                    else
+                        table.insert(menu_items, Menu.item(version))
+                    end
                 end
+
+                ui.display_change_version_menu({
+                    package_name = package_name,
+                    menu_items = menu_items,
+                    on_success = function()
+                        M.__reload()
+                    end,
+                })
+            end,
+            on_error = function()
+                utils.loading.stop()
             end,
         })
     end
+end
+
+M.hide = function()
+    M.__clear_virtual_text()
+
+    config.state.displayed = false
 end
 
 return M
