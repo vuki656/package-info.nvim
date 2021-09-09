@@ -13,11 +13,11 @@ local PROMPT_ACTIONS = {
 local INSTALL_ACTIONS = {
     prod = {
         text = "Production",
-        id = constants.DEPENDENCY_TYPE.prod,
+        id = constants.DEPENDENCY_TYPE.production,
     },
     dev = {
         text = "Development",
-        id = constants.DEPENDENCY_TYPE.dev,
+        id = constants.DEPENDENCY_TYPE.development,
     },
     cancel = {
         text = "Cancel",
@@ -190,7 +190,7 @@ M.display_change_version_menu = function(options)
             submit = { "<CR>", "<Space>" },
         },
         on_submit = function(answer)
-            local command = config.get_command.change_version(options.package_name, answer.text)
+            local command = utils.get_command.change_version(options.package_name, answer.text)
 
             utils.loading.start("|  Installing " .. options.package_name .. "@" .. answer.text)
 

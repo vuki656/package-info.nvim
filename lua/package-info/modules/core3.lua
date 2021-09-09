@@ -19,7 +19,7 @@ local M = {
 M.__get_outdated_dependencies = function(callback)
     utils.job({
         json = true,
-        command = "npm outdated --json",
+        command = utils.get_command.outdated(),
         on_success = callback,
     })
 end
@@ -216,7 +216,7 @@ M.delete = function()
         utils.loading.start("|  Deleting " .. package_name .. " package")
 
         ui.display_prompt({
-            command = config.get_command.delete(package_name),
+            command = utils.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             on_submit = function()
                 M.__reload()
@@ -237,7 +237,7 @@ M.update = function()
         utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
         ui.display_prompt({
-            command = config.get_command.update(package_name),
+            command = utils.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             on_submit = function()
                 M.__reload()
@@ -260,12 +260,10 @@ M.install = function()
                 return
             end
 
-            local command = config.get_command.install(dependency_type, dependency_name)
-
             utils.loading.start("|  Installing " .. dependency_name .. " package")
 
             utils.job({
-                command = command,
+                command = utils.get_command.install(dependency_type, dependency_name),
                 on_success = function()
                     M.__reload()
 
@@ -282,11 +280,9 @@ end
 M.reinstall = function()
     utils.loading.start("| ﰇ Reinstalling dependencies")
 
-    local command = config.get_command.reinstall()
-
     utils.job({
         json = false,
-        command = command,
+        command = utils.get_command.reinstall(),
         on_success = function()
             M.__reload()
 
@@ -304,20 +300,19 @@ M.change_version = function()
     if package_name then
         utils.loading.start("|  Fetching " .. package_name .. " versions")
 
-        local fetch_command = config.get_command.version_list(package_name)
-
         utils.job({
             json = true,
-            command = fetch_command,
+            command = utils.get_command.version_list(package_name),
             on_success = function(versions)
                 utils.loading.stop()
 
                 local menu_items = {}
 
-                -- Iterate versions from the end to show the latest versions first and skip unstable
+                -- Iterate versions from the end to show the latest versions first
                 for index = #versions, 1, -1 do
                     local version = versions[index]
 
+                    --  Skip unstable version e.g next@11.1.0-canary
                     if not config.options.hide_unstable_versions and not string.match(version, "-") then
                         table.insert(menu_items, Menu.item(version))
                     end

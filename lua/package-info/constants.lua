@@ -13,8 +13,8 @@ M.PACKAGE_MANAGERS = {
 }
 
 M.DEPENDENCY_TYPE = {
-    prod = "prod",
-    dev = "dev",
+    production = "prod",
+    development = "dev",
 }
 
 return M
