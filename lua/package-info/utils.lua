@@ -65,12 +65,11 @@ M.loading = {
     end,
 }
 
-
 --- Runs an async job
 -- @param options.command - string command to run
 -- @param options.json - boolean if output should be parsed as json
 -- @param options.callback - function to invoke with the results
-function job(options)
+M.job = function(options)
     local value = ""
 
     vim.fn.jobstart(options.command, {

@@ -5,6 +5,7 @@ local utils = require("package-info.utils")
 
 local core = require("package-info.modules.core")
 local core2 = require("package-info.modules.core2")
+local core3 = require("package-info.modules.core3")
 
 local M = {}
 
@@ -13,7 +14,7 @@ M.setup = function(options)
 end
 
 M.show = function(options)
-    core2.show()
+    core3.show()
 end
 
 M.hide = function()
@@ -21,7 +22,7 @@ M.hide = function()
 end
 
 M.delete = function()
-    core2.delete()
+    core3.delete()
 end
 
 M.update = function()
