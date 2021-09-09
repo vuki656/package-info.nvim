@@ -1,7 +1,6 @@
 local Menu = require("nui.menu")
 local Input = require("nui.input")
 
-local config = require("package-info.config")
 local constants = require("package-info.constants")
 local utils = require("package-info.utils")
 
