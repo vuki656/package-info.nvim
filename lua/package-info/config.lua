@@ -51,6 +51,9 @@ M.state = {
 
         return os.time() < M.state.last_run + hour_in_seconds
     end,
+    update_last_run = function()
+        M.state.last_run = os.time()
+    end,
     store_buffer_id = function()
         M.state.buffer_id = vim.fn.bufnr()
     end,

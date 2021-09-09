@@ -202,7 +202,16 @@ M.load_plugin = function()
     M.__parse_buffer()
 end
 
-M.show = function()
+M.show = function(options)
+    options = options or { force = false }
+
+    if config.state.should_skip() and options.force == false then
+        M.__display_virtual_text()
+        M.__reload()
+
+        return
+    end
+
     utils.loading.start("|  Fetching latest versions")
 
     M.__get_outdated_dependencies(function(outdated_dependencies)
@@ -211,6 +220,8 @@ M.show = function()
         M.__reload()
 
         utils.loading.stop()
+
+        config.state.update_last_run()
         config.state.displayed = true
     end)
 end
