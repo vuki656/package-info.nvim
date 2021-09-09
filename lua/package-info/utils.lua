@@ -2,6 +2,7 @@ local json_parser = require("package-info.libs.json_parser")
 
 local constants = require("package-info.constants")
 local logger = require("package-info.logger")
+local config = require("package-info.config")
 
 M = {}
 
@@ -107,11 +108,11 @@ M.get_command = {
     --- Returns the delete command based on package manager
     -- @param package-name - string
     delete = function(package_name)
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
             return "yarn remove " .. package_name
         end
 
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "npm uninstall " .. package_name
         end
     end,
@@ -119,11 +120,11 @@ M.get_command = {
     --- Returns the update command based on package manager
     -- @param package-name - string
     update = function(package_name)
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
             return "yarn upgrade --latest " .. package_name
         end
 
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "npm install " .. package_name .. "@latest"
         end
     end,
@@ -132,22 +133,22 @@ M.get_command = {
     -- @param type - one of constants.PACKAGE_MANAGERS
     -- @param package_name - string used to denote the package
     install = function(type, package_name)
-        if type == constants.DEPENDENCY_TYPE.dev then
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if type == constants.DEPENDENCY_TYPE.development then
+            if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
                 return "yarn add -D " .. package_name
             end
 
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
                 return "npm install --save-dev " .. package_name
             end
         end
 
-        if type == constants.DEPENDENCY_TYPE.prod then
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if type == constants.DEPENDENCY_TYPE.production then
+            if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
                 return "yarn add " .. package_name
             end
 
-            if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+            if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
                 return "npm install " .. package_name
             end
         end
@@ -155,11 +156,11 @@ M.get_command = {
 
     --- Returns the reinstall command based on package manager
     reinstall = function()
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
             return "rm -rf node_modules && yarn"
         end
 
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "rm -rf node_modules && npm install"
         end
     end,
@@ -168,11 +169,11 @@ M.get_command = {
     -- @param package_name - string used to denote the package installed
     -- @param version - string used to denote the version installed
     change_version = function(package_name, version)
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
             return "yarn upgrade " .. package_name .. "@" .. version
         end
 
-        if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "npm install " .. package_name .. "@" .. version
         end
     end,
@@ -181,6 +182,11 @@ M.get_command = {
     -- @param package_name - string used to denote the package
     version_list = function(package_name)
         return "npm view " .. package_name .. " versions --json"
+    end,
+
+    --- Returns command to get outdated dependencies
+    outdated = function()
+        return "npm outdated --json"
     end,
 }
 
