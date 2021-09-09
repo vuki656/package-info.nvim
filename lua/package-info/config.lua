@@ -24,6 +24,7 @@ M.options = {
     autostart = true,
     package_manager = constants.PACKAGE_MANAGERS.yarn,
     hide_up_to_date = false,
+    hide_unstable_versions = false,
 
     __highlight_params = {
         fg = "guifg",
@@ -92,15 +93,22 @@ M.get_command = {
     end,
 
     --- Returns the change version command based on package manager
-    -- @param package_name - string used to denote the package and version to be installed
-    change_version = function(package)
+    -- @param package_name - string used to denote the package installed
+    -- @param version - string used to denote the version installed
+    change_version = function(package_name, version)
         if M.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn upgrade " .. package
+            return "yarn upgrade " .. package_name .. "@" .. version
         end
 
         if M.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "npm install " .. package
+            return "npm install " .. package_name .. "@" .. version
         end
+    end,
+
+    --- Returns available package versions
+    -- @param package_name - string used to denote the package
+    version_list = function(package_name)
+        return "npm view " .. package_name .. " versions --json"
     end,
 }
 
