@@ -82,18 +82,20 @@ M.job = function(options)
                 if has_error then
                     logger.error("Error running " .. options.command .. ". Try running manually.")
 
+                    options.on_error(stdout)
+
                     return
                 end
 
                 if options.json then
                     local json_value = json_parser.decode(value)
 
-                    options.callback(json_value)
+                    options.on_success(json_value)
 
                     return
                 end
 
-                options.callback(value)
+                options.on_success(value)
             end
         end,
     })

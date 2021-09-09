@@ -67,25 +67,15 @@ M.display_prompt = function(options)
             submit = { "<CR>", "<Space>" },
         },
         on_submit = function(selected_action)
-            local value = ""
-
             if selected_action.text == PROMPT_ACTIONS.confirm then
-                vim.fn.jobstart(options.command, {
-                    on_stdout = function(_, stdout)
-                        value = value .. table.concat(stdout)
-
-                        if table.concat(stdout) == "" then
-                            local has_error = utils.has_errors(value)
-
-                            if has_error then
-                                logger.error("Error running " .. options.command .. ". Try running manually.")
-
-                                options.on_cancel()
-                                return
-                            end
-
-                            options.on_submit()
-                        end
+                utils.job({
+                    json = false,
+                    command = options.command,
+                    on_success = function()
+                        options.on_submit()
+                    end,
+                    on_error = function()
+                        options.on_cancel()
                     end,
                 })
             else
