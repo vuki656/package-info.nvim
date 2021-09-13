@@ -98,10 +98,14 @@ end)
 
 describe("Loading", function()
     it("should start", function()
-        utils.loading.start("Installing prettier")
+        local message = "Installing prettier"
 
-        assert.are_not.equals(utils.loading.index, 1)
+        utils.loading.start(message)
+
         assert.are.equals(utils.loading.is_running, true)
+        assert.are.equals(utils.loading.log, message)
+        assert.are_not.equals(utils.loading.index, 1)
+        assert.are_not.equals(utils.loading.spinner, "")
     end)
 
     it("should stop", function()
@@ -111,20 +115,7 @@ describe("Loading", function()
         assert.are.equals(utils.loading.is_running, false)
         assert.are.equals(utils.loading.log, "")
         assert.are.equals(utils.loading.spinner, "")
-    end)
-
-    it("should set the message", function()
-        local message = "Installing prettier"
-
-        utils.loading.start(message)
-
-        assert.are.equals(utils.loading.log, message)
-    end)
-
-    it("should start the loading animation", function()
-        utils.loading.start("Installing prettier")
-
-        assert.are_not.equals(utils.loading.spinner, "")
+        assert.are.equals(utils.loading.index, 1)
     end)
 
     it("should get the status", function()
