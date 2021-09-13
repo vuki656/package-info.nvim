@@ -288,7 +288,7 @@ vim.api.nvim_set_keymap("n", "<leader>np", ":lua require('package-info').change_
 - Display might be slow on a project with a lot of packages. This is due to the
   `npm outdated` command taking a long time. Nothing can be done about that
 
-- Idea was inspired by [akinso](https://github.com/akinsho) and his [dependency-assist.nvim](https://github.com/akinsho/dependency-assist.nvim)
+- Idea was inspired by [akinsho](https://github.com/akinsho) and his [dependency-assist.nvim](https://github.com/akinsho/dependency-assist.nvim)
 
 - Readme template stolen from [folke](https://github.com/folke)
 
