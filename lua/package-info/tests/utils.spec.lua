@@ -100,10 +100,11 @@ describe("Loading", function()
     it("should start", function()
         utils.loading.start("Installing prettier")
 
+        assert.are_not.equals(utils.loading.index, 1)
         assert.are.equals(utils.loading.is_running, true)
     end)
 
-    it("should start", function()
+    it("should stop", function()
         utils.loading.start("Installing prettier")
         utils.loading.stop()
 
