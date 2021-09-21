@@ -143,6 +143,19 @@ M.__register_highlight_groups = function()
     M.__register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
 end
 
+M.__register_autocommands = function()
+    vim.cmd([[ 
+        command! PackageInfoShow lua require('package-info').show()
+        command! PackageInfoShowForce lua require('package-info').show({ force = true })
+        command! PackageInfoHide lua require('package-info').hide()
+        command! PackageInfoDelete lua require('package-info').delete()
+        command! PackageInfoUpdate lua require('package-info').update()
+        command! PackageInfoInstall lua require('package-info').install()
+        command! PackageInfoReinstall lua require('package-info').reinstall()
+        command! PackageInfoChangeVersion lua require('package-info').change_version()
+    ]])
+end
+
 --- Take all user options and setup the config
 -- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
 M.setup = function(user_options)
@@ -151,6 +164,7 @@ M.setup = function(user_options)
     M.__register_autostart()
     M.__register_256color_support()
     M.__register_highlight_groups()
+    M.__register_autocommands()
     M.namespace.register()
 end
 
