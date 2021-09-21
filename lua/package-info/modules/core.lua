@@ -41,6 +41,10 @@ end
 
 --- Strips ^ from version
 M.__clean_version = function(string)
+    if string == nil then
+        return nil
+    end
+
     return string:gsub("%^", "")
 end
 
@@ -70,14 +74,50 @@ M.__parse_buffer = function()
     M.__dependencies = dependencies
 end
 
+--- Checks if the given string conforms to 1.0.0 version format
+-- @param value - string to check
+M.__is_valid_package_version = function(value)
+    local cleaned_version = M.__clean_version(value)
+
+    if cleaned_version == nil then
+        return false
+    end
+
+    local position = 0
+    local is_valid = true
+
+    -- Check that the first two chunks in version string are numbers
+    -- Everything beyond could be unstable version suffix
+    for chunk in string.gmatch(cleaned_version, "([^.]+)") do
+        if position ~= 2 and type(tonumber(chunk)) ~= "number" then
+            is_valid = false
+        end
+
+        position = position + 1
+    end
+
+    return is_valid
+end
+
 --- Gets the package name from the given buffer line
 -- @param line - string representing a buffer line
 M.__get_package_name_from_line = function(line)
-    local package_name = string.match(line, [["(.-)"]])
-    local is_valid = M.__is_valid_package_name(package_name)
+    local value = {}
 
-    if is_valid then
-        return package_name
+    -- Tries to extract name and version
+    for chunk in string.gmatch(line, [["(.-)"]]) do
+        table.insert(value, chunk)
+    end
+
+    if value[1] == nil or value[2] == nil then
+        return nil
+    end
+
+    local is_valid_name = M.__is_valid_package_name(value[1])
+    local is_valid_version = M.__is_valid_package_version(value[2])
+
+    if is_valid_name and is_valid_version then
+        return value[1]
     else
         return nil
     end
