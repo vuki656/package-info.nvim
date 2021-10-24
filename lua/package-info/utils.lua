@@ -1,4 +1,4 @@
-local json_parser = require("package-info.libs.json_parser")
+local json_parser = vim.json
 
 local constants = require("package-info.constants")
 local logger = require("package-info.logger")
