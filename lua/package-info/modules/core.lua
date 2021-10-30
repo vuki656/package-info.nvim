@@ -174,7 +174,9 @@ M.__reload_buffer = function()
     local current_buffer_number = vim.fn.bufnr()
 
     if current_buffer_number == config.state.buffer.id then
+        local view = vim.fn.winsaveview()
         vim.cmd(":e")
+        vim.fn.winrestview(view)
     end
 end
 
