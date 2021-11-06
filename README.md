@@ -2,7 +2,7 @@
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/logo.png" width=315>
 
-## All the `npm`/`yarn` commands I don't want to type
+## All the `npm`/`yarn`/`pnpm` commands I don't want to type
 
 </div>
 
@@ -70,7 +70,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/delete.gif" width=500>
 
-Runs `yarn remove` or `npm uninstall` in the background and reloads the buffer.
+Runs `yarn remove`, `npm uninstall`, or `pnpm uninstall` in the background and reloads the buffer.
 
 </div>
 
@@ -91,7 +91,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/change.gif" width=500>
 
-Runs `npm install package@version` or `yarn upgrade package@version` in the background and reloads the buffer.
+Runs `npm install package@version`, `yarn upgrade package@version`, or `pnpm update package` in the background and reloads the buffer.
 
 </div>
 
@@ -112,7 +112,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/install.gif" width=500>
 
-Runs `npm install package` or `yarn add package` in the background and reloads the buffer.
+Runs `npm install package`, `yarn add package`, or `pnpm add package` in the background and reloads the buffer.
 
 </div>
 
@@ -133,7 +133,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/reinstall.gif" width=500>
 
-Runs `rm -rf node_modules && yarn` or `rm -rf node_modules && npm install` in the background and reloads the buffer.
+Runs `rm -rf node_modules && yarn`, `rm -rf node_modules && npm install`, or `rm -rf node_modules && pnpm install` in the background and reloads the buffer.
 
 </div>
 
@@ -230,7 +230,7 @@ require('package-info').setup()
     autostart = true -- Whether to autostart when `package.json` is opened
     hide_up_to_date = true -- It hides up to date versions when displaying virtual text
     hide_unstable_versions = false, -- It hides unstable versions from version list e.g next-11.1.3-canary3
-    -- Can be `npm` or `yarn`. Used for `delete`, `install` etc...
+    -- Can be `npm`, `yarn`, or `pnpm`. Used for `delete`, `install` etc...
     -- The plugin will try to auto-detect the package manager based on
     -- `yarn.lock` or `package-lock.json`. If none are found it will use the
     -- provided one, if nothing is provided it will use `yarn`
