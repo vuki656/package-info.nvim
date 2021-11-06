@@ -67,6 +67,7 @@ M.state = {
 M.__detect_package_manager = function()
     local package_lock = io.open("package-lock.json", "r")
     local yarn_lock = io.open("yarn.lock", "r")
+    local pnpm_lock = io.open("pnpm-lock.yaml", "r")
 
     if package_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.npm
@@ -76,6 +77,11 @@ M.__detect_package_manager = function()
     if yarn_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
         io.close(yarn_lock)
+    end
+
+    if pnpm_lock ~= nil then
+        M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
+        io.close(pnpm_lock)
     end
 end
 
