@@ -73,7 +73,9 @@ M.job = function(options)
         on_exit = function(_, exit_code)
             if exit_code ~= 0 then
                 logger.error("Error running " .. options.command .. ". Try running manually.")
-                options.on_error()
+                if options.on_error ~= nil then
+                    options.on_error()
+                end
 
                 return
             end
