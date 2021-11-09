@@ -2,9 +2,9 @@ local Menu = require("nui.menu")
 
 local json_parser
 if vim.json then
-  json_parser = vim.json
+    json_parser = vim.json
 else
- json_parser = require("package-info.libs.json_parser")
+    json_parser = require("package-info.libs.json_parser")
 end
 
 local constants = require("package-info.constants")
