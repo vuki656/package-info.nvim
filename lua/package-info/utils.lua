@@ -66,12 +66,13 @@ M.loading = {
 -- @param options.json - boolean if output should be parsed as json
 -- @param options.on_success - function to invoke with the results
 -- @param options.on_error - function to invoke if the command fails
+-- @param options.ignore_error - ignore non-zero exit codes
 M.job = function(options)
     local value = ""
 
     vim.fn.jobstart(options.command, {
         on_exit = function(_, exit_code)
-            if exit_code ~= 0 then
+            if exit_code ~= 0 and not options.ignore_error then
                 logger.error("Error running " .. options.command .. ". Try running manually.")
                 if options.on_error ~= nil then
                     options.on_error()

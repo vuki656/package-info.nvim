@@ -26,6 +26,7 @@ M.__get_outdated_dependencies = function(callback)
         json = true,
         command = utils.get_command.outdated(),
         on_success = callback,
+        ignore_error = true,
     })
 end
 
