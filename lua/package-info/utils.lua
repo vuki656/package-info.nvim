@@ -12,19 +12,6 @@ local config = require("package-info.config")
 
 M = {}
 
---- Checks if given string contains "error"
--- For now probably acceptable, but should be more precise
--- @param value - string to check
-M.has_errors = function(value)
-    local string_value = value
-
-    if type(value) ~= "string" then
-        string_value = table.concat(value)
-    end
-
-    return string.find(string_value, "error") ~= nil
-end
-
 --- Manages loading animation state
 M.loading = {
     animation = {
@@ -77,35 +64,30 @@ M.loading = {
 --- Runs an async job
 -- @param options.command - string command to run
 -- @param options.json - boolean if output should be parsed as json
--- @param options.callback - function to invoke with the results
+-- @param options.on_success - function to invoke with the results
+-- @param options.on_error - function to invoke if the command fails
 M.job = function(options)
     local value = ""
 
     vim.fn.jobstart(options.command, {
-        on_stdout = function(_, stdout)
-            value = value .. table.concat(stdout)
+        on_exit = function(_, exit_code)
+            if exit_code ~= 0 then
+                logger.error("Error running " .. options.command .. ". Try running manually.")
+                options.on_error()
 
-            if table.concat(stdout) == "" then
-                local has_error = M.has_errors(stdout)
+                return
+            end
 
-                if has_error then
-                    logger.error("Error running " .. options.command .. ". Try running manually.")
+            if options.json then
+                local json_value = json_parser.decode(value)
 
-                    options.on_error(stdout)
-
-                    return
-                end
-
-                if options.json then
-                    local json_value = json_parser.decode(value)
-
-                    options.on_success(json_value)
-
-                    return
-                end
-
+                options.on_success(json_value)
+            else
                 options.on_success(value)
             end
+        end,
+        on_stdout = function(_, stdout)
+            value = value .. table.concat(stdout)
         end,
     })
 end
