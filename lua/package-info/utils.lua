@@ -1,4 +1,5 @@
 local json_parser
+
 if vim.json then
     json_parser = vim.json
 else
@@ -54,6 +55,7 @@ M.loading = {
         M.loading.is_running = false
         M.loading.log = ""
         M.loading.spinner = ""
+        M.loading.index = 1
     end,
     update = function()
         if M.loading.is_running then

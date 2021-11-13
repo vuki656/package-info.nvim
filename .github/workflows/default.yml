@@ -22,3 +22,29 @@ jobs:
         with:
           config: "../../.markdownlint.json"
           args: "../../README.md"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get neovim v0.5.1
+        uses: actions/cache@v2
+        with:
+          path: build/neovim/v0.5.1
+          key: ${{ runner.os }}-appimage-0.5.1
+
+      - name: Fetch dependencies
+        run: |
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
+          ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
+      - name: Run Tests
+        run: |
+          test -d build/neovim/v0.5.1 || {
+            mkdir -p build/neovim/v0.5.1
+            curl -Lo build/neovim/v0.5.1/nvim https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage
+            chmod +x build/neovim/v0.5.1/nvim
+          }
+          build/neovim/v0.5.1/nvim --headless --noplugin -u lua/package-info/tests/minimal.vim -c "PlenaryBustedDirectory lua/package-info/tests { minimal_init = 'lua/package-info/tests/minimal.vim' }"
