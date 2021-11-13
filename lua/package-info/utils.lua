@@ -82,9 +82,16 @@ M.job = function(options)
             end
 
             if options.json then
-                local json_value = json_parser.decode(value)
+                local ok, json_value = pcall(json_parser.decode, value)
 
-                options.on_success(json_value)
+                if ok then
+                    options.on_success(json_value)
+                else
+                    logger.error("Error running " .. options.command .. ". Try running manually.")
+                    if options.on_error ~= nil then
+                        options.on_error()
+                    end
+                end
             else
                 options.on_success(value)
             end
