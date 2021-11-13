@@ -1,6 +1,11 @@
 local Menu = require("nui.menu")
 
-local json_parser = require("package-info.libs.json_parser")
+local json_parser
+if vim.json then
+    json_parser = vim.json
+else
+    json_parser = require("package-info.libs.json_parser")
+end
 
 local constants = require("package-info.constants")
 local config = require("package-info.config")
@@ -174,7 +179,9 @@ M.__reload_buffer = function()
     local current_buffer_number = vim.fn.bufnr()
 
     if current_buffer_number == config.state.buffer.id then
+        local view = vim.fn.winsaveview()
         vim.cmd(":e")
+        vim.fn.winrestview(view)
     end
 end
 

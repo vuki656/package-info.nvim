@@ -1,4 +1,10 @@
-local json_parser = require("package-info.libs.json_parser")
+local json_parser
+
+if vim.json then
+    json_parser = vim.json
+else
+    json_parser = require("package-info.libs.json_parser")
+end
 
 local constants = require("package-info.constants")
 local logger = require("package-info.logger")
@@ -49,6 +55,7 @@ M.loading = {
         M.loading.is_running = false
         M.loading.log = ""
         M.loading.spinner = ""
+        M.loading.index = 1
     end,
     update = function()
         if M.loading.is_running then
