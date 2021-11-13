@@ -1,4 +1,5 @@
 local json_parser
+
 if vim.json then
     json_parser = vim.json
 else
