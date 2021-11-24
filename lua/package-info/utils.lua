@@ -114,6 +114,10 @@ M.get_command = {
         if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "npm uninstall " .. package_name
         end
+
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+            return "pnpm remove " .. package_name
+        end
     end,
 
     --- Returns the update command based on package manager
@@ -125,6 +129,10 @@ M.get_command = {
 
         if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "npm install " .. package_name .. "@latest"
+        end
+
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+            return "pnpm update " .. package_name
         end
     end,
 
@@ -140,6 +148,10 @@ M.get_command = {
             if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
                 return "npm install --save-dev " .. package_name
             end
+
+            if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+                return "pnpm add -D " .. package_name
+            end
         end
 
         if type == constants.DEPENDENCY_TYPE.production then
@@ -149,6 +161,10 @@ M.get_command = {
 
             if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
                 return "npm install " .. package_name
+            end
+
+            if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+                return "pnpm add " .. package_name
             end
         end
     end,
@@ -161,6 +177,10 @@ M.get_command = {
 
         if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "rm -rf node_modules && npm install"
+        end
+
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+            return "rm -rf node_modules && pnpm install"
         end
     end,
 
@@ -175,11 +195,19 @@ M.get_command = {
         if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
             return "npm install " .. package_name .. "@" .. version
         end
+
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+            return "pnpm add " .. package_name .. "@" .. version
+        end
     end,
 
     --- Returns available package versions
     -- @param package_name - string used to denote the package
     version_list = function(package_name)
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+            return "pnpm view " .. package_name .. " versions --json"
+        end
+
         return "npm view " .. package_name .. " versions --json"
     end,
 

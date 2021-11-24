@@ -42,6 +42,52 @@ describe("Command retrieval for yarn", function()
     end)
 end)
 
+describe("Command retrieval for pnpm", function()
+    config.options.package_manager = "pnpm"
+
+    it("should get the delete command", function()
+        local command = utils.get_command.delete("prettier")
+
+        assert.are.equals("pnpm remove prettier", command)
+    end)
+
+    it("should get the update command", function()
+        local command = utils.get_command.update("prettier")
+
+        assert.are.equals("pnpm update prettier", command)
+    end)
+
+    it("should get the development install command", function()
+        local command = utils.get_command.install(constants.DEPENDENCY_TYPE.development, "prettier")
+
+        assert.are.equals("pnpm add -D prettier", command)
+    end)
+
+    it("should get the production install command", function()
+        local command = utils.get_command.install(constants.DEPENDENCY_TYPE.production, "prettier")
+
+        assert.are.equals("pnpm add prettier", command)
+    end)
+
+    it("should get the reinstall command", function()
+        local command = utils.get_command.reinstall()
+
+        assert.are.equals("rm -rf node_modules && pnpm install", command)
+    end)
+
+    it("should get the change version command", function()
+        local command = utils.get_command.change_version("prettier", "3.0.0")
+
+        assert.are.equals("pnpm add prettier@3.0.0", command)
+    end)
+
+    it("should get the list command", function()
+        local command = utils.get_command.version_list("prettier")
+
+        assert.are.equals("pnpm view prettier versions --json", command)
+    end)
+end)
+
 describe("Command retrieval for npm", function()
     config.options.package_manager = "npm"
 
