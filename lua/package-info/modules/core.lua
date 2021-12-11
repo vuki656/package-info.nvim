@@ -19,17 +19,6 @@ local M = {
     __buffer = {},
 }
 
---- Gets outdated dependency json
--- @param callback - function to invoke after
-M.__get_outdated_dependencies = function(callback)
-    utils.job({
-        json = true,
-        command = utils.get_command.outdated(),
-        on_success = callback,
-        ignore_error = true,
-    })
-end
-
 --- Checks if the currently opened file is package.json and has content
 M.__is_valid_package_json = function()
     local current_buffer_name = vim.api.nvim_buf_get_name(0)
@@ -277,15 +266,23 @@ M.show = function(options)
 
     utils.loading.start("|  Fetching latest versions")
 
-    M.__get_outdated_dependencies(function(outdated_dependencies)
-        M.__parse_buffer()
-        M.__display_virtual_text(outdated_dependencies)
-        M.__reload()
+    utils.job({
+        json = true,
+        command = utils.get_command.outdated(),
+        ignore_error = true,
+        on_success = function(outdated_dependencies)
+            M.__parse_buffer()
+            M.__display_virtual_text(outdated_dependencies)
+            M.__reload()
 
-        utils.loading.stop()
+            utils.loading.stop()
 
-        config.state.last_run.update()
-    end)
+            config.state.last_run.update()
+        end,
+        on_error = function()
+            utils.loading.stop()
+        end,
+    })
 end
 
 M.delete = function()
