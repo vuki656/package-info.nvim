@@ -270,6 +270,7 @@ M.show = function(options)
 
     if config.state.last_run.should_skip() and options.force == false then
         M.__display_virtual_text()
+        M.__reload()
 
         return
     end
@@ -279,6 +280,7 @@ M.show = function(options)
     M.__get_outdated_dependencies(function(outdated_dependencies)
         M.__parse_buffer()
         M.__display_virtual_text(outdated_dependencies)
+        M.__reload()
 
         utils.loading.stop()
 
