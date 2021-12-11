@@ -124,7 +124,7 @@ M.get_command = {
     -- @param package-name - string
     update = function(package_name)
         if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn upgrade --latest " .. package_name
+            return "yarn up " .. package_name
         end
 
         if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
@@ -189,7 +189,7 @@ M.get_command = {
     -- @param version - string used to denote the version installed
     change_version = function(package_name, version)
         if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "yarn upgrade " .. package_name .. "@" .. version
+            return "yarn up " .. package_name .. "@" .. version
         end
 
         if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
