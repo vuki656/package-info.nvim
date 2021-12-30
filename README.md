@@ -189,7 +189,7 @@ components.right.active[5] = {
 
 ## ⚡️ Requirements
 
-- Neovim >= 0.5.0
+- Neovim >= 0.6.0
 - Npm
 - [Patched font](https://github.com/ryanoasis/nerd-fonts/tree/gh-pages) if you want icons
 
