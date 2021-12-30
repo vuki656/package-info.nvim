@@ -24,7 +24,7 @@ body:
     attributes:
       label: Neovim Version
       options:
-        - label: "I am using the 0.5 neovim version"
+        - label: "I am using the 0.6 neovim version or later"
           required: true
 
   - type: input

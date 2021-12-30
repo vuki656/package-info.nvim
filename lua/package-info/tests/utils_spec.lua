@@ -14,7 +14,7 @@ describe("Command retrieval for yarn", function()
     it("should get the update command", function()
         local command = utils.get_command.update("prettier")
 
-        assert.are.equals("yarn upgrade --latest prettier", command)
+        assert.are.equals("yarn up prettier", command)
     end)
 
     it("should get the development install command", function()
@@ -38,7 +38,7 @@ describe("Command retrieval for yarn", function()
     it("should get the change version command", function()
         local command = utils.get_command.change_version("prettier", "3.0.0")
 
-        assert.are.equals("yarn upgrade prettier@3.0.0", command)
+        assert.are.equals("yarn up prettier@3.0.0", command)
     end)
 end)
 
