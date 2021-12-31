@@ -1,6 +1,8 @@
 -- DESCRIPTION: sets up the user given config, and plugin config
 
 local constants = require("package-info.constants")
+local job = require("package-info.utils.job")
+local logger = require("package-info.logger")
 
 ----------------------------------------------------------------------------
 ---------------------------------- MODULE ----------------------------------
@@ -23,6 +25,7 @@ M.options = {
     },
     autostart = true,
     package_manager = constants.PACKAGE_MANAGERS.yarn,
+    yarn_version = nil,
     hide_up_to_date = false,
     hide_unstable_versions = false,
 
@@ -75,6 +78,20 @@ M.__detect_package_manager = function()
     end
 
     if yarn_lock ~= nil then
+        job({
+            command = "yarn -v",
+            on_success = function(full_version)
+                local major_version = full_version:sub(1, 1)
+
+                if major_version == "1" then
+                    M.options.yarn_version = "1"
+                end
+            end,
+            on_error = function()
+                logger.error("Error detecting yarn version. Falling back to yarn 2")
+            end,
+        })
+
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
         io.close(yarn_lock)
     end
