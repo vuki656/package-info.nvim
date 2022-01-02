@@ -29,12 +29,6 @@ describe("Command retrieval for yarn", function()
         assert.are.equals("yarn add prettier", command)
     end)
 
-    it("should get the reinstall command", function()
-        local command = utils.get_command.reinstall()
-
-        assert.are.equals("rm -rf node_modules && yarn", command)
-    end)
-
     it("should get the change version command", function()
         local command = utils.get_command.change_version("prettier", "3.0.0")
 
@@ -67,12 +61,6 @@ describe("Command retrieval for pnpm", function()
         local command = utils.get_command.install(constants.DEPENDENCY_TYPE.production, "prettier")
 
         assert.are.equals("pnpm add prettier", command)
-    end)
-
-    it("should get the reinstall command", function()
-        local command = utils.get_command.reinstall()
-
-        assert.are.equals("rm -rf node_modules && pnpm install", command)
     end)
 
     it("should get the change version command", function()
@@ -113,12 +101,6 @@ describe("Command retrieval for npm", function()
         local command = utils.get_command.install(constants.DEPENDENCY_TYPE.production, "prettier")
 
         assert.are.equals("npm install prettier", command)
-    end)
-
-    it("should get the reinstall command", function()
-        local command = utils.get_command.reinstall()
-
-        assert.are.equals("rm -rf node_modules && npm install", command)
     end)
 
     it("should get the change version command", function()

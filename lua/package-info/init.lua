@@ -1,4 +1,5 @@
 -- FILE DESCRIPTION: Plugin entry point
+-- TODO: calculate prompt width based on title (package name) length
 
 local config = require("package-info.config")
 local utils = require("package-info.utils")
@@ -29,10 +30,6 @@ end
 
 M.install = function()
     core.install()
-end
-
-M.reinstall = function()
-    core.reinstall()
 end
 
 M.change_version = function()

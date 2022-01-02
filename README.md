@@ -27,7 +27,6 @@
 - Delete package on current line
 - Install a different version of a package on current line
 - Install new package
-- Reinstall dependencies
 - Automatic package manager detection
 - Loading animation hook (to be placed in status bar or anywhere else)
 
@@ -123,27 +122,6 @@ vim.api.nvim_set_keymap(
     "n",
     "<leader>ni",
     "<cmd>lua require('package-info').install()<cr>",
-    { silent = true, noremap = true }
-)
-```
-
-<div align="center">
-
-### Reinstall Dependencies
-
-<img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/reinstall.gif" width=500>
-
-Runs `rm -rf node_modules && yarn`, `rm -rf node_modules && npm install`, or `rm -rf node_modules && pnpm install` in the background and reloads the buffer.
-
-</div>
-
-#### Keybinding
-
-```lua
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>nr",
-    "<cmd>lua require('package-info').reinstall()<cr>",
     { silent = true, noremap = true }
 )
 ```
@@ -272,9 +250,6 @@ vim.api.nvim_set_keymap("n", "<leader>nd", ":lua require('package-info').delete(
 
 -- Install a new package
 vim.api.nvim_set_keymap("n", "<leader>ni", ":lua require('package-info').install()<CR>", { silent = true, noremap = true })
-
--- Reinstall dependencies
-vim.api.nvim_set_keymap("n", "<leader>nr", ":lua require('package-info').reinstall()<CR>", { silent = true, noremap = true })
 
 -- Install a different package version
 vim.api.nvim_set_keymap("n", "<leader>np", ":lua require('package-info').change_version()<CR>", { silent = true, noremap = true })

@@ -157,7 +157,6 @@ M.__register_autocommands = function()
         command! PackageInfoDelete lua require('package-info').delete()
         command! PackageInfoUpdate lua require('package-info').update()
         command! PackageInfoInstall lua require('package-info').install()
-        command! PackageInfoReinstall lua require('package-info').reinstall()
         command! PackageInfoChangeVersion lua require('package-info').change_version()
     ]])
 end

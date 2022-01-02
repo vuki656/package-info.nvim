@@ -169,21 +169,6 @@ M.get_command = {
         end
     end,
 
-    --- Returns the reinstall command based on package manager
-    reinstall = function()
-        if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-            return "rm -rf node_modules && yarn"
-        end
-
-        if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-            return "rm -rf node_modules && npm install"
-        end
-
-        if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
-            return "rm -rf node_modules && pnpm install"
-        end
-    end,
-
     --- Returns the change version command based on package manager
     -- @param package_name - string used to denote the package installed
     -- @param version - string used to denote the version installed

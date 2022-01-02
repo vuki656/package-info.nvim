@@ -16,7 +16,6 @@ local ACTIONS = {
 
 local M = {}
 
--- TODO: calculate prompt width based on title (package name) length
 --- Generic confirm/cancel prompt
 -- @param props.title: string - displayed at the top of the prompt
 -- @param props.command: string - command executed on confirm select

@@ -1,3 +1,5 @@
+-- TODO : extract each command call to separate file
+
 local Menu = require("nui.menu")
 
 local json_parser
@@ -375,23 +377,6 @@ M.install = function()
             })
         end)
     end)
-end
-
-M.reinstall = function()
-    utils.loading.start("| ﰇ Reinstalling dependencies")
-
-    utils.job({
-        json = false,
-        command = utils.get_command.reinstall(),
-        on_success = function()
-            M.__reload()
-
-            utils.loading.stop()
-        end,
-        on_error = function()
-            utils.loading.stop()
-        end,
-    })
 end
 
 M.change_version = function()
