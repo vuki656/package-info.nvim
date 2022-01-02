@@ -13,6 +13,8 @@ local utils = require("package-info.utils")
 local ui = require("package-info.ui")
 local logger = require("package-info.logger")
 
+local Prompt = require("package-info.ui.generic.prompt")
+
 local M = {
     __dependencies = {},
     __outdated_dependencies = {},
@@ -291,7 +293,7 @@ M.delete = function()
     if package_name then
         utils.loading.start("|  Deleting " .. package_name .. " package")
 
-        ui.display_prompt({
+        Prompt.New({
             command = utils.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             on_submit = function()
@@ -300,6 +302,17 @@ M.delete = function()
                 utils.loading.stop()
             end,
             on_cancel = function()
+                utils.loading.stop()
+            end,
+            on_error = function()
+                M.__reload()
+
+                utils.loading.stop()
+            end,
+        })
+
+        Prompt.Open({
+            on_error = function()
                 utils.loading.stop()
             end,
         })
@@ -312,7 +325,7 @@ M.update = function()
     if package_name then
         utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
-        ui.display_prompt({
+        Prompt.New({
             command = utils.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             on_submit = function()
@@ -321,6 +334,17 @@ M.update = function()
                 utils.loading.stop()
             end,
             on_cancel = function()
+                utils.loading.stop()
+            end,
+            on_error = function()
+                M.__reload()
+
+                utils.loading.stop()
+            end,
+        })
+
+        Prompt.Open({
+            on_error = function()
                 utils.loading.stop()
             end,
         })

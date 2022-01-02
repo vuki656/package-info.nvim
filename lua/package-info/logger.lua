@@ -1,5 +1,6 @@
 local M = {}
 
+-- TODO: write to file on log
 M.__print = function(message, highlight_group)
     vim.api.nvim_echo({ { "PackageInfo: " .. message, highlight_group or "" } }, {}, {})
 end

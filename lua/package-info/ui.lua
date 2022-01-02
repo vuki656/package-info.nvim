@@ -4,11 +4,6 @@ local Input = require("nui.input")
 local constants = require("package-info.constants")
 local utils = require("package-info.utils")
 
-local PROMPT_ACTIONS = {
-    confirm = "Confirm",
-    cancel = "Cancel",
-}
-
 local INSTALL_ACTIONS = {
     prod = {
         text = "Production",
@@ -25,63 +20,6 @@ local INSTALL_ACTIONS = {
 }
 
 local M = {}
-
---- Generic confirm/cancel prompt
--- @param options.title - string
--- @param options.command - string used as command executed on confirm
--- @param options.callback - function used after command executed
-M.display_prompt = function(options)
-    local menu = Menu({
-        relative = "cursor",
-        border = {
-            style = "rounded",
-            highlight = "Normal",
-            text = {
-                top = options.title,
-                top_align = "left",
-            },
-        },
-        position = {
-            row = 0,
-            col = 0,
-        },
-        size = {
-            width = 50,
-            height = 2,
-        },
-        highlight = "Normal:Normal",
-        focusable = true,
-    }, {
-        lines = {
-            Menu.item(PROMPT_ACTIONS.confirm),
-            Menu.item(PROMPT_ACTIONS.cancel),
-        },
-        keymap = {
-            focus_next = { "j", "<Down>", "<Tab>" },
-            focus_prev = { "k", "<Up>", "<S-Tab>" },
-            close = { "<Esc>", "<C-c>" },
-            submit = { "<CR>", "<Space>" },
-        },
-        on_submit = function(selected_action)
-            if selected_action.text == PROMPT_ACTIONS.confirm then
-                utils.job({
-                    json = false,
-                    command = options.command,
-                    on_success = function()
-                        options.on_submit()
-                    end,
-                    on_error = function()
-                        options.on_cancel()
-                    end,
-                })
-            else
-                options.on_cancel()
-            end
-        end,
-    })
-
-    menu:mount()
-end
 
 --- Menu to choose the type of dependency to be installed
 M.display_install_menu = function(callback)
