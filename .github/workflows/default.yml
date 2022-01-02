@@ -13,16 +13,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --color always --check .
 
-  markdownlint:
-    name: Lint Documentation
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Lint changelog file
-        uses: avto-dev/markdown-lint@v1
-        with:
-          config: "../../.markdownlint.json"
-          args: "../../README.md"
-
   test:
     name: Test
     runs-on: ubuntu-latest
