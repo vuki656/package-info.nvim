@@ -59,6 +59,8 @@ M.new = function(props)
         on_submit = function(answer)
             if answer.id ~= ACTIONS.CONFIRM.id then
                 props.on_cancel()
+
+                return
             end
 
             props.on_submit()

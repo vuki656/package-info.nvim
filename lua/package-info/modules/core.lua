@@ -300,11 +300,11 @@ M.delete = function()
         return
     end
 
-    utils.loading.start("|  Deleting " .. package_name .. " package")
-
     prompt.new({
         title = " Delete [" .. package_name .. "] Package ",
         on_submit = function()
+            utils.loading.start("|  Deleting " .. package_name .. " package")
+
             job({
                 json = false,
                 command = utils.get_command.delete(package_name),
@@ -337,41 +337,39 @@ M.update = function()
         return
     end
 
-    if package_name then
-        utils.loading.start("| ﯁ Updating " .. package_name .. " package")
+    prompt.new({
+        title = " Update [" .. package_name .. "] Package ",
+        on_submit = function()
+            utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
-        prompt.new({
-            title = " Update [" .. package_name .. "] Package ",
-            on_submit = function()
-                job({
-                    json = false,
-                    command = utils.get_command.update(package_name),
-                    on_success = function()
-                        M.__reload()
+            job({
+                json = false,
+                command = utils.get_command.update(package_name),
+                on_success = function()
+                    M.__reload()
 
-                        utils.loading.stop()
-                    end,
-                    on_error = function()
-                        utils.loading.stop()
-                    end,
-                })
-            end,
-            on_cancel = function()
-                utils.loading.stop()
-            end,
-            on_error = function()
-                M.__reload()
+                    utils.loading.stop()
+                end,
+                on_error = function()
+                    utils.loading.stop()
+                end,
+            })
+        end,
+        on_cancel = function()
+            utils.loading.stop()
+        end,
+        on_error = function()
+            M.__reload()
 
-                utils.loading.stop()
-            end,
-        })
+            utils.loading.stop()
+        end,
+    })
 
-        prompt.open({
-            on_error = function()
-                utils.loading.stop()
-            end,
-        })
-    end
+    prompt.open({
+        on_error = function()
+            utils.loading.stop()
+        end,
+    })
 end
 
 -- TODO: this should be split up into two separate entities
