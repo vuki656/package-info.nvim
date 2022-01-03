@@ -11,6 +11,7 @@ local delete = require("package-info.actions.delete")
 local install = require("package-info.actions.install")
 local hide = require("package-info.actions.hide")
 local change_version = require("package-info.actions.change-version")
+local update = require("package-info.actions.update")
 
 local M = {}
 
@@ -31,7 +32,7 @@ M.delete = function()
 end
 
 M.update = function()
-    core.update()
+    update()
 end
 
 M.install = function()
