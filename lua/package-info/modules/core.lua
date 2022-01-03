@@ -13,8 +13,6 @@ local utils = require("package-info.utils")
 local logger = require("package-info.logger")
 
 local prompt = require("package-info.ui.generic.prompt")
-local dependency_type_select = require("package-info.ui.dependency-type-select")
-local dependency_name_input = require("package-info.ui.dependency-name-input")
 local job = require("package-info.utils.job")
 
 local M = {
@@ -329,35 +327,6 @@ M.update = function()
             utils.loading.stop()
         end,
     })
-end
-
--- TODO: this should be split up into two separate entities
-M.install = function()
-    dependency_type_select.new({
-        on_submit = function(selected_dependency_type)
-            dependency_name_input.new({
-                on_submit = function(dependency_name)
-                    utils.loading.start("|  Installing " .. dependency_name .. " package")
-
-                    utils.job({
-                        command = utils.get_command.install(selected_dependency_type, dependency_name),
-                        on_success = function()
-                            M.__reload()
-
-                            utils.loading.stop()
-                        end,
-                        on_error = function()
-                            utils.loading.stop()
-                        end,
-                    })
-                end,
-            })
-
-            dependency_name_input.open()
-        end,
-    })
-
-    dependency_type_select.open()
 end
 
 return M
