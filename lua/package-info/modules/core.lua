@@ -296,48 +296,65 @@ end
 M.delete = function()
     local package_name = M.__get_package_name_from_current_line()
 
-    if package_name then
-        utils.loading.start("|  Deleting " .. package_name .. " package")
-
-        prompt.new({
-            command = utils.get_command.delete(package_name),
-            title = " Delete [" .. package_name .. "] Package ",
-            on_submit = function()
-                M.__reload()
-
-                utils.loading.stop()
-            end,
-            on_cancel = function()
-                utils.loading.stop()
-            end,
-            on_error = function()
-                M.__reload()
-
-                utils.loading.stop()
-            end,
-        })
-
-        prompt.open({
-            on_error = function()
-                utils.loading.stop()
-            end,
-        })
+    if package_name == nil then
+        return
     end
+
+    utils.loading.start("|  Deleting " .. package_name .. " package")
+
+    prompt.new({
+        title = " Delete [" .. package_name .. "] Package ",
+        on_submit = function()
+            job({
+                json = false,
+                command = utils.get_command.delete(package_name),
+                on_success = function()
+                    M.__reload()
+
+                    utils.loading.stop()
+                end,
+                on_error = function()
+                    utils.loading.stop()
+                end,
+            })
+        end,
+        on_cancel = function()
+            utils.loading.stop()
+        end,
+    })
+
+    prompt.open({
+        on_error = function()
+            utils.loading.stop()
+        end,
+    })
 end
 
 M.update = function()
     local package_name = M.__get_package_name_from_current_line()
 
+    if package_name == nil then
+        return
+    end
+
     if package_name then
         utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
         prompt.new({
-            command = utils.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             on_submit = function()
-                M.__reload()
+                job({
+                    json = false,
+                    command = utils.get_command.update(package_name),
+                    on_success = function()
+                        M.__reload()
 
-                utils.loading.stop()
+                        utils.loading.stop()
+                    end,
+                    on_error = function()
+                        utils.loading.stop()
+                    end,
+                })
             end,
             on_cancel = function()
                 utils.loading.stop()

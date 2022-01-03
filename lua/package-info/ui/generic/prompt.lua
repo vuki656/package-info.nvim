@@ -1,6 +1,5 @@
 local Menu = require("nui.menu")
 
-local job = require("package-info.utils.job")
 local safe_call = require("package-info.utils.safe-call")
 local logger = require("package-info.logger")
 
@@ -58,21 +57,11 @@ M.new = function(props)
             submit = { "<CR>", "<Space>" },
         },
         on_submit = function(answer)
-            -- TODO: ui shouldn't be concerned with the business logic
             if answer.id ~= ACTIONS.CONFIRM.id then
                 props.on_cancel()
             end
 
-            job({
-                json = false,
-                command = props.command,
-                on_success = function()
-                    props.on_submit()
-                end,
-                on_error = function()
-                    props.on_error()
-                end,
-            })
+            props.on_submit()
         end,
         on_close = function()
             props.on_cancel()
