@@ -5,13 +5,12 @@
 local config = require("package-info.config")
 local utils = require("package-info.utils")
 
-local core = require("package-info.modules.core")
-
 local delete = require("package-info.actions.delete")
 local install = require("package-info.actions.install")
 local hide = require("package-info.actions.hide")
 local change_version = require("package-info.actions.change-version")
 local update = require("package-info.actions.update")
+local show = require("package-info.actions.show")
 
 local M = {}
 
@@ -20,7 +19,7 @@ M.setup = function(options)
 end
 
 M.show = function(options)
-    core.show(options)
+    show(options)
 end
 
 M.hide = function()

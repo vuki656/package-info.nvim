@@ -1,5 +1,3 @@
--- TODO: extract each command call to separate file
-
 local json_parser
 if vim.json then
     json_parser = vim.json
@@ -9,7 +7,6 @@ end
 
 local constants = require("package-info.constants")
 local config = require("package-info.config")
-local utils = require("package-info.utils")
 local logger = require("package-info.logger")
 
 local M = {
@@ -247,41 +244,6 @@ M.load_plugin = function()
     end
 
     M.__parse_buffer()
-end
-
-M.show = function(options)
-    if not M.__is_valid_package_json() then
-        return
-    end
-
-    options = options or { force = false }
-
-    if config.state.last_run.should_skip() and options.force == false then
-        M.__display_virtual_text()
-        M.__reload()
-
-        return
-    end
-
-    utils.loading.start("|  Fetching latest versions")
-
-    utils.job({
-        json = true,
-        command = utils.get_command.outdated(),
-        ignore_error = true,
-        on_success = function(outdated_dependencies)
-            M.__parse_buffer()
-            M.__display_virtual_text(outdated_dependencies)
-            M.__reload()
-
-            utils.loading.stop()
-
-            config.state.last_run.update()
-        end,
-        on_error = function()
-            utils.loading.stop()
-        end,
-    })
 end
 
 return M
