@@ -1,5 +1,4 @@
--- TODO : extract each command call to separate file
--- TODO: rename package_name to dependency_name
+-- TODO: extract each command call to separate file
 
 local Menu = require("nui.menu")
 
@@ -104,7 +103,7 @@ end
 
 --- Gets the package name from the given buffer line
 -- @param line - string representing a buffer line
-M.__get_package_name_from_line = function(line)
+M.__get_dependency_name_from_line = function(line)
     local value = {}
 
     -- Tries to extract name and version
@@ -116,7 +115,7 @@ M.__get_package_name_from_line = function(line)
         return nil
     end
 
-    local is_valid_name = M.__is_valid_package_name(value[1])
+    local is_valid_name = M.__is_valid_dependency_name(value[1])
     local is_valid_version = M.__is_valid_package_version(value[2])
 
     if is_valid_name and is_valid_version then
@@ -140,9 +139,9 @@ M.__get_package_version_from_line = function(line)
 end
 
 --- Verifies that the given package is on the package list
--- @param package_name - string package to check
-M.__is_valid_package_name = function(package_name)
-    if M.__dependencies[package_name] then
+-- @param dependency_name - string package to check
+M.__is_valid_dependency_name = function(dependency_name)
+    if M.__dependencies[dependency_name] then
         return true
     else
         return false
@@ -150,14 +149,14 @@ M.__is_valid_package_name = function(package_name)
 end
 
 --- Gets package from current line
-M.__get_package_name_from_current_line = function()
+M.__get_dependency_name_from_current_line = function()
     local current_line = vim.fn.getline(".")
 
-    local package_name = M.__get_package_name_from_line(current_line)
-    local is_valid = M.__is_valid_package_name(package_name)
+    local dependency_name = M.__get_dependency_name_from_line(current_line)
+    local is_valid = M.__is_valid_dependency_name(dependency_name)
 
     if is_valid then
-        return package_name
+        return dependency_name
     else
         logger.error("No valid package on current line")
 
@@ -199,11 +198,11 @@ end
 
 --- Draws virtual text on given buffer line
 -- @param outdated_dependencies - table of outdated dependancies
-M.__set_virtual_text = function(outdated_dependencies, line_number, package_name)
+M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_name)
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
         icon = config.options.icons.style.up_to_date,
-        text = M.__dependencies[package_name].version.current,
+        text = M.__dependencies[dependency_name].version.current,
     }
 
     if config.options.hide_up_to_date then
@@ -211,12 +210,12 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, package_name
         package_metadata.icon = ""
     end
 
-    if outdated_dependencies[package_name] then
-        if outdated_dependencies[package_name].latest ~= M.__dependencies[package_name].version.current then
+    if outdated_dependencies[dependency_name] then
+        if outdated_dependencies[dependency_name].latest ~= M.__dependencies[dependency_name].version.current then
             package_metadata = {
                 group = constants.HIGHLIGHT_GROUPS.outdated,
                 icon = config.options.icons.style.outdated,
-                text = M.__clean_version(outdated_dependencies[package_name].latest),
+                text = M.__clean_version(outdated_dependencies[dependency_name].latest),
             }
         end
     end
@@ -238,10 +237,10 @@ M.__display_virtual_text = function(outdated_dependencies)
     outdated_dependencies = outdated_dependencies or M.__outdated_dependencies
 
     for line_number, line_content in ipairs(M.__buffer) do
-        local package_name = M.__get_package_name_from_line(line_content)
+        local dependency_name = M.__get_dependency_name_from_line(line_content)
 
-        if package_name then
-            M.__set_virtual_text(outdated_dependencies, line_number, package_name)
+        if dependency_name then
+            M.__set_virtual_text(outdated_dependencies, line_number, dependency_name)
         end
     end
 
@@ -294,20 +293,20 @@ M.show = function(options)
 end
 
 M.delete = function()
-    local package_name = M.__get_package_name_from_current_line()
+    local dependency_name = M.__get_dependency_name_from_current_line()
 
-    if package_name == nil then
+    if dependency_name == nil then
         return
     end
 
     prompt.new({
-        title = " Delete [" .. package_name .. "] Package ",
+        title = " Delete [" .. dependency_name .. "] Package ",
         on_submit = function()
-            utils.loading.start("|  Deleting " .. package_name .. " package")
+            utils.loading.start("|  Deleting " .. dependency_name .. " package")
 
             job({
                 json = false,
-                command = utils.get_command.delete(package_name),
+                command = utils.get_command.delete(dependency_name),
                 on_success = function()
                     M.__reload()
 
@@ -331,20 +330,20 @@ M.delete = function()
 end
 
 M.update = function()
-    local package_name = M.__get_package_name_from_current_line()
+    local dependency_name = M.__get_dependency_name_from_current_line()
 
-    if package_name == nil then
+    if dependency_name == nil then
         return
     end
 
     prompt.new({
-        title = " Update [" .. package_name .. "] Package ",
+        title = " Update [" .. dependency_name .. "] Package ",
         on_submit = function()
-            utils.loading.start("| ﯁ Updating " .. package_name .. " package")
+            utils.loading.start("| ﯁ Updating " .. dependency_name .. " package")
 
             job({
                 json = false,
-                command = utils.get_command.update(package_name),
+                command = utils.get_command.update(dependency_name),
                 on_success = function()
                     M.__reload()
 
@@ -402,13 +401,13 @@ M.install = function()
 end
 
 M.change_version = function()
-    local package_name = M.__get_package_name_from_current_line()
+    local dependency_name = M.__get_dependency_name_from_current_line()
 
-    utils.loading.start("|  Fetching " .. package_name .. " versions")
+    utils.loading.start("|  Fetching " .. dependency_name .. " versions")
 
     job({
         json = true,
-        command = utils.get_command.version_list(package_name),
+        command = utils.get_command.version_list(dependency_name),
         on_success = function(versions)
             utils.loading.stop()
 
@@ -429,9 +428,9 @@ M.change_version = function()
             dependency_version_select.new({
                 version_list = version_list,
                 on_submit = function(selected_version)
-                    local command = utils.get_command.change_version(package_name, selected_version)
+                    local command = utils.get_command.change_version(dependency_name, selected_version)
 
-                    utils.loading.start("|  Installing " .. package_name .. "@" .. selected_version)
+                    utils.loading.start("|  Installing " .. dependency_name .. "@" .. selected_version)
 
                     utils.job({
                         command = command,
