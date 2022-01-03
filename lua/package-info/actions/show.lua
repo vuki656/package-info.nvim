@@ -1,5 +1,6 @@
 local utils = require("package-info.utils")
 local config = require("package-info.config")
+local job = require("package-info.utils.job")
 
 local core = require("package-info.core")
 
@@ -19,7 +20,7 @@ return function(options)
 
     utils.loading.start("|  Fetching latest versions")
 
-    utils.job({
+    job({
         json = true,
         command = utils.get_command.outdated(),
         ignore_error = true,

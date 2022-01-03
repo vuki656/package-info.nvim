@@ -40,7 +40,7 @@ return function()
 
                     utils.loading.start("|  Installing " .. dependency_name .. "@" .. selected_version)
 
-                    utils.job({
+                    job({
                         command = command,
                         on_success = function()
                             core.__reload()
