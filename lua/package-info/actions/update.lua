@@ -2,7 +2,7 @@ local utils = require("package-info.utils")
 local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
 
-local core = require("package-info.modules.core")
+local core = require("package-info.core")
 
 return function()
     local dependency_name = core.__get_dependency_name_from_current_line()

@@ -6,7 +6,7 @@ local job = require("package-info.utils.job")
 
 local dependency_version_select = require("package-info.ui.dependency-version-select")
 
-local core = require("package-info.modules.core")
+local core = require("package-info.core")
 
 return function()
     local dependency_name = core.__get_dependency_name_from_current_line()

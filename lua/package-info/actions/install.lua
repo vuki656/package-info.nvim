@@ -3,7 +3,7 @@ local utils = require("package-info.utils")
 local dependency_type_select = require("package-info.ui.dependency-type-select")
 local dependency_name_input = require("package-info.ui.dependency-name-input")
 
-local core = require("package-info.modules.core")
+local core = require("package-info.core")
 
 function display_dependency_name_input(selected_dependency_type)
     dependency_name_input.new({

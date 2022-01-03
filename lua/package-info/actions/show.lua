@@ -1,7 +1,7 @@
 local utils = require("package-info.utils")
 local config = require("package-info.config")
 
-local core = require("package-info.modules.core")
+local core = require("package-info.core")
 
 return function(options)
     if not core.__is_valid_package_json() then
