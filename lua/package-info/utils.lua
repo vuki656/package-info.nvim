@@ -1,3 +1,4 @@
+-- TODO: split into multiple files
 local json_parser
 
 if vim.json then

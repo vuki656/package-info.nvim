@@ -6,6 +6,8 @@ local utils = require("package-info.utils")
 
 local core = require("package-info.modules.core")
 
+local delete = require("package-info.actions.delete")
+
 local M = {}
 
 M.setup = function(options)
@@ -21,7 +23,7 @@ M.hide = function()
 end
 
 M.delete = function()
-    core.delete()
+    delete()
 end
 
 M.update = function()
