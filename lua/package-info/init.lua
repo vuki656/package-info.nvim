@@ -7,6 +7,7 @@ local utils = require("package-info.utils")
 local core = require("package-info.modules.core")
 
 local delete = require("package-info.actions.delete")
+local hide = require("package-info.actions.hide")
 
 local M = {}
 
@@ -19,7 +20,7 @@ M.show = function(options)
 end
 
 M.hide = function()
-    core.hide()
+    hide()
 end
 
 M.delete = function()

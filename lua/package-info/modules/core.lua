@@ -417,10 +417,5 @@ M.change_version = function()
     })
 end
 
-M.hide = function()
-    M.__clear_virtual_text()
-
-    config.state.displayed = false
-end
 
 return M
