@@ -12,6 +12,7 @@ local config = require("package-info.config")
 
 M = {}
 
+-- TODO: assign id to loading instance
 --- Manages loading animation state
 M.loading = {
     animation = {

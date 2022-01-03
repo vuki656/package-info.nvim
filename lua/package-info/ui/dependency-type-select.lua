@@ -1,54 +1,58 @@
 local Menu = require("nui.menu")
 
-local job = require("package-info.utils.job")
-local safe_call = require("package-info.utils.safe-call")
+local CONSTANTS = require("package-info.constants")
+
 local logger = require("package-info.logger")
+local safe_call = require("package-info.utils.safe-call")
 
 local ACTIONS = {
-    CONFIRM = {
-        id = 1,
-        text = "Confirm",
+    PRODUCTION = {
+        text = "Production",
+        id = CONSTANTS.DEPENDENCY_TYPE.production,
+    },
+    DEVELOPMENT = {
+        text = "Development",
+        id = CONSTANTS.DEPENDENCY_TYPE.development,
     },
     CANCEL = {
-        id = 2,
         text = "Cancel",
+        id = 3,
     },
 }
 
 local M = {}
 
---- Spawn a new generic confirm/cancel prompt
--- @param props.title: string - displayed at the top of the prompt
--- @param props.command: string - command executed on confirm select
--- @param props.on_submit: function - executed after successful command execution
--- @param props.on_cancel: function - executed if user selects PROMPT_ACTIONS.cancel
--- @param props.on_error: function - executed if command execution throws an error
+-- TODO : see if the style config for components can be shared
+--- Spawn a new dependency type select prompt
+-- @param props.on_submit: function - executed after selection
+-- @param props.on_cancel?: function - executed if user selects ACTIONS.cancel
 M.new = function(props)
     local style = {
         relative = "cursor",
-        border = {
-            style = "rounded",
-            highlight = "Normal",
-            text = {
-                top = props.title,
-                top_align = "left",
-            },
-        },
         position = {
             row = 0,
             col = 0,
         },
         size = {
             width = 50,
-            height = 2,
+            height = 3,
         },
         highlight = "Normal:Normal",
         focusable = true,
+        border = {
+            style = "rounded",
+            highlight = "Normal",
+            text = {
+                top = " Select Dependency Type ",
+                top_align = "left",
+            },
+        },
     }
 
     M.instance = Menu(style, {
         lines = {
-            Menu.item(ACTIONS.CONFIRM),
+            Menu.item(ACTIONS.PRODUCTION),
+            Menu.item(ACTIONS.DEVELOPMENT),
             Menu.item(ACTIONS.CANCEL),
         },
         keymap = {
@@ -58,24 +62,12 @@ M.new = function(props)
             submit = { "<CR>", "<Space>" },
         },
         on_submit = function(answer)
-            -- TODO: ui shouldn't be concerned with the business logic
-            if answer.id ~= ACTIONS.CONFIRM.id then
-                props.on_cancel()
+            if answer.id == ACTIONS.DEVELOPMENT.id or answer.id == ACTIONS.PRODUCTION.id then
+                props.on_submit(answer.id)
             end
-
-            job({
-                json = false,
-                command = props.command,
-                on_success = function()
-                    props.on_submit()
-                end,
-                on_error = function()
-                    props.on_error()
-                end,
-            })
         end,
         on_close = function()
-            props.on_cancel()
+            safe_call(props.on_cancel)
         end,
     })
 end
@@ -87,7 +79,7 @@ M.open = function(props)
     props = props or {}
 
     if M.instance == nil then
-        logger.error("Failed to open prompt. Not spawned properly")
+        logger.error("Failed to open dependency type select prompt. Not spawned properly")
 
         safe_call(props.on_error)
 
@@ -106,7 +98,7 @@ M.close = function(props)
     props = props or {}
 
     if M.instance == nil then
-        logger.error("Failed to close prompt. Not spawned properly")
+        logger.error("Failed to close dependency type select prompt. Not spawned properly")
 
         safe_call(props.on_error)
 

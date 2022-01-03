@@ -1,4 +1,5 @@
 -- TODO : extract each command call to separate file
+-- TODO: rename package_name to dependency_name
 
 local Menu = require("nui.menu")
 
@@ -12,10 +13,13 @@ end
 local constants = require("package-info.constants")
 local config = require("package-info.config")
 local utils = require("package-info.utils")
-local ui = require("package-info.ui")
 local logger = require("package-info.logger")
 
-local Prompt = require("package-info.ui.generic.prompt")
+local prompt = require("package-info.ui.generic.prompt")
+local dependency_type_select = require("package-info.ui.dependency-type-select")
+local dependency_name_input = require("package-info.ui.dependency-name-input")
+local dependency_version_select = require("package-info.ui.dependency-version-select")
+local job = require("package-info.utils.job")
 
 local M = {
     __dependencies = {},
@@ -295,7 +299,7 @@ M.delete = function()
     if package_name then
         utils.loading.start("|  Deleting " .. package_name .. " package")
 
-        Prompt.New({
+        prompt.new({
             command = utils.get_command.delete(package_name),
             title = " Delete [" .. package_name .. "] Package ",
             on_submit = function()
@@ -313,7 +317,7 @@ M.delete = function()
             end,
         })
 
-        Prompt.Open({
+        prompt.open({
             on_error = function()
                 utils.loading.stop()
             end,
@@ -327,7 +331,7 @@ M.update = function()
     if package_name then
         utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
-        Prompt.New({
+        prompt.new({
             command = utils.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             on_submit = function()
@@ -345,7 +349,7 @@ M.update = function()
             end,
         })
 
-        Prompt.Open({
+        prompt.open({
             on_error = function()
                 utils.loading.stop()
             end,
@@ -353,70 +357,87 @@ M.update = function()
     end
 end
 
+-- TODO: this should be split up into two separate entities
 M.install = function()
-    ui.display_install_menu(function(dependency_type)
-        ui.display_install_input(function(dependency_name)
-            if dependency_name == "" then
-                logger.error("No package specified")
+    dependency_type_select.new({
+        on_submit = function(selected_dependency_type)
+            dependency_name_input.new({
+                on_submit = function(dependency_name)
+                    utils.loading.start("|  Installing " .. dependency_name .. " package")
 
-                return
-            end
+                    utils.job({
+                        command = utils.get_command.install(selected_dependency_type, dependency_name),
+                        on_success = function()
+                            M.__reload()
 
-            utils.loading.start("|  Installing " .. dependency_name .. " package")
-
-            utils.job({
-                command = utils.get_command.install(dependency_type, dependency_name),
-                on_success = function()
-                    M.__reload()
-
-                    utils.loading.stop()
-                end,
-                on_error = function()
-                    utils.loading.stop()
+                            utils.loading.stop()
+                        end,
+                        on_error = function()
+                            utils.loading.stop()
+                        end,
+                    })
                 end,
             })
-        end)
-    end)
+
+            dependency_name_input.open()
+        end,
+    })
+
+    dependency_type_select.open()
 end
 
 M.change_version = function()
     local package_name = M.__get_package_name_from_current_line()
 
-    if package_name then
-        utils.loading.start("|  Fetching " .. package_name .. " versions")
+    utils.loading.start("|  Fetching " .. package_name .. " versions")
 
-        utils.job({
-            json = true,
-            command = utils.get_command.version_list(package_name),
-            on_success = function(versions)
-                utils.loading.stop()
+    job({
+        json = true,
+        command = utils.get_command.version_list(package_name),
+        on_success = function(versions)
+            utils.loading.stop()
 
-                local menu_items = {}
+            local version_list = {}
 
-                -- Iterate versions from the end to show the latest versions first
-                for index = #versions, 1, -1 do
-                    local version = versions[index]
+            -- Iterate versions from the end to show the latest versions first
+            for index = #versions, 1, -1 do
+                local version = versions[index]
 
-                    --  Skip unstable version e.g next@11.1.0-canary
-                    if config.options.hide_unstable_versions and string.match(version, "-") then
-                    else
-                        table.insert(menu_items, Menu.item(version))
-                    end
+                -- TODO: cleanup stupid if else logic
+                --  Skip unstable version e.g next@11.1.0-canary
+                if config.options.hide_unstable_versions and string.match(version, "-") then
+                else
+                    table.insert(version_list, Menu.item(version))
                 end
+            end
 
-                ui.display_change_version_menu({
-                    package_name = package_name,
-                    menu_items = menu_items,
-                    on_success = function()
-                        M.__reload()
-                    end,
-                })
-            end,
-            on_error = function()
-                utils.loading.stop()
-            end,
-        })
-    end
+            dependency_version_select.new({
+                version_list = version_list,
+                on_submit = function(selected_version)
+                    local command = utils.get_command.change_version(package_name, selected_version)
+
+                    utils.loading.start("|  Installing " .. package_name .. "@" .. selected_version)
+
+                    utils.job({
+                        command = command,
+                        on_success = function()
+                            M.__reload()
+
+                            utils.loading.stop()
+                        end,
+                        on_error = function()
+                            utils.loading.stop()
+                        end,
+                    })
+                end,
+            })
+
+            dependency_version_select.open()
+        end,
+        on_error = function()
+            utils.loading.stop()
+        end,
+    })
 end
 
 M.hide = function()
