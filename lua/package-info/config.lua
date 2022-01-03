@@ -71,17 +71,26 @@ M.__detect_package_manager = function()
 
     if package_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.npm
+
         io.close(package_lock)
+
+        return
     end
 
     if yarn_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
+
         io.close(yarn_lock)
+
+        return
     end
 
     if pnpm_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
+
         io.close(pnpm_lock)
+
+        return
     end
 end
 
