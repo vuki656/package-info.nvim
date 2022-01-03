@@ -8,6 +8,7 @@ local core = require("package-info.modules.core")
 
 local delete = require("package-info.actions.delete")
 local hide = require("package-info.actions.hide")
+local change_version = require("package-info.actions.change-version")
 
 local M = {}
 
@@ -36,7 +37,7 @@ M.install = function()
 end
 
 M.change_version = function()
-    core.change_version()
+    change_version()
 end
 
 M.get_status = function()
