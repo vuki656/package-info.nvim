@@ -1,6 +1,7 @@
 local prompt = require("package-info.ui.generic.prompt")
 local utils = require("package-info.utils")
 local job = require("package-info.utils.job")
+local loading = require("package-info.ui.generic.loading-status")
 
 local core = require("package-info.core")
 
@@ -11,10 +12,12 @@ return function()
         return
     end
 
+    local loading_id = loading.new("|  Deleting " .. dependency_name .. " package")
+
     prompt.new({
         title = " Delete [" .. dependency_name .. "] Package ",
         on_submit = function()
-            utils.loading.start("|  Deleting " .. dependency_name .. " package")
+            loading.start(loading_id)
 
             job({
                 json = false,
@@ -22,21 +25,21 @@ return function()
                 on_success = function()
                     core.__reload()
 
-                    utils.loading.stop()
+                    loading.stop(loading_id)
                 end,
                 on_error = function()
-                    utils.loading.stop()
+                    loading.stop(loading_id)
                 end,
             })
         end,
         on_cancel = function()
-            utils.loading.stop()
+            loading.stop(loading_id)
         end,
     })
 
     prompt.open({
         on_error = function()
-            utils.loading.stop()
+            loading.stop(loading_id)
         end,
     })
 end

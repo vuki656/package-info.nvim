@@ -3,7 +3,7 @@
 -- TODO: virtual text background shouldn't be manually set
 
 local config = require("package-info.config")
-local utils = require("package-info.utils")
+local loading = require("package-info.ui.generic.loading-status")
 
 local delete = require("package-info.actions.delete")
 local install = require("package-info.actions.install")
@@ -43,7 +43,7 @@ M.change_version = function()
 end
 
 M.get_status = function()
-    return utils.loading.fetch()
+    return loading.get()
 end
 
 return M
