@@ -1,4 +1,4 @@
-local utils = require("package-info.utils")
+local commands = require("package-info.commands")
 local core = require("package-info.core")
 local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
@@ -19,33 +19,33 @@ return function()
         on_submit = function()
             job({
                 json = false,
-                command = utils.get_command.update(dependency_name),
+                command = commands.get_update(dependency_name),
                 on_start = function()
                     loading.start(id)
                 end,
                 on_success = function()
                     core.__reload()
 
-                    loading.start(id)
+                    loading.stop(id)
                 end,
                 on_error = function()
-                    loading.start(id)
+                    loading.stop(id)
                 end,
             })
         end,
         on_cancel = function()
-            utils.loading.stop()
+            loading.stop(id)
         end,
         on_error = function()
             core.__reload()
 
-            utils.loading.stop()
+            loading.stop(id)
         end,
     })
 
     prompt.open({
         on_error = function()
-            utils.loading.stop()
+            loading.stop(id)
         end,
     })
 end

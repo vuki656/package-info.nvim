@@ -2,7 +2,7 @@ local Menu = require("nui.menu")
 
 local config = require("package-info.config")
 local loading = require("package-info.ui.generic.loading-status")
-local utils = require("package-info.utils")
+local commands = require("package-info.commands")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
 
@@ -16,7 +16,7 @@ function display_dependency_version_select(version_list, dependency_name)
             local id = loading.new("|  Installing " .. dependency_name .. "@" .. selected_version)
 
             job({
-                command = utils.get_command.change_version(dependency_name, selected_version),
+                command = commands.get_change_version(dependency_name, selected_version),
                 on_start = function()
                     loading.start(id)
                 end,
@@ -61,7 +61,7 @@ return function()
 
     job({
         json = true,
-        command = utils.get_command.version_list(dependency_name),
+        command = commands.get_version_list(dependency_name),
         on_start = function()
             loading.start(id)
         end,

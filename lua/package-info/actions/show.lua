@@ -1,4 +1,4 @@
-local utils = require("package-info.utils")
+local commands = require("package-info.commands")
 local config = require("package-info.config")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
@@ -23,7 +23,7 @@ return function(options)
 
     job({
         json = true,
-        command = utils.get_command.outdated(),
+        command = commands.get_outdated(),
         ignore_error = true,
         on_start = function()
             loading.start(id)

@@ -1,4 +1,4 @@
-local utils = require("package-info.utils")
+local commands = require("package-info.commands")
 local core = require("package-info.core")
 local job = require("package-info.utils.job")
 
@@ -12,7 +12,7 @@ function display_dependency_name_input(selected_dependency_type)
             local id = loading.new("|  Installing " .. dependency_name .. " package")
 
             job({
-                command = utils.get_command.install(selected_dependency_type, dependency_name),
+                command = commands.get_install(selected_dependency_type, dependency_name),
                 on_start = function()
                     loading.start(id)
                 end,

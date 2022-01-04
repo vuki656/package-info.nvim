@@ -1,5 +1,5 @@
 local prompt = require("package-info.ui.generic.prompt")
-local utils = require("package-info.utils")
+local commands = require("package-info.commands")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
 
@@ -19,7 +19,7 @@ return function()
         on_submit = function()
             job({
                 json = false,
-                command = utils.get_command.delete(dependency_name),
+                command = commands.get_delete(dependency_name),
                 on_start = function()
                     loading.start(id)
                 end,
