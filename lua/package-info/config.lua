@@ -105,10 +105,12 @@ end
 --- Register autocommand for loading plugin
 M.__register_plugin_loading = function()
     vim.api.nvim_exec(
-        [[augroup package-info-autogroup
-             autocmd!
-             autocmd BufEnter * lua require("package-info.core").load_plugin()
-         augroup end]],
+        [[
+            augroup package-info-autogroup
+                 autocmd!
+                 autocmd BufEnter * lua require("package-info.core").load_plugin()
+            augroup end
+        ]],
         false
     )
 end
@@ -117,10 +119,12 @@ end
 M.__register_autostart = function()
     if M.options.autostart then
         vim.api.nvim_exec(
-            [[augroup package-info-autogroup
-                autocmd!
-                autocmd BufEnter * lua require("package-info").show()
-            augroup end]],
+            [[
+                augroup package-info-autogroup
+                    autocmd!
+                    autocmd BufEnter * lua require("package-info").show()
+                augroup end
+            ]],
             false
         )
     end
