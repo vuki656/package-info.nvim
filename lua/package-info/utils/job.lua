@@ -8,6 +8,7 @@ else
 end
 
 -- TODO: cleanup
+-- TODO: doesn't properly call on_exit if job fails and something breaks
 --- Runs an async job
 -- @param options.command - string command to run
 -- @param options.json - boolean if output should be parsed as json

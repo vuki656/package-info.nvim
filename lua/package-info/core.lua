@@ -8,6 +8,7 @@ else
 end
 
 local constants = require("package-info.constants")
+local state = require("package-info.state")
 local config = require("package-info.config")
 local logger = require("package-info.logger")
 
@@ -26,7 +27,7 @@ M.__is_valid_package_json = function()
     local is_valid = is_package_json and buffer_size > 0
 
     if is_valid then
-        config.state.buffer.save()
+        state.buffer.save()
     end
 
     return is_valid
@@ -43,7 +44,7 @@ end
 
 --- Loads current buffer into state
 M.__parse_buffer = function()
-    local buffer_raw_value = vim.api.nvim_buf_get_lines(config.state.buffer.id, 0, 0 - 1, false)
+    local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = json_parser.decode(buffer_string_value)
 
@@ -157,8 +158,8 @@ end
 
 --- Clears package-info virtual text from current buffer
 M.__clear_virtual_text = function()
-    if config.state.displayed then
-        vim.api.nvim_buf_clear_namespace(config.state.buffer.id, config.namespace.id, 0, -1)
+    if state.displayed then
+        vim.api.nvim_buf_clear_namespace(state.buffer.id, config.namespace, 0, -1)
     end
 end
 
@@ -166,7 +167,7 @@ end
 M.__reload_buffer = function()
     local current_buffer_number = vim.fn.bufnr()
 
-    if current_buffer_number == config.state.buffer.id then
+    if current_buffer_number == state.buffer.id then
         local view = vim.fn.winsaveview()
         vim.cmd(":e")
         vim.fn.winrestview(view)
@@ -179,7 +180,7 @@ M.__reload = function()
 
     M.__parse_buffer()
 
-    if config.state.displayed then
+    if state.displayed then
         M.__clear_virtual_text()
         M.__display_virtual_text()
     end
@@ -192,11 +193,11 @@ end
 M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_name)
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
-        icon = config.options.icons.style.up_to_date,
+        icon = config.icons.style.up_to_date,
         text = M.__dependencies[dependency_name].version.current,
     }
 
-    if config.options.hide_up_to_date then
+    if state.hide_up_to_date then
         package_metadata.text = ""
         package_metadata.icon = ""
     end
@@ -205,17 +206,17 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
         if outdated_dependencies[dependency_name].latest ~= M.__dependencies[dependency_name].version.current then
             package_metadata = {
                 group = constants.HIGHLIGHT_GROUPS.outdated,
-                icon = config.options.icons.style.outdated,
+                icon = config.icons.style.outdated,
                 text = M.__clean_version(outdated_dependencies[dependency_name].latest),
             }
         end
     end
 
-    if not config.options.icons.enable then
+    if not config.icons.enable then
         package_metadata.icon = ""
     end
 
-    vim.api.nvim_buf_set_extmark(config.state.buffer.id, config.namespace.id, line_number - 1, 0, {
+    vim.api.nvim_buf_set_extmark(state.buffer.id, config.namespace, line_number - 1, 0, {
         virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
         virt_text_pos = "eol",
         priority = 200,
@@ -237,7 +238,7 @@ M.__display_virtual_text = function(outdated_dependencies)
 
     M.__outdated_dependencies = outdated_dependencies
 
-    config.state.displayed = true
+    state.displayed = true
 end
 
 M.load_plugin = function()

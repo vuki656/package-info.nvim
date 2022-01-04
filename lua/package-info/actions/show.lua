@@ -1,10 +1,12 @@
 local commands = require("package-info.commands")
-local config = require("package-info.config")
+local state = require("package-info.state")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
 
 local loading = require("package-info.ui.generic.loading-status")
 
+-- TODO: check if this is skipped if its already showed
+-- FIXME: behaves stupid with autostart on
 return function(options)
     if not core.__is_valid_package_json() then
         return
@@ -12,7 +14,7 @@ return function(options)
 
     options = options or { force = false }
 
-    if config.state.last_run.should_skip() and options.force == false then
+    if state.last_run.should_skip() and options.force == false then
         core.__display_virtual_text()
         core.__reload()
 
@@ -35,7 +37,7 @@ return function(options)
 
             loading.stop(id)
 
-            config.state.last_run.update()
+            state.last_run.update()
         end,
         on_error = function()
             loading.stop(id)

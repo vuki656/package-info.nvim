@@ -1,9 +1,9 @@
-local config = require("package-info.config")
+local state = require("package-info.state")
 
 local core = require("package-info.core")
 
 return function()
     core.__clear_virtual_text()
 
-    config.state.displayed = false
+    state.state.displayed = false
 end

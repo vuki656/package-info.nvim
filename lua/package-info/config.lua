@@ -1,15 +1,15 @@
 -- DESCRIPTION: sets up the user given config, and plugin config
 
 local constants = require("package-info.constants")
+local register_highlight_group = require("package-info.utils.register-highlight-group")
+local register_autocmd = require("package-info.utils.register-autocmd")
 
 ----------------------------------------------------------------------------
 ---------------------------------- MODULE ----------------------------------
 ----------------------------------------------------------------------------
 
-local M = {}
-
 --- Default options
-M.options = {
+local M = {
     colors = {
         up_to_date = "#3C4048",
         outdated = "#d19a66",
@@ -22,6 +22,7 @@ M.options = {
         },
     },
     autostart = true,
+    namespace = "",
     package_manager = constants.PACKAGE_MANAGERS.yarn,
     hide_up_to_date = false,
     hide_unstable_versions = false,
@@ -31,62 +32,38 @@ M.options = {
     },
 }
 
-M.namespace = {
-    id = "",
-    register = function()
-        M.namespace.id = vim.api.nvim_create_namespace("package-ui")
-    end,
-}
-
-M.state = {
-    buffer = {
-        id = nil,
-        save = function()
-            M.state.buffer.id = vim.fn.bufnr()
-        end,
-    },
-    last_run = {
-        time = nil,
-        update = function()
-            M.state.last_run.time = os.time()
-        end,
-        should_skip = function()
-            local hour_in_seconds = 3600
-
-            if M.state.last_run.time == nil then
-                return false
-            end
-
-            return os.time() < M.state.last_run.time + hour_in_seconds
-        end,
-    },
-    displayed = false,
-}
+--- Register namespace for usage for virtual text
+M.__register_namespace = function()
+    M.namespace = vim.api.nvim_create_namespace("package-info")
+end
 
 -- Check if yarn.lock or package-lock.json exist and set package manager accordingly
-M.__detect_package_manager = function()
-    local package_lock = io.open("package-lock.json", "r")
+M.__register_package_manager = function()
+    -- TODO: do we need to detect yarn if its the default
     local yarn_lock = io.open("yarn.lock", "r")
-    local pnpm_lock = io.open("pnpm-lock.yaml", "r")
-
-    if package_lock ~= nil then
-        M.options.package_manager = constants.PACKAGE_MANAGERS.npm
-
-        io.close(package_lock)
-
-        return
-    end
 
     if yarn_lock ~= nil then
-        M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
+        M.package_manager = constants.PACKAGE_MANAGERS.yarn
 
         io.close(yarn_lock)
 
         return
     end
 
+    local package_lock = io.open("package-lock.json", "r")
+
+    if package_lock ~= nil then
+        M.package_manager = constants.PACKAGE_MANAGERS.npm
+
+        io.close(package_lock)
+
+        return
+    end
+
+    local pnpm_lock = io.open("pnpm-lock.yaml", "r")
+
     if pnpm_lock ~= nil then
-        M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
+        M.package_manager = constants.PACKAGE_MANAGERS.pnpm
 
         io.close(pnpm_lock)
 
@@ -95,74 +72,48 @@ M.__detect_package_manager = function()
 end
 
 --- Clone options and replace empty ones with default ones
--- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
+-- @param user_options - all the options user can provide in the plugin config
 M.__register_user_options = function(user_options)
-    M.__detect_package_manager()
-
-    M.options = vim.tbl_deep_extend("force", {}, M.options, user_options or {})
+    M = vim.tbl_deep_extend("force", {}, M, user_options or {})
 end
 
 --- Register autocommand for loading plugin
 M.__register_plugin_loading = function()
-    vim.api.nvim_exec(
-        [[
-            augroup package-info-autogroup
-                 autocmd!
-                 autocmd BufEnter * lua require("package-info.core").load_plugin()
-            augroup end
-        ]],
-        false
-    )
+    register_autocmd("BufEnter", "lua require('package-info.core').load_plugin()")
 end
 
 --- Register autocommand for auto-starting plugin
 M.__register_autostart = function()
-    if M.options.autostart then
-        vim.api.nvim_exec(
-            [[
-                augroup package-info-autogroup
-                    autocmd!
-                    autocmd BufEnter * lua require("package-info").show()
-                augroup end
-            ]],
-            false
-        )
+    if M.autostart then
+        register_autocmd("BufEnter", "lua require('package-info').show()")
     end
 end
 
 --- If terminal doesn't support true color, fallback to 256 config
 M.__register_256color_support = function()
-    if not vim.o.termguicolors then
-        vim.cmd([[
-          augroup package-info-autogroup
-            autocmd!
-            autocmd ColorScheme * lua require('package-info.config').__register_highlight_groups()
-          augroup END
-        ]])
-
-        M.options.colors = {
-            up_to_date = "237",
-            outdated = "173",
-        }
-
-        M.options.__highlight_params.fg = "ctermfg"
+    -- Skip if terminal supports gui colors
+    if vim.o.termguicolors then
+        return
     end
-end
 
---- Register given highlight group
--- @param group - highlight group
--- @param color - color to use with the highlight group
-M.__register_highlight_group = function(group, color)
-    vim.cmd("highlight " .. group .. " " .. M.options.__highlight_params.fg .. "=" .. color)
+    register_autocmd("ColorScheme", "lua require('package-info.config').__register_highlight_groups()")
+
+    M.colors = {
+        up_to_date = "237",
+        outdated = "173",
+    }
+
+    M.__highlight_params.fg = "ctermfg"
 end
 
 --- Register all highlight groups
 M.__register_highlight_groups = function()
-    M.__register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, M.options.colors.outdated)
-    M.__register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.options.colors.up_to_date)
+    register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, M.colors.outdated, M.__highlight_params.fg)
+    register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, M.colors.up_to_date, M.__highlight_params.fg)
 end
 
-M.__register_autocommands = function()
+--- Register all plugin commands
+M.__register_commands = function()
     vim.cmd([[ 
         command! PackageInfoShow lua require('package-info').show()
         command! PackageInfoShowForce lua require('package-info').show({ force = true })
@@ -175,15 +126,16 @@ M.__register_autocommands = function()
 end
 
 --- Take all user options and setup the config
--- @param user_options - all the options user can provide in the plugin config // See M.options for defaults
+-- @param user_options - all the options user can provide in the plugin config // See M for defaults
 M.setup = function(user_options)
+    M.__register_namespace()
+    M.__register_package_manager()
     M.__register_user_options(user_options)
     M.__register_plugin_loading()
     M.__register_autostart()
     M.__register_256color_support()
     M.__register_highlight_groups()
-    M.__register_autocommands()
-    M.namespace.register()
+    M.__register_commands()
 end
 
 return M
