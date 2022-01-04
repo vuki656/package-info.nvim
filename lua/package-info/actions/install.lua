@@ -1,25 +1,28 @@
 local utils = require("package-info.utils")
+local core = require("package-info.core")
 local job = require("package-info.utils.job")
 
 local dependency_type_select = require("package-info.ui.dependency-type-select")
 local dependency_name_input = require("package-info.ui.dependency-name-input")
-
-local core = require("package-info.core")
+local loading = require("package-info.ui.generic.loading-status")
 
 function display_dependency_name_input(selected_dependency_type)
     dependency_name_input.new({
         on_submit = function(dependency_name)
-            utils.loading.start("|  Installing " .. dependency_name .. " package")
+            local id = loading.new("|  Installing " .. dependency_name .. " package")
 
             job({
                 command = utils.get_command.install(selected_dependency_type, dependency_name),
+                on_start = function()
+                    loading.start(id)
+                end,
                 on_success = function()
                     core.__reload()
 
-                    utils.loading.stop()
+                    loading.stop(id)
                 end,
                 on_error = function()
-                    utils.loading.stop()
+                    loading.stop(id)
                 end,
             })
         end,

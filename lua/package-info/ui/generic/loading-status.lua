@@ -16,6 +16,7 @@ local M = {
 }
 
 -- FIXME: each new instance spins faster and faster
+-- TODO: new should return an instance on which you can call start/stop/etc
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
 M.new = function(log)

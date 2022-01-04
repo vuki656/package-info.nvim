@@ -1,4 +1,5 @@
 local logger = require("package-info.logger")
+local safe_call = require("package-info.utils.safe-call")
 
 if vim.json then
     json_parser = vim.json
@@ -11,10 +12,13 @@ end
 -- @param options.command - string command to run
 -- @param options.json - boolean if output should be parsed as json
 -- @param options.on_success - function to invoke with the results
+-- @param options.on_start?: function - callback to invoke before the job starts
 -- @param options.on_error - function to invoke if the command fails
 -- @param options.ignore_error - ignore non-zero exit codes
 return function(options)
     local value = ""
+
+    safe_call(options.on_start())
 
     vim.fn.jobstart(options.command, {
         on_exit = function(_, exit_code)

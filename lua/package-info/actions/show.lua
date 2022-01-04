@@ -1,8 +1,9 @@
 local utils = require("package-info.utils")
 local config = require("package-info.config")
 local job = require("package-info.utils.job")
-
 local core = require("package-info.core")
+
+local loading = require("package-info.ui.generic.loading-status")
 
 return function(options)
     if not core.__is_valid_package_json() then
@@ -18,23 +19,26 @@ return function(options)
         return
     end
 
-    utils.loading.start("|  Fetching latest versions")
+    local id = loading.new("|  Fetching latest versions")
 
     job({
         json = true,
         command = utils.get_command.outdated(),
         ignore_error = true,
+        on_start = function()
+            loading.start(id)
+        end,
         on_success = function(outdated_dependencies)
             core.__parse_buffer()
             core.__display_virtual_text(outdated_dependencies)
             core.__reload()
 
-            utils.loading.stop()
+            loading.stop(id)
 
             config.state.last_run.update()
         end,
         on_error = function()
-            utils.loading.stop()
+            loading.stop(id)
         end,
     })
 end
