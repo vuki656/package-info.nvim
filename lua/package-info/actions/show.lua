@@ -5,8 +5,6 @@ local core = require("package-info.core")
 
 local loading = require("package-info.ui.generic.loading-status")
 
--- TODO: check if this is skipped if its already showed
--- FIXME: behaves stupid with autostart on
 return function(options)
     if not core.is_valid_package_json() then
         return

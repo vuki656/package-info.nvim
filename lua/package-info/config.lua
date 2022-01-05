@@ -75,7 +75,7 @@ end
 
 --- Register autocommand for auto-starting plugin
 M.__register_autostart = function()
-    if M.autostart then
+    if M.options.autostart then
         register_autocmd("BufEnter", "lua require('package-info').show()")
     end
 end
