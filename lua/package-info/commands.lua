@@ -1,5 +1,3 @@
--- TODO: split into multiple files
-
 local constants = require("package-info.constants")
 local config = require("package-info.config")
 
