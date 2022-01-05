@@ -3,7 +3,7 @@ local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
 
 describe("Command retrieval for yarn", function()
-    config.package_manager = "yarn"
+    config.options.package_manager = "yarn"
 
     it("should get the delete command", function()
         local command = commands.get_delete("prettier")
@@ -37,7 +37,7 @@ describe("Command retrieval for yarn", function()
 end)
 
 describe("Command retrieval for pnpm", function()
-    config.package_manager = "pnpm"
+    config.options.package_manager = "pnpm"
 
     it("should get the delete command", function()
         local command = commands.get_delete("prettier")
@@ -77,7 +77,7 @@ describe("Command retrieval for pnpm", function()
 end)
 
 describe("Command retrieval for npm", function()
-    config.package_manager = "npm"
+    config.options.package_manager = "npm"
 
     it("should get the delete command", function()
         local command = commands.get_delete("prettier")

@@ -45,7 +45,7 @@ function create_select_items(versions)
 
         -- TODO: cleanup stupid if else logic
         --  Skip unstable version e.g next@11.1.0-canary
-        if config.hide_unstable_versions and string.match(version, "-") then
+        if config.options.hide_unstable_versions and string.match(version, "-") then
         else
             table.insert(version_list, Menu.item(version))
         end

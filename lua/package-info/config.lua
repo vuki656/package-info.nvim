@@ -3,26 +3,27 @@ local register_highlight_group = require("package-info.utils.register-highlight-
 local register_autocmd = require("package-info.utils.register-autocmd")
 
 -- TODO: Extract state to state.lua
--- FIXME: Config not loaded in correct order
 
 --- Default options
 local M = {
-    colors = {
-        up_to_date = "#3C4048",
-        outdated = "#d19a66",
-    },
-    icons = {
-        enable = true,
-        style = {
-            up_to_date = "|  ",
-            outdated = "|  ",
+    options = {
+        colors = {
+            up_to_date = "#3C4048",
+            outdated = "#d19a66",
         },
+        icons = {
+            enable = true,
+            style = {
+                up_to_date = "|  ",
+                outdated = "|  ",
+            },
+        },
+        autostart = true,
+        namespace = "",
+        package_manager = constants.PACKAGE_MANAGERS.yarn,
+        hide_up_to_date = false,
+        hide_unstable_versions = false,
     },
-    autostart = true,
-    namespace = "",
-    package_manager = constants.PACKAGE_MANAGERS.yarn,
-    hide_up_to_date = false,
-    hide_unstable_versions = false,
 }
 
 --- Register namespace for usage for virtual text
@@ -56,7 +57,7 @@ end
 --- Clone options and replace empty ones with default ones
 -- @param user_options?: default M table - all the options user can provide in the plugin config
 M.__register_user_options = function(user_options)
-    M = vim.tbl_deep_extend("force", M, user_options or {})
+    M.options = vim.tbl_deep_extend("force", M.options, user_options or {})
 end
 
 --- Register autocommand for loading the plugin
@@ -88,8 +89,8 @@ end
 --- Register all highlight groups
 M.__register_highlight_groups = function()
     local colors = {
-        up_to_date = M.colors.up_to_date,
-        outdated = M.colors.outdated,
+        up_to_date = M.options.colors.up_to_date,
+        outdated = M.options.colors.outdated,
     }
 
     -- 256 color support

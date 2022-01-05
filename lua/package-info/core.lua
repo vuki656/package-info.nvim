@@ -120,7 +120,7 @@ end
 M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_name)
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
-        icon = config.icons.style.up_to_date,
+        icon = config.options.icons.style.up_to_date,
         text = M.__dependencies[dependency_name].version.current,
     }
 
@@ -133,17 +133,17 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
         if outdated_dependencies[dependency_name].latest ~= M.__dependencies[dependency_name].version.current then
             package_metadata = {
                 group = constants.HIGHLIGHT_GROUPS.outdated,
-                icon = config.icons.style.outdated,
+                icon = config.options.icons.style.outdated,
                 text = M.__clean_version(outdated_dependencies[dependency_name].latest),
             }
         end
     end
 
-    if not config.icons.enable then
+    if not config.options.icons.enable then
         package_metadata.icon = ""
     end
 
-    vim.api.nvim_buf_set_extmark(state.buffer.id, config.namespace, line_number - 1, 0, {
+    vim.api.nvim_buf_set_extmark(state.buffer.id, config.options.namespace, line_number - 1, 0, {
         virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
         virt_text_pos = "eol",
         priority = 200,
@@ -212,7 +212,7 @@ end
 --- Clears package-info virtual text from current buffer
 M.clear_virtual_text = function()
     if state.displayed then
-        vim.api.nvim_buf_clear_namespace(state.buffer.id, config.namespace, 0, -1)
+        vim.api.nvim_buf_clear_namespace(state.buffer.id, config.options.namespace, 0, -1)
     end
 end
 
