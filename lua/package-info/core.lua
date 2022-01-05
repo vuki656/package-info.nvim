@@ -10,7 +10,7 @@ end
 local constants = require("package-info.constants")
 local state = require("package-info.state")
 local config = require("package-info.config")
-local logger = require("package-info.logger")
+local logger = require("package-info.utils.logger")
 
 local M = {
     __dependencies = {},

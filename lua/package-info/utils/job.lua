@@ -1,4 +1,4 @@
-local logger = require("package-info.logger")
+local logger = require("package-info.utils.logger")
 local safe_call = require("package-info.utils.safe-call")
 
 if vim.json then

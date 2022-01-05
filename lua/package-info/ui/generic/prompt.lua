@@ -1,7 +1,7 @@
 local Menu = require("nui.menu")
 
 local safe_call = require("package-info.utils.safe-call")
-local logger = require("package-info.logger")
+local logger = require("package-info.utils.logger")
 
 local ACTIONS = {
     CONFIRM = {
