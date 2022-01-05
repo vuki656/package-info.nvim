@@ -8,15 +8,15 @@ local loading = require("package-info.ui.generic.loading-status")
 -- TODO: check if this is skipped if its already showed
 -- FIXME: behaves stupid with autostart on
 return function(options)
-    if not core.__is_valid_package_json() then
+    if not core.is_valid_package_json() then
         return
     end
 
     options = options or { force = false }
 
     if state.last_run.should_skip() and options.force == false then
-        core.__display_virtual_text()
-        core.__reload()
+        core.display_virtual_text()
+        core.reload()
 
         return
     end
@@ -31,9 +31,9 @@ return function(options)
             loading.start(id)
         end,
         on_success = function(outdated_dependencies)
-            core.__parse_buffer()
-            core.__display_virtual_text(outdated_dependencies)
-            core.__reload()
+            core.parse_buffer()
+            core.display_virtual_text(outdated_dependencies)
+            core.reload()
 
             loading.stop(id)
 

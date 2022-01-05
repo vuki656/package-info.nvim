@@ -17,7 +17,7 @@ function display_dependency_name_input(selected_dependency_type)
                     loading.start(id)
                 end,
                 on_success = function()
-                    core.__reload()
+                    core.reload()
 
                     loading.stop(id)
                 end,

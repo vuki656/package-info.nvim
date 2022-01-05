@@ -21,7 +21,7 @@ function display_dependency_version_select(version_list, dependency_name)
                     loading.start(id)
                 end,
                 on_success = function()
-                    core.__reload()
+                    core.reload()
 
                     loading.stop(id)
                 end,
@@ -55,7 +55,7 @@ function create_select_items(versions)
 end
 
 return function()
-    local dependency_name = core.__get_dependency_name_from_current_line()
+    local dependency_name = core.get_dependency_name_from_current_line()
 
     local id = loading.new("|  Fetching " .. dependency_name .. " versions")
 

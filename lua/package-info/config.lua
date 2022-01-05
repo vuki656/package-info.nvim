@@ -2,6 +2,9 @@ local constants = require("package-info.utils.constants")
 local register_highlight_group = require("package-info.utils.register-highlight-group")
 local register_autocmd = require("package-info.utils.register-autocmd")
 
+-- TODO: Extract state to state.lua
+-- FIXME: Config not loaded in correct order
+
 --- Default options
 local M = {
     colors = {
@@ -53,7 +56,7 @@ end
 --- Clone options and replace empty ones with default ones
 -- @param user_options?: default M table - all the options user can provide in the plugin config
 M.__register_user_options = function(user_options)
-    M = vim.tbl_deep_extend("force", {}, M, user_options or {})
+    M = vim.tbl_deep_extend("force", M, user_options or {})
 end
 
 --- Register autocommand for loading the plugin
@@ -117,9 +120,10 @@ end
 --- Take all user options and setup the config
 -- @param user_options: default M table - all options user can provide in the plugin config
 M.setup = function(user_options)
+    M.__register_user_options(user_options)
+
     M.__register_namespace()
     M.__register_package_manager()
-    M.__register_user_options(user_options)
     M.__register_start()
     M.__register_colorscheme_initialization()
     M.__register_autostart()

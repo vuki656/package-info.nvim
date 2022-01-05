@@ -6,7 +6,7 @@ local job = require("package-info.utils.job")
 local loading = require("package-info.ui.generic.loading-status")
 
 return function()
-    local dependency_name = core.__get_dependency_name_from_current_line()
+    local dependency_name = core.get_dependency_name_from_current_line()
 
     if dependency_name == nil then
         return
@@ -24,7 +24,7 @@ return function()
                     loading.start(id)
                 end,
                 on_success = function()
-                    core.__reload()
+                    core.reload()
 
                     loading.stop(id)
                 end,
@@ -37,7 +37,7 @@ return function()
             loading.stop(id)
         end,
         on_error = function()
-            core.__reload()
+            core.reload()
 
             loading.stop(id)
         end,

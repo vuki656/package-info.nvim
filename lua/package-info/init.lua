@@ -4,47 +4,53 @@
 -- TODO: make sure everything has docs
 -- TODO: all commands should be package manager specific, don't assume one or the other is installed
 
-local config = require("package-info.config")
-local loading = require("package-info.ui.generic.loading-status")
-
-local delete = require("package-info.actions.delete")
-local install = require("package-info.actions.install")
-local hide = require("package-info.actions.hide")
-local change_version = require("package-info.actions.change-version")
-local update = require("package-info.actions.update")
-local show = require("package-info.actions.show")
-
 local M = {}
 
 M.setup = function(options)
+    local config = require("package-info.config")
+
     config.setup(options)
 end
 
 M.show = function(options)
+    local show = require("package-info.actions.show")
+
     show(options)
 end
 
 M.hide = function()
+    local hide = require("package-info.actions.hide")
+
     hide()
 end
 
 M.delete = function()
+    local delete = require("package-info.actions.delete")
+
     delete()
 end
 
 M.update = function()
+    local update = require("package-info.actions.update")
+
     update()
 end
 
 M.install = function()
+    local install = require("package-info.actions.install")
+
     install()
 end
 
 M.change_version = function()
+    local change_version = require("package-info.actions.change-version")
+
     change_version()
 end
 
 M.get_status = function()
+    local loading = require("package-info.ui.generic.loading-status")
+
     return loading.get()
 end
 
