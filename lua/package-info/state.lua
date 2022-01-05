@@ -25,4 +25,11 @@ M.last_run = {
     end,
 }
 
+M.namespace = {
+    id = nil,
+    register = function()
+        M.namespace.id = vim.api.nvim_create_namespace("package-info")
+    end,
+}
+
 return M

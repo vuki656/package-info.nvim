@@ -143,7 +143,7 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
         package_metadata.icon = ""
     end
 
-    vim.api.nvim_buf_set_extmark(state.buffer.id, config.options.namespace, line_number - 1, 0, {
+    vim.api.nvim_buf_set_extmark(state.buffer.id, state.namespace.id, line_number - 1, 0, {
         virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
         virt_text_pos = "eol",
         priority = 200,
@@ -212,7 +212,7 @@ end
 --- Clears package-info virtual text from current buffer
 M.clear_virtual_text = function()
     if state.displayed then
-        vim.api.nvim_buf_clear_namespace(state.buffer.id, config.options.namespace, 0, -1)
+        vim.api.nvim_buf_clear_namespace(state.buffer.id, state.namespace.id, 0, -1)
     end
 end
 

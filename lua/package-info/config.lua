@@ -1,8 +1,7 @@
 local constants = require("package-info.utils.constants")
 local register_highlight_group = require("package-info.utils.register-highlight-group")
 local register_autocmd = require("package-info.utils.register-autocmd")
-
--- TODO: Extract state to state.lua
+local state = require("package-info.state")
 
 --- Default options
 local M = {
@@ -19,8 +18,7 @@ local M = {
             },
         },
         autostart = true,
-        namespace = "",
-        package_manager = constants.PACKAGE_MANAGERS.yarn,
+        package_manager = constants.PACKAGE_MANAGERS.npm,
         hide_up_to_date = false,
         hide_unstable_versions = false,
     },
@@ -28,7 +26,7 @@ local M = {
 
 --- Register namespace for usage for virtual text
 M.__register_namespace = function()
-    M.namespace = vim.api.nvim_create_namespace("package-info")
+    state.namespace.register()
 end
 
 -- Check which lock file exists and set package manager accordingly
@@ -133,8 +131,8 @@ end
 M.setup = function(user_options)
     M.__register_user_options(user_options)
 
-    M.__register_namespace()
     M.__register_package_manager()
+    M.__register_namespace()
     M.__register_start()
     M.__register_colorscheme_initialization()
     M.__register_autostart()
