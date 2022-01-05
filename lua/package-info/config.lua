@@ -1,4 +1,4 @@
-local constants = require("package-info.constants")
+local constants = require("package-info.utils.constants")
 local register_highlight_group = require("package-info.utils.register-highlight-group")
 local register_autocmd = require("package-info.utils.register-autocmd")
 

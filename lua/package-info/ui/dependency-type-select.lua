@@ -1,6 +1,6 @@
 local Menu = require("nui.menu")
 
-local CONSTANTS = require("package-info.constants")
+local CONSTANTS = require("package-info.utils.constants")
 
 local logger = require("package-info.utils.logger")
 local safe_call = require("package-info.utils.safe-call")

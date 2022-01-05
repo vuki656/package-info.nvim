@@ -1,5 +1,5 @@
 local commands = require("package-info.commands")
-local constants = require("package-info.constants")
+local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
 
 describe("Command retrieval for yarn", function()

@@ -7,7 +7,7 @@ else
     json_parser = require("package-info.libs.json_parser")
 end
 
-local constants = require("package-info.constants")
+local constants = require("package-info.utils.constants")
 local state = require("package-info.state")
 local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
