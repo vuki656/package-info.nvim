@@ -1,5 +1,3 @@
--- FILE DESCRIPTION: Plugin entry point
--- TODO: calculate prompt width based on title (package name) length
 -- TODO: virtual text background shouldn't be manually set
 -- TODO: make sure everything has docs
 -- TODO: all commands should be package manager specific, don't assume one or the other is installed

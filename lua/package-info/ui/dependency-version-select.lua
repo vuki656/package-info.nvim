@@ -6,6 +6,17 @@ local logger = require("package-info.utils.logger")
 local M = {}
 
 M.new = function(props)
+    -- Set height to max 20 and min to (version_list.length === lines)
+    local height = math.min(vim.tbl_count(props.version_list), 20)
+    local width = 20
+
+    -- Set width to min 20 and max to longest menu item text length
+    for _, version in pairs(props.version_list) do
+        if width < string.len(version.text) then
+            width = string.len(version.text)
+        end
+    end
+
     local style = {
         relative = "cursor",
         position = {
@@ -13,15 +24,15 @@ M.new = function(props)
             col = 0,
         },
         size = {
-            width = 30,
-            height = 20,
+            width = width,
+            height = height,
         },
         focusable = true,
         border = {
             style = "rounded",
             text = {
                 top = " Select Version ",
-                top_align = "left",
+                top_align = "center",
             },
         },
         win_options = {

@@ -42,7 +42,7 @@ M.new = function(props)
             style = "rounded",
             text = {
                 top = " Select Dependency Type ",
-                top_align = "left",
+                top_align = "center",
             },
         },
         win_options = {

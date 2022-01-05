@@ -25,7 +25,7 @@ M.new = function(props)
             style = "rounded",
             text = {
                 top = " Enter Package Name ",
-                top_align = "left",
+                top_align = "center",
             },
         },
         win_options = {

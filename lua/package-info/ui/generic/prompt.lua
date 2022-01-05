@@ -30,7 +30,7 @@ M.new = function(props)
             highlight = "Normal",
             text = {
                 top = props.title,
-                top_align = "left",
+                top_align = "center",
             },
         },
         position = {
