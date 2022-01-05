@@ -15,13 +15,13 @@ M.last_run = {
         M.last_run.time = os.time()
     end,
     should_skip = function()
-        local hour_in_seconds = 3600
+        local HOUR_IN_SECONDS = 3600
 
         if M.last_run.time == nil then
             return false
         end
 
-        return os.time() < M.last_run.time + hour_in_seconds
+        return os.time() < M.last_run.time + HOUR_IN_SECONDS
     end,
 }
 

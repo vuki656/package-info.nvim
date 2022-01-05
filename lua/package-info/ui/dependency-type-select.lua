@@ -37,15 +37,16 @@ M.new = function(props)
             width = 50,
             height = 3,
         },
-        highlight = "Normal:Normal",
         focusable = true,
         border = {
             style = "rounded",
-            highlight = "Normal",
             text = {
                 top = " Select Dependency Type ",
                 top_align = "left",
             },
+        },
+        win_options = {
+            winhighlight = "Normal:Normal,FloatBorder:Normal",
         },
     }
 

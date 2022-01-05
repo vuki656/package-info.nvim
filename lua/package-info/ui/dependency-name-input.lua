@@ -20,15 +20,16 @@ M.new = function(props)
             width = 50,
             height = 2,
         },
-        highlight = "Normal:Normal",
         focusable = true,
         border = {
             style = "rounded",
-            highlight = "Normal",
             text = {
                 top = " Enter Package Name ",
                 top_align = "left",
             },
+        },
+        win_options = {
+            winhighlight = "Normal:Normal,FloatBorder:Normal",
         },
     }
 

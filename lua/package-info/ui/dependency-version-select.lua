@@ -16,15 +16,16 @@ M.new = function(props)
             width = 30,
             height = 20,
         },
-        highlight = "Normal:Normal",
         focusable = true,
         border = {
             style = "rounded",
-            highlight = "Normal",
             text = {
                 top = " Select Version ",
                 top_align = "left",
             },
+        },
+        win_options = {
+            winhighlight = "Normal:Normal,FloatBorder:Normal",
         },
     }
 
