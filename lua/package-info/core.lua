@@ -183,11 +183,36 @@ M.is_valid_package_json = function()
     return is_valid
 end
 
+--- Try and decode json from string and panic if invalid
+-- @param value: string - json string to try and decode
+-- @return json?: table - converted json value
+M.__decode_json_string = function(value)
+    function decode()
+        json_parser.decode(value)
+    end
+
+    local json = ""
+
+    if pcall(decode) then
+        json = json_parser.decode(value)
+    else
+        logger.error("Invalid JSON format in package.json")
+
+        return nil
+    end
+
+    return json
+end
+
 --- Loads current buffer into state
 M.parse_buffer = function()
     local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
-    local buffer_json_value = json_parser.decode(buffer_string_value)
+    local buffer_json_value = M.__decode_json_string(buffer_string_value)
+
+    if not buffer_json_value then
+        return
+    end
 
     local dev_dependencies = buffer_json_value["devDependencies"] or {}
     local prod_dependencies = buffer_json_value["dependencies"] or {}
