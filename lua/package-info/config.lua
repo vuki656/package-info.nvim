@@ -33,10 +33,20 @@ end
 
 -- Check which lock file exists and set package manager accordingly
 M.__register_package_manager = function()
+    local yarn_lock = io.open("yarn.lock", "r")
+
+    if yarn_lock ~= nil then
+        M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
+
+        io.close(yarn_lock)
+
+        return
+    end
+
     local package_lock = io.open("package-lock.json", "r")
 
     if package_lock ~= nil then
-        M.package_manager = constants.PACKAGE_MANAGERS.npm
+        M.options.package_manager = constants.PACKAGE_MANAGERS.npm
 
         io.close(package_lock)
 
@@ -46,7 +56,7 @@ M.__register_package_manager = function()
     local pnpm_lock = io.open("pnpm-lock.yaml", "r")
 
     if pnpm_lock ~= nil then
-        M.package_manager = constants.PACKAGE_MANAGERS.pnpm
+        M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
 
         io.close(pnpm_lock)
 
