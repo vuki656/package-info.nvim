@@ -1,5 +1,4 @@
-local logger = require("package-info.utils.logger")
-local safe_call = require("package-info.utils.safe-call")
+local json_parser
 
 if vim.json then
     json_parser = vim.json
@@ -7,46 +6,49 @@ else
     json_parser = require("package-info.libs.json_parser")
 end
 
--- TODO: cleanup
--- TODO: doesn't properly call on_exit if job fails and something breaks
+local logger = require("package-info.utils.logger")
+local safe_call = require("package-info.utils.safe-call")
+
 --- Runs an async job
--- @param options.command - string command to run
--- @param options.json - boolean if output should be parsed as json
--- @param options.on_success - function to invoke with the results
--- @param options.on_start?: function - callback to invoke before the job starts
--- @param options.on_error - function to invoke if the command fails
--- @param options.ignore_error - ignore non-zero exit codes
-return function(options)
+-- @param props.command - string command to run
+-- @param props.on_success - function to invoke with the results
+-- @param props.on_error - function to invoke if the command fails
+-- @param props.ignore_error?: boolean - ignore non-zero exit codes (npm outdated throws 1 when getting the list for example)
+-- @param props.on_start?: function - callback to invoke before the job starts
+-- @param props.json?: boolean - if output should be parsed as json
+return function(props)
     local value = ""
 
-    safe_call(options.on_start())
+    safe_call(props.on_start)
 
-    vim.fn.jobstart(options.command, {
+    function on_error()
+        logger.error("Error running " .. props.command .. ". Try running manually.")
+
+        if props.on_error ~= nil then
+            props.on_error()
+        end
+    end
+
+    vim.fn.jobstart(props.command, {
         on_exit = function(_, exit_code)
-            if exit_code ~= 0 and not options.ignore_error then
-                logger.error("Error running " .. options.command .. ". Try running manually.")
-
-                if options.on_error ~= nil then
-                    options.on_error()
-                end
+            if exit_code ~= 0 and not props.ignore_error then
+                on_error()
 
                 return
             end
 
-            if options.json then
+            if props.json then
                 local ok, json_value = pcall(json_parser.decode, value)
 
                 if ok then
-                    options.on_success(json_value)
+                    props.on_success(json_value)
                 else
-                    logger.error("Error running " .. options.command .. ". Try running manually.")
+                    on_error()
 
-                    if options.on_error ~= nil then
-                        options.on_error()
-                    end
+                    return
                 end
-            else
-                options.on_success(value)
+
+                props.on_success(value)
             end
         end,
         on_stdout = function(_, stdout)
