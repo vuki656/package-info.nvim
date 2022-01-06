@@ -30,10 +30,14 @@ M.new = function(log)
         is_running = false,
     }
 
+    --- Get the current loading status message
+    -- @return nil
     function get_message()
         return state.current_spinner .. " " .. state.log
     end
 
+    --- Update the spinner instance recursively
+    -- @return nil
     function update()
         state.current_spinner = SPINNERS[state.index]
 
@@ -48,6 +52,8 @@ M.new = function(log)
         end)
     end
 
+    --- Start the spinner
+    -- @return nil
     function start()
         if not state.is_running then
             update()
