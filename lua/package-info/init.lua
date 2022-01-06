@@ -1,3 +1,5 @@
+-- TODO: tests
+
 local M = {}
 
 M.setup = function(options)

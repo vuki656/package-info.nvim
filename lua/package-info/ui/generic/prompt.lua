@@ -24,11 +24,17 @@ local M = {}
 -- @param props.on_error: function - executed if command execution throws an error
 -- @return nil
 M.new = function(props)
+    local width = 35
+
+    -- If name won't fit in the prompt adjust the width so it fits + padding
+    if string.len(props.title) > width then
+        width = string.len(props.title) + 4
+    end
+
     local style = {
         relative = "cursor",
         border = {
             style = "rounded",
-            highlight = "Normal",
             text = {
                 top = props.title,
                 top_align = "center",
@@ -39,7 +45,7 @@ M.new = function(props)
             col = 0,
         },
         size = {
-            width = 50,
+            width = width,
             height = 2,
         },
         win_options = {
