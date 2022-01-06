@@ -1,4 +1,5 @@
 -- TODO: tests
+-- TODO: yarn 1 support
 
 local M = {}
 

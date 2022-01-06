@@ -1,3 +1,5 @@
+-- TODO: this can be put inside the file where called
+
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
 

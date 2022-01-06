@@ -1,5 +1,3 @@
--- FIXME: each new instance spins faster and faster
-
 local SPINNERS = {
     "⠋",
     "⠙",
@@ -47,7 +45,7 @@ M.new = function(log)
             state.index = 1
         end
 
-        vim.fn.timer_start(80, function()
+        vim.fn.timer_start(60, function()
             update()
         end)
     end
@@ -62,10 +60,20 @@ M.new = function(log)
         end
     end
 
+    --- Stops the timer
+    -- @return nil
+    function stop()
+        vim.fn.timer_stopall()
+
+        state.is_ready = false
+        state.is_running = false
+    end
+
     local instance = vim.tbl_deep_extend("force", state, {
         get_message = get_message,
         update = update,
         start = start,
+        stop = stop,
     })
 
     table.insert(M.instances, instance)
@@ -95,6 +103,8 @@ M.stop = function(id)
     for _, instance in pairs(M.instances) do
         if instance.id ~= id then
             table.insert(instances, instance)
+        else
+            instance.stop()
         end
     end
 
