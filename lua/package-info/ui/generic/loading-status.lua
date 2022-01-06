@@ -1,3 +1,5 @@
+-- FIXME: each new instance spins faster and faster
+
 local SPINNERS = {
     "⠋",
     "⠙",
@@ -15,9 +17,9 @@ local M = {
     instances = {},
 }
 
--- FIXME: each new instance spins faster and faster
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
+-- @return number - id of the created instance
 M.new = function(log)
     local state = {
         index = 1,
@@ -67,6 +69,7 @@ end
 
 --- Start the instance by given id
 -- @param id: string - id of the instance to start
+-- @return nil
 M.start = function(id)
     for _, instance in pairs(M.instances) do
         if instance.id == id then
@@ -79,6 +82,7 @@ end
 
 --- Stop the instance by given id by removing it from the list
 -- @param id: string - id of the instance to stop
+-- @return nil
 M.stop = function(id)
     local instances = {}
 
@@ -92,6 +96,7 @@ M.stop = function(id)
 end
 
 --- Get the first instance message if there are instances
+-- @return string
 M.get = function()
     if vim.tbl_isempty(M.instances) then
         return ""

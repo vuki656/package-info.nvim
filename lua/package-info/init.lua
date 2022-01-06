@@ -1,6 +1,3 @@
--- TODO: make sure everything has docs
--- TODO: all commands should be package manager specific, don't assume one or the other is installed
-
 local M = {}
 
 M.setup = function(options)

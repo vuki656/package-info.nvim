@@ -1,7 +1,7 @@
 --- Register given highlight group
--- @param group: string - highlight group
+-- @param group: string - highlight group to register
 -- @param color: string - color to use with the highlight group
-return function(group, color)
+return function(highlight_group, color)
     local type = "guifg"
 
     --- 256 color support
@@ -9,5 +9,5 @@ return function(group, color)
         type = "ctermfg"
     end
 
-    vim.cmd("highlight " .. group .. " " .. type .. "=" .. color)
+    vim.cmd("highlight " .. highlight_group .. " " .. type .. "=" .. color)
 end

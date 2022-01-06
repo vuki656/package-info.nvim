@@ -1,5 +1,3 @@
--- FILE DESCRIPTION: Constants reused within the plugin
-
 local M = {}
 
 M.HIGHLIGHT_GROUPS = {

@@ -6,6 +6,9 @@ local dependency_type_select = require("package-info.ui.dependency-type-select")
 local dependency_name_input = require("package-info.ui.dependency-name-input")
 local loading = require("package-info.ui.generic.loading-status")
 
+--- Renders the dependency name input
+-- @param selected_dependency_type: constants.DEPENDENCY_TYPE - dependency type to determine the install command
+-- @return nil
 function display_dependency_name_input(selected_dependency_type)
     dependency_name_input.new({
         on_submit = function(dependency_name)
@@ -31,6 +34,8 @@ function display_dependency_name_input(selected_dependency_type)
     dependency_name_input.open()
 end
 
+--- Runs the install new dependency action
+-- @return nil
 return function()
     dependency_type_select.new({
         on_submit = function(selected_dependency_type)

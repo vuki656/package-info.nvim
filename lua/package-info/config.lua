@@ -25,11 +25,13 @@ local M = {
 }
 
 --- Register namespace for usage for virtual text
+-- @return nil
 M.__register_namespace = function()
     state.namespace.register()
 end
 
 -- Check which lock file exists and set package manager accordingly
+-- @return nil
 M.__register_package_manager = function()
     local yarn_lock = io.open("yarn.lock", "r")
 
@@ -63,17 +65,20 @@ M.__register_package_manager = function()
 end
 
 --- Clone options and replace empty ones with default ones
--- @param user_options?: default M table - all the options user can provide in the plugin config
+-- @param user_options: default M table - all the options user can provide in the plugin config
+-- @return nil
 M.__register_user_options = function(user_options)
     M.options = vim.tbl_deep_extend("force", M.options, user_options or {})
 end
 
 --- Register autocommand for loading the plugin
+-- @return nil
 M.__register_start = function()
     register_autocmd("BufEnter", "lua require('package-info.core').load_plugin()")
 end
 
 --- Register autocommand for auto-starting plugin
+-- @return nil
 M.__register_autostart = function()
     if M.options.autostart then
         register_autocmd("BufEnter", "lua require('package-info').show()")
@@ -81,6 +86,7 @@ M.__register_autostart = function()
 end
 
 --- Sets the plugin colors after the user colorscheme is loaded
+-- @return nil
 M.__register_colorscheme_initialization = function()
     local colorscheme = vim.api.nvim_exec("colorscheme", true)
 
@@ -95,6 +101,7 @@ M.__register_colorscheme_initialization = function()
 end
 
 --- Register all highlight groups
+-- @return nil
 M.__register_highlight_groups = function()
     local colors = {
         up_to_date = M.options.colors.up_to_date,
@@ -114,6 +121,7 @@ M.__register_highlight_groups = function()
 end
 
 --- Register all plugin commands
+-- @return nil
 M.__register_commands = function()
     vim.cmd([[ 
         command! PackageInfoShow lua require('package-info').show()
@@ -128,6 +136,7 @@ end
 
 --- Take all user options and setup the config
 -- @param user_options: default M table - all options user can provide in the plugin config
+-- @return nil
 M.setup = function(user_options)
     M.__register_user_options(user_options)
 

@@ -26,6 +26,7 @@ local M = {}
 --- Spawn a new dependency type select prompt
 -- @param props.on_submit: function - executed after selection
 -- @param props.on_cancel?: function - executed if user selects ACTIONS.cancel
+-- @return nil
 M.new = function(props)
     local style = {
         relative = "cursor",
@@ -76,6 +77,7 @@ end
 --- Opens the prompt
 -- @param props.on_success?: function - executed after successful prompt open
 -- @param props.on_error?: function - executed if prompt instance not properly spawned
+-- @return nil
 M.open = function(props)
     props = props or {}
 
@@ -95,6 +97,7 @@ end
 --- Closes the prompt
 -- @param props.on_success?: function - executed after successful prompt close
 -- @param props.on_error?: function - executed if prompt instance not properly spawned or opened
+-- @return nil
 M.close = function(props)
     props = props or {}
 

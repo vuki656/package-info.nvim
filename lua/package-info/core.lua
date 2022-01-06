@@ -18,16 +18,19 @@ local M = {
 }
 
 --- Strips ^ from version
-M.__clean_version = function(string)
-    if string == nil then
+-- @param value: string - value from which to strip ^ from
+-- @return string
+M.__clean_version = function(value)
+    if value == nil then
         return nil
     end
 
-    return string:gsub("%^", "")
+    return value:gsub("%^", "")
 end
 
 --- Checks if the given string conforms to 1.0.0 version format
--- @param value - string to check
+-- @param value: string - value to check if conforms
+-- @return boolean
 M.__is_valid_package_version = function(value)
     local cleaned_version = M.__clean_version(value)
 
@@ -53,7 +56,8 @@ end
 
 --- Gets the package version from the given buffer line
 -- Expects '"name": "2.3.4"', and gets the second match for value in between parentheses
--- @param line - string representing a buffer line
+-- @param line: string - buffer line
+-- @return string
 M.__get_package_version_from_line = function(line)
     local value = {}
 
@@ -64,17 +68,8 @@ M.__get_package_version_from_line = function(line)
     return value[2]:gsub("%^", "")
 end
 
---- Verifies that the given package is on the package list
--- @param dependency_name - string package to check
-M.__is_valid_dependency_name = function(dependency_name)
-    if M.__dependencies[dependency_name] then
-        return true
-    else
-        return false
-    end
-end
-
 --- Reloads the buffer if it's package.json
+-- @return nil
 M.__reload_buffer = function()
     local current_buffer_number = vim.fn.bufnr()
 
@@ -86,22 +81,23 @@ M.__reload_buffer = function()
 end
 
 --- Gets package from current line
+-- @return string?
 M.get_dependency_name_from_current_line = function()
     local current_line = vim.fn.getline(".")
 
     local dependency_name = M.get_dependency_name_from_line(current_line)
-    local is_valid = M.__is_valid_dependency_name(dependency_name)
 
-    if is_valid then
+    if M.__dependencies[dependency_name] then
         return dependency_name
     else
-        logger.error("No valid package on current line")
+        logger.warn("No valid package on current line")
 
         return nil
     end
 end
 
 --- Rereads the current buffer value and reloads the buffer
+-- @return nil
 M.reload = function()
     M.__reload_buffer()
 
@@ -116,7 +112,16 @@ M.reload = function()
 end
 
 --- Draws virtual text on given buffer line
--- @param outdated_dependencies - table of outdated dependancies
+-- @param outdated_dependencies: table - outdated dependancies
+-- {
+--     [dependency_name]: {
+--         current: string - currently installed version
+--         latest: string - latest available version
+--     }
+-- }
+-- @param line_number: number - line on which to place virtual text
+-- @param dependency_name: string - dependency based on which to get the virtual text
+-- @return nil
 M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_name)
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
@@ -151,7 +156,14 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
 end
 
 --- Handles virtual text displaying
--- @param outdated_dependencies - table of outdated dependancies
+-- @param outdated_dependencies?: table - outdated dependancies
+-- {
+--     [dependency_name]: {
+--         current: string - currently installed version
+--         latest: string - latest available version
+--     }
+-- }
+-- @return nil
 M.display_virtual_text = function(outdated_dependencies)
     outdated_dependencies = outdated_dependencies or M.__outdated_dependencies
 
@@ -169,6 +181,7 @@ M.display_virtual_text = function(outdated_dependencies)
 end
 
 --- Checks if the currently opened file is package.json and has content
+-- @return boolean
 M.is_valid_package_json = function()
     local current_buffer_name = vim.api.nvim_buf_get_name(0)
     local is_package_json = string.match(current_buffer_name, "package.json$")
@@ -205,6 +218,7 @@ M.__decode_json_string = function(value)
 end
 
 --- Loads current buffer into state
+-- @return nil
 M.parse_buffer = function()
     local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
@@ -234,7 +248,8 @@ M.parse_buffer = function()
     M.__dependencies = dependencies
 end
 
---- Clears package-info virtual text from current buffer
+--- Clears plugin virtual text from current buffer
+-- @return nil
 M.clear_virtual_text = function()
     if state.displayed then
         vim.api.nvim_buf_clear_namespace(state.buffer.id, state.namespace.id, 0, -1)
@@ -242,7 +257,8 @@ M.clear_virtual_text = function()
 end
 
 --- Gets the package name from the given buffer line
--- @param line - string representing a buffer line
+-- @param line: string - buffer line from which to get the name from
+-- @return string?
 M.get_dependency_name_from_line = function(line)
     local value = {}
 
@@ -251,11 +267,12 @@ M.get_dependency_name_from_line = function(line)
         table.insert(value, chunk)
     end
 
+    -- If no version or name fail
     if value[1] == nil or value[2] == nil then
         return nil
     end
 
-    local is_valid_name = M.__is_valid_dependency_name(value[1])
+    local is_valid_name = M.__dependencies[value[1]]
     local is_valid_version = M.__is_valid_package_version(value[2])
 
     if is_valid_name and is_valid_version then
@@ -265,6 +282,8 @@ M.get_dependency_name_from_line = function(line)
     end
 end
 
+--- Parser current buffer if valid
+-- @return nil
 M.load_plugin = function()
     if not M.is_valid_package_json() then
         return

@@ -16,6 +16,7 @@ local safe_call = require("package-info.utils.safe-call")
 -- @param props.ignore_error?: boolean - ignore non-zero exit codes (npm outdated throws 1 when getting the list for example)
 -- @param props.on_start?: function - callback to invoke before the job starts
 -- @param props.json?: boolean - if output should be parsed as json
+-- @return nil
 return function(props)
     local value = ""
 
@@ -42,12 +43,12 @@ return function(props)
 
                 if ok then
                     props.on_success(json_value)
-                else
-                    on_error()
 
                     return
                 end
 
+                on_error()
+            else
                 props.on_success(value)
             end
         end,

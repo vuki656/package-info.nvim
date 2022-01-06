@@ -17,11 +17,12 @@ local ACTIONS = {
 local M = {}
 
 --- Spawn a new generic confirm/cancel prompt
--- @param props.title: string - displayed at the top of the prompt
+-- @param props.title: string - text displayed at the top of the prompt
 -- @param props.command: string - command executed on confirm select
 -- @param props.on_submit: function - executed after successful command execution
 -- @param props.on_cancel: function - executed if user selects PROMPT_ACTIONS.cancel
 -- @param props.on_error: function - executed if command execution throws an error
+-- @return nil
 M.new = function(props)
     local style = {
         relative = "cursor",
@@ -41,7 +42,9 @@ M.new = function(props)
             width = 50,
             height = 2,
         },
-        highlight = "Normal:Normal",
+        win_options = {
+            winhighlight = "Normal:Normal,FloatBorder:Normal",
+        },
         focusable = true,
     }
 
@@ -74,6 +77,7 @@ end
 --- Opens the prompt
 -- @param props.on_success?: function - executed after successful prompt open
 -- @param props.on_error?: function - executed if prompt instance not properly spawned
+-- @return nil
 M.open = function(props)
     props = props or {}
 
@@ -93,6 +97,7 @@ end
 --- Closes the prompt
 -- @param props.on_success?: function - executed after successful prompt close
 -- @param props.on_error?: function - executed if prompt instance not properly spawned or opened
+-- @return nil
 M.close = function(props)
     props = props or {}
 

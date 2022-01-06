@@ -5,6 +5,8 @@ local core = require("package-info.core")
 
 local loading = require("package-info.ui.generic.loading-status")
 
+--- Runs the show outdated dependancies action
+-- @return nil
 return function(options)
     if not core.is_valid_package_json() then
         return

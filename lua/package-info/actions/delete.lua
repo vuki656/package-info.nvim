@@ -5,6 +5,8 @@ local core = require("package-info.core")
 
 local loading = require("package-info.ui.generic.loading-status")
 
+--- Runs the delete action
+-- @return nil
 return function()
     local dependency_name = core.get_dependency_name_from_current_line()
 

@@ -9,6 +9,7 @@ local M = {}
 -- @param props.on_submit: function - executed after selection
 -- @param props.on_close?: function - executed if user closes the input
 -- @param props.on_error?: function - executed if users enters an invalid package name
+-- @return nil
 M.new = function(props)
     local style = {
         relative = "cursor",
@@ -55,6 +56,7 @@ end
 --- Opens the input
 -- @param props.on_success?: function - executed after successful input open
 -- @param props.on_error?: function - executed if input instance not properly spawned
+-- @return nil
 M.open = function(props)
     props = props or {}
 
@@ -74,6 +76,7 @@ end
 --- Closes the input
 -- @param props.on_success?: function - executed after successful input close
 -- @param props.on_error?: function - executed if input instance not properly spawned or opened
+-- @return nil
 M.close = function(props)
     props = props or {}
 
