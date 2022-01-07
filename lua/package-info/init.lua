@@ -10,39 +10,39 @@ M.setup = function(options)
 end
 
 M.show = function(options)
-    local show = require("package-info.actions.show")
+    local show_action = require("package-info.actions.show")
 
-    show(options)
+    show_action.run(options)
 end
 
 M.hide = function()
-    local hide = require("package-info.actions.hide")
+    local hide_action = require("package-info.actions.hide")
 
-    hide()
+    hide_action.run()
 end
 
 M.delete = function()
-    local delete = require("package-info.actions.delete")
+    local delete_action = require("package-info.actions.delete")
 
-    delete()
+    delete_action.run()
 end
 
 M.update = function()
-    local update = require("package-info.actions.update")
+    local update_action = require("package-info.actions.update")
 
-    update()
+    update_action.run()
 end
 
 M.install = function()
-    local install = require("package-info.actions.install")
+    local install_action = require("package-info.actions.install")
 
-    install()
+    install_action.run()
 end
 
 M.change_version = function()
-    local change_version = require("package-info.actions.change-version")
+    local change_version_action = require("package-info.actions.change-version")
 
-    change_version()
+    change_version_action.run()
 end
 
 M.get_status = function()

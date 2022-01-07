@@ -1,13 +1,33 @@
-local commands = require("package-info.commands")
 local core = require("package-info.core")
 local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
+local config = require("package-info.config")
+local constants = require("package-info.utils.constants")
 
 local loading = require("package-info.ui.generic.loading-status")
 
+local M = {}
+
+--- Returns the update command based on package manager
+-- @param dependency_name: string - dependency for which to get the command
+-- @return string
+M.__get_command = function(dependency_name)
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        return "yarn up " .. dependency_name
+    end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        return "npm install " .. dependency_name .. "@latest"
+    end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+        return "pnpm update " .. dependency_name
+    end
+end
+
 --- Runs the update dependency action
 -- @return nil
-return function()
+M.run = function()
     local dependency_name = core.get_dependency_name_from_current_line()
 
     if dependency_name == nil then
@@ -21,7 +41,7 @@ return function()
         on_submit = function()
             job({
                 json = false,
-                command = commands.get_update(dependency_name),
+                command = M.__get_command(dependency_name),
                 on_start = function()
                     loading.start(id)
                 end,
@@ -51,3 +71,5 @@ return function()
         end,
     })
 end
+
+return M

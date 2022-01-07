@@ -2,24 +2,60 @@ local Menu = require("nui.menu")
 
 local config = require("package-info.config")
 local loading = require("package-info.ui.generic.loading-status")
-local commands = require("package-info.commands")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
+local constants = require("package-info.utils.constants")
 
 local dependency_version_select = require("package-info.ui.dependency-version-select")
+
+local M = {}
+
+--- Returns the change version command based on package manager
+-- @param dependency_name: string - dependency for which to get the command
+-- @param version: string - used to denote the version to be installed
+-- @return string
+M.__get_change_version_command = function(dependency_name, version)
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        return "yarn up " .. dependency_name .. "@" .. version
+    end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        return "npm install " .. dependency_name .. "@" .. version
+    end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+        return "pnpm add " .. dependency_name .. "@" .. version
+    end
+end
+
+--- Returns available package versions command based on package manager
+-- @param dependency_name: string - dependency for which to get the command
+-- @return string
+M.__get_version_list_command = function(dependency_name)
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+        return "pnpm view " .. dependency_name .. " versions --json"
+    end
+
+    if
+        config.options.package_manager == constants.PACKAGE_MANAGERS.npm
+        or config.options.package_manager == constants.PACKAGE_MANAGERS.yarn
+    then
+        return "npm view " .. dependency_name .. " versions --json"
+    end
+end
 
 --- Display dependency version select UI
 -- @param version_list: Menu.item[] - items to be rendered in the menu
 -- @param dependency_name: string - dependency for which to run change version command
 -- @return nil
-function display_dependency_version_select(version_list, dependency_name)
+M.__display_dependency_version_select = function(version_list, dependency_name)
     dependency_version_select.new({
         version_list = version_list,
         on_submit = function(selected_version)
             local id = loading.new("|  Installing " .. dependency_name .. "@" .. selected_version)
 
             job({
-                command = commands.get_change_version(dependency_name, selected_version),
+                command = M.__get_change_version_command(dependency_name, selected_version),
                 on_start = function()
                     loading.start(id)
                 end,
@@ -41,7 +77,7 @@ end
 --- Maps output from command to menu items
 -- @param versions: string[] - versions to map to menu items
 -- @return Menu.item[] - versions mapped to menu items
-function create_select_items(versions)
+M.__create_select_items = function(versions)
     local version_list = {}
 
     -- Iterate versions from the end to show the latest versions first
@@ -61,26 +97,28 @@ end
 
 --- Runs the change version action
 -- @return nil
-return function()
+M.run = function()
     local dependency_name = core.get_dependency_name_from_current_line()
 
     local id = loading.new("|  Fetching " .. dependency_name .. " versions")
 
     job({
         json = true,
-        command = commands.get_version_list(dependency_name),
+        command = M.__get_version_list_command(dependency_name),
         on_start = function()
             loading.start(id)
         end,
         on_success = function(versions)
             loading.stop(id)
 
-            local version_list = create_select_items(versions)
+            local version_list = M.__create_select_items(versions)
 
-            display_dependency_version_select(version_list, dependency_name)
+            M.__display_dependency_version_select(version_list, dependency_name)
         end,
         on_error = function()
             loading.stop(id)
         end,
     })
 end
+
+return M

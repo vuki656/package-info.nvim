@@ -1,3 +1,5 @@
+-- FIXME: current spinner stops if there is another one queued up
+
 local SPINNERS = {
     "⠋",
     "⠙",

@@ -1,13 +1,33 @@
 local prompt = require("package-info.ui.generic.prompt")
-local commands = require("package-info.commands")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
+local config = require("package-info.config")
+local constants = require("package-info.utils.constants")
 
 local loading = require("package-info.ui.generic.loading-status")
 
+local M = {}
+
+--- Returns the delete command based on package manager
+-- @param dependency_name: string - dependency for which to get the command
+-- @return string
+M.__get_command = function(dependency_name)
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        return "yarn remove " .. dependency_name
+    end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
+        return "npm uninstall " .. dependency_name
+    end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
+        return "pnpm remove " .. dependency_name
+    end
+end
+
 --- Runs the delete action
 -- @return nil
-return function()
+M.run = function()
     local dependency_name = core.get_dependency_name_from_current_line()
 
     if dependency_name == nil then
@@ -21,7 +41,7 @@ return function()
         on_submit = function()
             job({
                 json = false,
-                command = commands.get_delete(dependency_name),
+                command = M.__get_command(dependency_name),
                 on_start = function()
                     loading.start(id)
                 end,
@@ -46,3 +66,5 @@ return function()
         end,
     })
 end
+
+return M

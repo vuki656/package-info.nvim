@@ -1,13 +1,20 @@
-local commands = require("package-info.commands")
 local state = require("package-info.state")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
 
 local loading = require("package-info.ui.generic.loading-status")
 
+local M = {}
+
+--- Returns command to get outdated dependencies
+-- @return string
+M.__get_command = function()
+    return "npm outdated --json"
+end
+
 --- Runs the show outdated dependancies action
 -- @return nil
-return function(options)
+M.run = function(options)
     if not core.is_valid_package_json() then
         return
     end
@@ -25,7 +32,7 @@ return function(options)
 
     job({
         json = true,
-        command = commands.get_outdated(),
+        command = M.__get_command(),
         ignore_error = true,
         on_start = function()
             loading.start(id)
@@ -44,3 +51,5 @@ return function(options)
         end,
     })
 end
+
+return M
