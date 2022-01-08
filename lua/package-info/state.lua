@@ -19,6 +19,7 @@ M.last_run = {
         M.last_run.time = os.time()
     end,
     --- Determine if the next run should be skipped
+    -- Skip if there was a run within the past hour
     -- @return boolean
     should_skip = function()
         local HOUR_IN_SECONDS = 3600
