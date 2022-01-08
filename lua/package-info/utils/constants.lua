@@ -16,4 +16,19 @@ M.DEPENDENCY_TYPE = {
     development = "dev",
 }
 
+M.LEGACY_COLORS = {
+    up_to_date = "237",
+    outdated = "173",
+}
+
+M.COMMANDS = {
+    show = "PackageInfoShow",
+    show_force = "PackageInfoShowForce",
+    hide = "PackageInfoHide",
+    delete = "PackageInfoDelete",
+    update = "PackageInfoUpdate",
+    install = "PackageInfoInstall",
+    change_version = "PackageInfoChangeVersion",
+}
+
 return M

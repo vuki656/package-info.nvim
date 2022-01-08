@@ -111,8 +111,8 @@ M.__register_highlight_groups = function()
     -- 256 color support
     if not vim.o.termguicolors then
         colors = {
-            up_to_date = "237",
-            outdated = "173",
+            up_to_date = constants.LEGACY_COLORS.up_to_date,
+            outdated = constants.LEGACY_COLORS.outdated,
         }
     end
 
@@ -123,15 +123,13 @@ end
 --- Register all plugin commands
 -- @return nil
 M.__register_commands = function()
-    vim.cmd([[ 
-        command! PackageInfoShow lua require('package-info').show()
-        command! PackageInfoShowForce lua require('package-info').show({ force = true })
-        command! PackageInfoHide lua require('package-info').hide()
-        command! PackageInfoDelete lua require('package-info').delete()
-        command! PackageInfoUpdate lua require('package-info').update()
-        command! PackageInfoInstall lua require('package-info').install()
-        command! PackageInfoChangeVersion lua require('package-info').change_version()
-    ]])
+    vim.cmd("command! " .. constants.COMMANDS.show .. " lua require('package-info').show()")
+    vim.cmd("command! " .. constants.COMMANDS.show_force .. " lua require('package-info').show({ force = true })")
+    vim.cmd("command! " .. constants.COMMANDS.hide .. " lua require('package-info').hide()")
+    vim.cmd("command! " .. constants.COMMANDS.delete .. " lua require('package-info').delete()")
+    vim.cmd("command! " .. constants.COMMANDS.update .. " lua require('package-info').update()")
+    vim.cmd("command! " .. constants.COMMANDS.install .. " lua require('package-info').install()")
+    vim.cmd("command! " .. constants.COMMANDS.change_version .. " lua require('package-info').change_version()")
 end
 
 --- Take all user options and setup the config
