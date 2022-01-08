@@ -87,6 +87,7 @@ M.__create_select_items = function(versions)
 
         --  Skip unstable version e.g next@11.1.0-canary
         if config.options.hide_unstable_versions and is_unstable then
+            table.insert(version_list)
         else
             table.insert(version_list, Menu.item(version))
         end

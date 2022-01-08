@@ -81,21 +81,17 @@ end
 -- @param value: string - json string to try and decode
 -- @return json?: table - converted json value
 M.__decode_json_string = function(value)
-    function decode()
+    local function decode()
         json_parser.decode(value)
     end
 
-    local json = ""
-
     if pcall(decode) then
-        json = json_parser.decode(value)
+        return json_parser.decode(value)
     else
         logger.error("Invalid JSON format in package.json")
 
         return nil
     end
-
-    return json
 end
 
 --- Reloads the buffer if it's package.json

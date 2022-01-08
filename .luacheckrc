@@ -1,0 +1,21 @@
+std = {
+    globals = {
+        "rawget",
+        "next",
+        "pcall",
+        "select",
+        "tostring",
+        "error",
+        "type",
+        "tonumber",
+        "os",
+        "io",
+        "table",
+        "ipairs",
+        "pairs",
+        "vim",
+        "string",
+        "require",
+        "math",
+    },
+}

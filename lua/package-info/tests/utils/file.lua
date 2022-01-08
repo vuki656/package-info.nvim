@@ -4,7 +4,7 @@ local M = {}
 -- @param name: path with file name to create
 -- @return nil
 M.create = function(name)
-    file = io.open(name, "w")
+    local file = io.open(name, "w")
     file:close()
 end
 

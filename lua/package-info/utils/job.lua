@@ -13,7 +13,7 @@ local safe_call = require("package-info.utils.safe-call")
 -- @param props.command - string command to run
 -- @param props.on_success - function to invoke with the results
 -- @param props.on_error - function to invoke if the command fails
--- @param props.ignore_error?: boolean - ignore non-zero exit codes (npm outdated throws 1 when getting the list for example)
+-- @param props.ignore_error?: boolean - ignore non-zero exit codes (npm outdated throws 1 when getting the list)
 -- @param props.on_start?: function - callback to invoke before the job starts
 -- @param props.json?: boolean - if output should be parsed as json
 -- @return nil
@@ -22,7 +22,7 @@ return function(props)
 
     safe_call(props.on_start)
 
-    function on_error()
+    local function on_error()
         logger.error("Error running " .. props.command .. ". Try running manually.")
 
         if props.on_error ~= nil then

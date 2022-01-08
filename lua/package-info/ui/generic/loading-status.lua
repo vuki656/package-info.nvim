@@ -32,13 +32,13 @@ M.new = function(log)
 
     --- Get the current loading status message
     -- @return nil
-    function get_message()
+    local function get_message()
         return state.current_spinner .. " " .. state.log
     end
 
     --- Update the spinner instance recursively
     -- @return nil
-    function update()
+    local function update()
         state.current_spinner = SPINNERS[state.index]
 
         state.index = state.index + 1
@@ -54,7 +54,7 @@ M.new = function(log)
 
     --- Start the spinner
     -- @return nil
-    function start()
+    local function start()
         if not state.is_running then
             update()
 
@@ -64,7 +64,7 @@ M.new = function(log)
 
     --- Stops the timer
     -- @return nil
-    function stop()
+    local function stop()
         vim.fn.timer_stopall()
 
         state.is_ready = false
