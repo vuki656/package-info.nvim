@@ -41,7 +41,7 @@ describe("Config", function()
 
         local merged_config = vim.tbl_deep_extend("keep", config.options, new_config)
 
-        assert.are.equals(vim.inspect(merged_config), vim.inspect(config.options))
+        assert.are.same(merged_config, config.options)
     end)
 
     it("should detect npm package manager", function()
