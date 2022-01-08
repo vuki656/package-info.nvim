@@ -1,5 +1,6 @@
 -- TODO: tests
 -- TODO: yarn 1 support
+-- TODO: add luacheck in pipeline
 
 local M = {}
 
