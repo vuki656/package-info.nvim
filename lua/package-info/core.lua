@@ -63,20 +63,6 @@ M.__is_valid_package_version = function(value)
     return is_valid
 end
 
---- Gets the package version from the given buffer line
--- Expects '"name": "2.3.4"', and gets the second match for value in between parentheses
--- @param line: string - buffer line
--- @return string
-M.__get_package_version_from_line = function(line)
-    local value = {}
-
-    for chunk in string.gmatch(line, [["(.-)"]]) do
-        table.insert(value, chunk)
-    end
-
-    return value[2]:gsub("%^", "")
-end
-
 --- Try and decode json from string and panic if invalid
 -- @param value: string - json string to try and decode
 -- @return json?: table - converted json value
