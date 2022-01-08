@@ -5,6 +5,13 @@ local state = require("package-info.state")
 local file = require("package-info.tests.utils.file")
 
 describe("Config", function()
+    local default_options = config.options
+
+    before_each(function()
+        -- Reset options to default ones
+        config.options = default_options
+    end)
+
     describe("register_user_options", function()
         it("should register user options", function()
             local new_config = {
@@ -173,6 +180,33 @@ describe("Config", function()
 
             assert.is_true(is_outdated_color_registered ~= nil)
             assert.is_true(is_up_to_date_color_registered ~= nil)
+        end)
+    end)
+
+    describe("register_autostart", function()
+        it("should register autostart if autostart option is true", function()
+            vim.cmd("autocmd! " .. constants.AUTOGROUP)
+
+            config.__register_autostart()
+
+            local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
+
+            local is_registered = string.find(autocommands, "lua require('package-info').show()", 0, true)
+
+            assert.is_true(is_registered ~= nil)
+        end)
+
+        it("shouldn't register autostart if autostart option is false", function()
+            vim.cmd("autocmd! " .. constants.AUTOGROUP)
+
+            config.__register_user_options({ autostart = false })
+            config.__register_autostart()
+
+            local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
+
+            local is_registered = string.find(autocommands, "lua require('package-info').show()", 0, true)
+
+            assert.is_true(is_registered == nil)
         end)
     end)
 

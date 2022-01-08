@@ -31,4 +31,6 @@ M.COMMANDS = {
     change_version = "PackageInfoChangeVersion",
 }
 
+M.AUTOGROUP = "PackageInfoAutogroup"
+
 return M

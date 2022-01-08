@@ -2,6 +2,7 @@ std = {
     globals = {
         "rawget",
         "next",
+        "before_each",
         "pcall",
         "select",
         "tostring",
