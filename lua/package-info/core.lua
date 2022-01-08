@@ -68,6 +68,27 @@ M.__get_package_version_from_line = function(line)
     return value[2]:gsub("%^", "")
 end
 
+--- Try and decode json from string and panic if invalid
+-- @param value: string - json string to try and decode
+-- @return json?: table - converted json value
+M.__decode_json_string = function(value)
+    function decode()
+        json_parser.decode(value)
+    end
+
+    local json = ""
+
+    if pcall(decode) then
+        json = json_parser.decode(value)
+    else
+        logger.error("Invalid JSON format in package.json")
+
+        return nil
+    end
+
+    return json
+end
+
 --- Reloads the buffer if it's package.json
 -- @return nil
 M.__reload_buffer = function()
@@ -78,37 +99,6 @@ M.__reload_buffer = function()
         vim.cmd(":e")
         vim.fn.winrestview(view)
     end
-end
-
---- Gets package from current line
--- @return string?
-M.get_dependency_name_from_current_line = function()
-    local current_line = vim.fn.getline(".")
-
-    local dependency_name = M.get_dependency_name_from_line(current_line)
-
-    if M.__dependencies[dependency_name] then
-        return dependency_name
-    else
-        logger.warn("No valid package on current line")
-
-        return nil
-    end
-end
-
---- Rereads the current buffer value and reloads the buffer
--- @return nil
-M.reload = function()
-    M.__reload_buffer()
-
-    M.parse_buffer()
-
-    if state.displayed then
-        M.clear_virtual_text()
-        M.display_virtual_text()
-    end
-
-    M.__reload_buffer()
 end
 
 --- Draws virtual text on given buffer line
@@ -155,6 +145,37 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
     })
 end
 
+--- Gets package from current line
+-- @return string?
+M.get_dependency_name_from_current_line = function()
+    local current_line = vim.fn.getline(".")
+
+    local dependency_name = M.get_dependency_name_from_line(current_line)
+
+    if M.__dependencies[dependency_name] then
+        return dependency_name
+    else
+        logger.warn("No valid package on current line")
+
+        return nil
+    end
+end
+
+--- Rereads the current buffer value and reloads the buffer
+-- @return nil
+M.reload = function()
+    M.__reload_buffer()
+
+    M.parse_buffer()
+
+    if state.displayed then
+        M.clear_virtual_text()
+        M.display_virtual_text()
+    end
+
+    M.__reload_buffer()
+end
+
 --- Handles virtual text displaying
 -- @param outdated_dependencies?: table - outdated dependancies
 -- {
@@ -194,27 +215,6 @@ M.is_valid_package_json = function()
     end
 
     return is_valid
-end
-
---- Try and decode json from string and panic if invalid
--- @param value: string - json string to try and decode
--- @return json?: table - converted json value
-M.__decode_json_string = function(value)
-    function decode()
-        json_parser.decode(value)
-    end
-
-    local json = ""
-
-    if pcall(decode) then
-        json = json_parser.decode(value)
-    else
-        logger.error("Invalid JSON format in package.json")
-
-        return nil
-    end
-
-    return json
 end
 
 --- Loads current buffer into state
