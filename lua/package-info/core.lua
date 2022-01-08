@@ -215,7 +215,7 @@ M.parse_buffer = function()
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = M.__decode_json_string(buffer_string_value)
 
-    if not buffer_json_value then
+    if buffer_json_value == nil then
         return
     end
 
