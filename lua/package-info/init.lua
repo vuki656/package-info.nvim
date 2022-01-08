@@ -1,6 +1,7 @@
 -- TODO: tests
 -- TODO: yarn 1 support
 -- TODO: add luacheck in pipeline
+-- TODO: rename package to dependency everywhere
 
 local M = {}
 
