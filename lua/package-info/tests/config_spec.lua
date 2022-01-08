@@ -149,8 +149,13 @@ describe("Config", function()
         local up_to_date_color = vim.api.nvim_exec("highlight " .. constants.HIGHLIGHT_GROUPS.up_to_date, true)
         local outdated_color = vim.api.nvim_exec("highlight " .. constants.HIGHLIGHT_GROUPS.outdated, true)
 
-        local is_up_to_date_color_registered = string.find(up_to_date_color, "237", 0, true)
-        local is_outdated_color_registered = string.find(outdated_color, "173", 0, true)
+        local is_up_to_date_color_registered = string.find(
+            up_to_date_color,
+            constants.LEGACY_COLORS.up_to_date,
+            0,
+            true
+        )
+        local is_outdated_color_registered = string.find(outdated_color, constants.LEGACY_COLORS.outdated, 0, true)
 
         assert.is_true(is_outdated_color_registered ~= nil)
         assert.is_true(is_up_to_date_color_registered ~= nil)
