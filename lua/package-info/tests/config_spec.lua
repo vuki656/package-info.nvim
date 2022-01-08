@@ -26,7 +26,7 @@ describe("Config", function()
 
         config.__register_user_options(new_config)
 
-        assert.are.equals(vim.inspect(new_config), vim.inspect(config.options))
+        assert.are.same(new_config, config.options)
     end)
 
     it("should keep default options if not changed by the user", function()
