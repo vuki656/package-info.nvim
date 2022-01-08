@@ -100,6 +100,10 @@ end
 M.run = function()
     local dependency_name = core.get_dependency_name_from_current_line()
 
+    if not dependency_name then
+        return
+    end
+
     local id = loading.new("|  Fetching " .. dependency_name .. " versions")
 
     job({
