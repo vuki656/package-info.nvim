@@ -12,8 +12,17 @@ local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
 
 local M = {
+    -- All found dependancies from package.json as a list of
+    -- {
+    --     version = {
+    --         current: string - current package version,
+    --         latest: string - latest package version,
+    --     },
+    -- }
     __dependencies = {},
+    -- JSON output from npm outdated --json
     __outdated_dependencies = {},
+    -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     __buffer = {},
 }
 
@@ -240,7 +249,6 @@ M.parse_buffer = function()
                 current = M.__clean_version(version),
                 latest = nil,
             },
-            position = nil,
         }
     end
 
