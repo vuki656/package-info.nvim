@@ -13,7 +13,7 @@ local logger = require("package-info.utils.logger")
 
 local M = {
     -- All found dependancies from package.json as a list of
-    -- {
+    -- ["dependency_name"] = {
     --     version = {
     --         current: string - current package version,
     --         latest: string - latest package version,
