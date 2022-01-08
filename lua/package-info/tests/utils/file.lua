@@ -5,6 +5,7 @@ local M = {}
 -- @return nil
 M.create = function(name)
     local file = io.open(name, "w")
+
     file:close()
 end
 
