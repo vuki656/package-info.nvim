@@ -1,4 +1,5 @@
 -- TODO: make sure all functions are atomic if possible
+-- TODO: consider moving stuff out of the core that's not coupled with it
 
 local json_parser
 
