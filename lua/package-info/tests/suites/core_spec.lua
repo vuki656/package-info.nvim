@@ -1,7 +1,6 @@
 -- TODO: split into multiple files
 -- TODO: figure out how to make the mocking for virtual text display more DRY
 -- TODO: option passing to display_virtual_text is janky, see if it can be better in the core itself
--- TODO: assert color groups => makes sure the correct color is used
 
 local spy = require("luassert.spy")
 
@@ -10,6 +9,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
 local logger = require("package-info.utils.logger")
+local to_boolean = require("package-info.utils.to-boolean")
 
 local file = require("package-info.tests.utils.file")
 
@@ -775,6 +775,38 @@ describe("Core", function()
             local dependency_name = core.get_dependency_name_from_line('"react": "16.0.0"')
 
             assert.are.equals("react", dependency_name)
+
+            file.delete(file_name)
+        end)
+    end)
+
+    describe("load_plugin", function()
+        it("shouldn return nil if not in package.json", function()
+            local is_loaded = to_boolean(core.load_plugin())
+
+            assert.is_false(is_loaded)
+        end)
+
+        it("shouldn return load the plugin if in package.json", function()
+            local file_name = "package.json"
+
+            file.create(
+                file_name,
+                [[
+                {
+                    "dependencies": {
+                        "react": "16.0.0"
+                    }
+                }
+                ]]
+            )
+            file.go(file_name)
+
+            spy.on(core, "parser_buffer")
+
+            core.load_plugin()
+
+            assert.spy(core.parse_buffer).was_called()
 
             file.delete(file_name)
         end)
