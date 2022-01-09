@@ -1,3 +1,5 @@
+-- TODO: make sure all functions are atomic if possible
+
 local json_parser
 
 if vim.json then
@@ -268,14 +270,14 @@ M.get_dependency_name_from_line = function(line)
         return nil
     end
 
-    local is_valid_name = M.__dependencies[value[1]]
+    local is_valid_name = to_boolean(M.__dependencies[value[1]])
     local is_valid_version = M.__is_valid_package_version(value[2])
 
     if is_valid_name and is_valid_version then
         return value[1]
-    else
-        return nil
     end
+
+    return nil
 end
 
 --- Parser current buffer if valid
