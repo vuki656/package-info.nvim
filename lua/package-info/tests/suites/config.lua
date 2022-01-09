@@ -10,18 +10,6 @@ describe("Config", function()
         config.options = default_options
     end)
 
-    describe("register_start", function()
-        it("should register load command", function()
-            config.__register_start()
-
-            local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
-
-            local is_registered = string.find(autocommands, "require('package-info.core').load_plugin()", 0, true)
-
-            assert.is_true(is_registered ~= nil)
-        end)
-    end)
-
     describe("register_colorscheme_initialization", function()
         it("should register colors", function()
             vim.cmd('let g:colors_name="weird-theme"')
