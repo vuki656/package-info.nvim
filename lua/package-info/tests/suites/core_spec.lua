@@ -9,6 +9,7 @@ local core = require("package-info.core")
 local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
+local logger = require("package-info.utils.logger")
 
 local file = require("package-info.tests.utils.file")
 
@@ -379,6 +380,68 @@ describe("Core", function()
             assert.are.equals(config.options.icons.style.up_to_date, dependency_metadata.icon)
             assert.are.equals(dependency.version.current, dependency_metadata.version)
             assert.are.equals(constants.HIGHLIGHT_GROUPS.up_to_date, dependency_metadata.group)
+
+            file.delete(file_name)
+        end)
+    end)
+
+    describe("get_dependency_name_from_current_line", function()
+        it("should get the name correctly", function()
+            local dependency = {
+                position = 3,
+                name = "react",
+                version = "16.0.0",
+            }
+
+            -- Simulate dependancies being parsed
+            core.__dependencies = {
+                [dependency.name] = {
+                    version = {},
+                },
+            }
+
+            local file_name = "package.json"
+
+            file.create(
+                file_name,
+                string.format(
+                    [[
+                    {
+                        "dependencies": {
+                            "%s": "%s"
+                        }
+                    }
+                    ]],
+                    dependency.name,
+                    dependency.version
+                )
+            )
+
+            file.go(file_name)
+
+            -- Go to line where dependency is
+            vim.cmd(tostring(dependency.position))
+
+            local dependency_name = core.get_dependency_name_from_current_line()
+
+            assert.are.equals(dependency.name, dependency_name)
+
+            file.delete(file_name)
+        end)
+
+        it("should return nil if no valid dependency is on the current line", function()
+            local file_name = "package.json"
+
+            file.create(file_name)
+            file.go(file_name)
+
+            spy.on(logger, "warn")
+
+            local dependency_name = core.get_dependency_name_from_current_line()
+
+            assert.is_nil(dependency_name)
+            assert.spy(logger.warn).was_called(1)
+            assert.spy(logger.warn).was_called_with("No valid package on current line")
 
             file.delete(file_name)
         end)
