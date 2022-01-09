@@ -220,7 +220,7 @@ M.parse_buffer = function()
     local buffer_json_value = M.__decode_json_string(buffer_string_value)
 
     if buffer_json_value == nil then
-        return
+        return nil
     end
 
     local dev_dependencies = buffer_json_value["devDependencies"] or {}
@@ -280,7 +280,7 @@ end
 -- @return nil
 M.load_plugin = function()
     if not M.is_valid_package_json() then
-        return
+        return nil
     end
 
     M.parse_buffer()
