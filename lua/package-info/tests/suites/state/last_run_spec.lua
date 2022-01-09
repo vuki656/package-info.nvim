@@ -1,22 +1,33 @@
 local state = require("package-info.state")
+local reset = require("package-info.tests.utils.reset")
 
-describe("State", function()
-    describe("buffer", function()
-        it("should save buffer id", function()
-            state.buffer.save()
-
-            assert.is_true(state.buffer.id ~= nil)
+describe("State last_run", function()
+    describe("update", function()
+        before_each(function()
+            reset.state()
         end)
-    end)
 
-    describe("last_run", function()
+        after_each(function()
+            reset.state()
+        end)
+
         it("should update last run time", function()
             state.last_run.update()
 
             assert.is_true(state.last_run.time ~= nil)
         end)
+    end)
 
-        it("should_skip should return false if there was no last run", function()
+    describe("should_skip", function()
+        before_each(function()
+            reset.state()
+        end)
+
+        after_each(function()
+            reset.state()
+        end)
+
+        it("should return false if there was no last run", function()
             state.last_run.time = nil
 
             local should_skip = state.last_run.should_skip()
@@ -24,7 +35,7 @@ describe("State", function()
             assert.is_false(should_skip)
         end)
 
-        it("should_skip should return true if there was a show action run within the past hour", function()
+        it("should return true if there was a show action run within the past hour", function()
             state.last_run.update()
 
             local should_skip = state.last_run.should_skip()
@@ -32,7 +43,7 @@ describe("State", function()
             assert.is_true(should_skip)
         end)
 
-        it("should_skip should return false if there was no show action run within the past hour", function()
+        it("should return false if there was no show action run within the past hour", function()
             local TWO_HOURS_IN_SECONDS = 7200
 
             -- Simulate 2 hour passing

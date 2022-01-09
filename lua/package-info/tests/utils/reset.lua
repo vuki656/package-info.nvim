@@ -9,8 +9,6 @@ M.core = function()
     core.__dependencies = {}
     core.__outdated_dependencies = {}
     core.__buffer = {}
-
-    core.load_plugin()
 end
 
 M.config = function()
