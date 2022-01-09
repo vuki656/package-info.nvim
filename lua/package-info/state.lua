@@ -2,6 +2,14 @@ local M = {
     displayed = false,
 }
 
+--- Resets the state to the initial values
+-- @return nil
+M.reset = function()
+    M.buffer.id = nil
+    M.last_run.time = nil
+    M.namespace.id = nil
+end
+
 M.buffer = {
     id = nil,
     --- Set the buffer id to current buffer id

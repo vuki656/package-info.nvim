@@ -87,7 +87,8 @@ M.__reload_buffer = function()
 
     if current_buffer_number == state.buffer.id then
         local view = vim.fn.winsaveview()
-        vim.cmd(":e")
+
+        vim.cmd("edit")
         vim.fn.winrestview(view)
     end
 end

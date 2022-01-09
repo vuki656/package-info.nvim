@@ -3,6 +3,7 @@ std = {
         "rawget",
         "next",
         "before_each",
+        "print",
         "pcall",
         "select",
         "tostring",
