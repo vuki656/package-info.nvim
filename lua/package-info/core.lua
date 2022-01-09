@@ -10,6 +10,7 @@ local constants = require("package-info.utils.constants")
 local state = require("package-info.state")
 local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
+local to_boolean = require("package-info.utils.to-boolean")
 
 local M = {
     -- All found dependancies from package.json as a list of
@@ -196,11 +197,14 @@ M.display_virtual_text = function(outdated_dependencies)
     state.displayed = true
 end
 
+-- TODO: this should also try and parse buffer to make sure its in a valid format
+-- TODO: merge with other checker
 --- Checks if the currently opened file is package.json and has content
 -- @return boolean
 M.is_valid_package_json = function()
     local current_buffer_name = vim.api.nvim_buf_get_name(0)
-    local is_package_json = string.match(current_buffer_name, "package.json$")
+
+    local is_package_json = to_boolean(string.match(current_buffer_name, "package.json$"))
     local buffer_size = vim.fn.getfsize(current_buffer_name)
 
     local is_valid = is_package_json and buffer_size > 0
