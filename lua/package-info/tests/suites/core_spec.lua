@@ -446,4 +446,68 @@ describe("Core", function()
             file.delete(file_name)
         end)
     end)
+
+    describe("reload", function()
+        it("should reload the buffer if it's package.json", function()
+            local file_name = "package.json"
+
+            file.create(
+                file_name,
+                [[
+                {
+                    "dependencies": {
+                        "react": "16.0.0"
+                    }
+                }
+                ]]
+            )
+
+            file.go(file_name)
+
+            spy.on(core, "__reload_buffer")
+            spy.on(core, "parse_buffer")
+
+            core.reload()
+
+            assert.spy(core.__reload_buffer).was_called(2)
+            assert.spy(core.parse_buffer).was_called(1)
+
+            file.delete(file_name)
+        end)
+
+        it("should reload the buffer and re-render virtual text if it's displayed and in package.json", function()
+            state.displayed = true
+
+            local file_name = "package.json"
+
+            file.create(
+                file_name,
+                [[
+                {
+                    "dependencies": {
+                        "react": "16.0.0"
+                    }
+                }
+                ]]
+            )
+
+            file.go(file_name)
+
+            config.setup()
+
+            spy.on(core, "__reload_buffer")
+            spy.on(core, "parse_buffer")
+            spy.on(core, "clear_virtual_text")
+            spy.on(core, "display_virtual_text")
+
+            core.reload()
+
+            assert.spy(core.__reload_buffer).was_called(2)
+            assert.spy(core.parse_buffer).was_called(1)
+            assert.spy(core.clear_virtual_text).was_called(1)
+            assert.spy(core.display_virtual_text).was_called(1)
+
+            file.delete(file_name)
+        end)
+    end)
 end)
