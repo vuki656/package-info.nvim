@@ -38,22 +38,27 @@ M.delete_package_json = function()
 end
 
 --- Create a file under the given path
--- @param path: string path with file name to create
--- @param content: string? - content to put in the file
--- @param go_to_file: boolean? - if true, switch to the created file right away
+-- @param props: table? -- contains
+-- {
+--      path: string path with file name to create
+--      content: string? - content to put in the file
+--      go: boolean? - if true, switch to the created file right away
+-- }
 -- @return nil
-M.create = function(path, content, go_to_file)
-    local file = io.open(path, "w")
+M.create = function(props)
+    local file = io.open(props.path, "w")
 
-    if content ~= nil then
-        file:write(content)
+    if props.content ~= nil then
+        file:write(props.content)
     end
 
     file:close()
 
-    if go_to_file then
-        M.go(path)
+    if props.go then
+        M.go(props.path)
     end
+
+    return { path = props.path }
 end
 
 --- Go to a file under the given path
