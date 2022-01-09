@@ -3,25 +3,27 @@ local register_highlight_group = require("package-info.utils.register-highlight-
 local register_autocmd = require("package-info.utils.register-autocmd")
 local state = require("package-info.state")
 
+local default = {
+    colors = {
+        up_to_date = "#3C4048",
+        outdated = "#d19a66",
+    },
+    icons = {
+        enable = true,
+        style = {
+            up_to_date = "|  ",
+            outdated = "|  ",
+        },
+    },
+    autostart = true,
+    package_manager = constants.PACKAGE_MANAGERS.npm,
+    hide_up_to_date = false,
+    hide_unstable_versions = false,
+}
+
 --- Default options
 local M = {
-    options = {
-        colors = {
-            up_to_date = "#3C4048",
-            outdated = "#d19a66",
-        },
-        icons = {
-            enable = true,
-            style = {
-                up_to_date = "|  ",
-                outdated = "|  ",
-            },
-        },
-        autostart = true,
-        package_manager = constants.PACKAGE_MANAGERS.npm,
-        hide_up_to_date = false,
-        hide_unstable_versions = false,
-    },
+    options = default,
 }
 
 --- Register namespace for usage for virtual text
@@ -68,7 +70,7 @@ end
 -- @param user_options: default M table - all the options user can provide in the plugin config
 -- @return nil
 M.__register_user_options = function(user_options)
-    M.options = vim.tbl_deep_extend("force", M.options, user_options or {})
+    M.options = vim.tbl_deep_extend("force", default, user_options or {})
 end
 
 --- Register autocommand for loading the plugin

@@ -108,11 +108,11 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
         icon = config.options.icons.style.up_to_date,
-        text = M.__dependencies[dependency_name].version.current,
+        version = M.__dependencies[dependency_name].version.current,
     }
 
-    if state.hide_up_to_date then
-        package_metadata.text = ""
+    if config.options.hide_up_to_date then
+        package_metadata.version = ""
         package_metadata.icon = ""
     end
 
@@ -121,7 +121,7 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
             package_metadata = {
                 group = constants.HIGHLIGHT_GROUPS.outdated,
                 icon = config.options.icons.style.outdated,
-                text = M.__clean_version(outdated_dependencies[dependency_name].latest),
+                version = M.__clean_version(outdated_dependencies[dependency_name].latest),
             }
         end
     end
@@ -131,10 +131,13 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
     end
 
     vim.api.nvim_buf_set_extmark(state.buffer.id, state.namespace.id, line_number - 1, 0, {
-        virt_text = { { package_metadata.icon .. package_metadata.text, package_metadata.group } },
+        virt_text = { { package_metadata.icon .. package_metadata.version, package_metadata.group } },
         virt_text_pos = "eol",
         priority = 200,
     })
+
+    -- NOTE: used for testing only since there's not way to get virtual text content via nvim API
+    return package_metadata
 end
 
 --- Gets package from current line
