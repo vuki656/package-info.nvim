@@ -15,7 +15,13 @@ M.config = function()
     config.options = config.__DEFAULT_OPTIONS
 
     -- Delete all registered autocommands from plugin autogroup
-    vim.cmd("autocmd! " .. constants.AUTOGROUP)
+    local function reset_autocommands()
+        vim.cmd("autocmd! " .. constants.AUTOGROUP)
+    end
+
+    if pcall(reset_autocommands) then
+        reset_autocommands()
+    end
 end
 
 M.state = function()

@@ -6,10 +6,6 @@ describe("State buffer", function()
         reset.state()
     end)
 
-    after_each(function()
-        reset.state()
-    end)
-
     it("should save buffer id", function()
         state.buffer.save()
 

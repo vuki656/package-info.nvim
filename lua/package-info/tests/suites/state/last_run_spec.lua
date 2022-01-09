@@ -7,10 +7,6 @@ describe("State last_run", function()
             reset.state()
         end)
 
-        after_each(function()
-            reset.state()
-        end)
-
         it("should update last run time", function()
             state.last_run.update()
 
@@ -20,10 +16,6 @@ describe("State last_run", function()
 
     describe("should_skip", function()
         before_each(function()
-            reset.state()
-        end)
-
-        after_each(function()
             reset.state()
         end)
 

@@ -12,47 +12,6 @@ describe("Config", function()
         config.options = default_options
     end)
 
-    describe("register_user_options", function()
-        it("should register user options", function()
-            local new_config = {
-                colors = {
-                    up_to_date = "#ffffff",
-                    outdated = "#333333",
-                },
-                icons = {
-                    enable = false,
-                    style = {
-                        up_to_date = "GG",
-                        outdated = "NN",
-                    },
-                },
-                autostart = false,
-                package_manager = constants.PACKAGE_MANAGERS.yarn,
-                hide_up_to_date = true,
-                hide_unstable_versions = true,
-            }
-
-            config.__register_user_options(new_config)
-
-            assert.are.same(new_config, config.options)
-        end)
-
-        it("should keep default options if not changed by the user", function()
-            local new_config = {
-                colors = {
-                    up_to_date = "#ffffff",
-                    outdated = "#333333",
-                },
-            }
-
-            config.__register_user_options(new_config)
-
-            local merged_config = vim.tbl_deep_extend("keep", config.options, new_config)
-
-            assert.are.same(merged_config, config.options)
-        end)
-    end)
-
     describe("register_package_manager", function()
         it("should detect npm package manager", function()
             local file_name = "package-lock.json"

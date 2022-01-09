@@ -3,7 +3,6 @@ local register_highlight_group = require("package-info.utils.register-highlight-
 local register_autocmd = require("package-info.utils.register-autocmd")
 local state = require("package-info.state")
 
---- Default options
 local M = {
     __DEFAULT_OPTIONS = {
         colors = {
@@ -71,7 +70,7 @@ end
 -- @param user_options: M.__DEFAULT_OPTIONS - all the options user can provide in the plugin config
 -- @return nil
 M.__register_user_options = function(user_options)
-    M.options = vim.tbl_deep_extend("force", {}, M.__DEFAULT_OPTIONS, user_options or {})
+    M.options = vim.tbl_deep_extend("keep", user_options or {}, M.__DEFAULT_OPTIONS)
 end
 
 --- Register autocommand for loading the plugin
