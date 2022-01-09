@@ -2,60 +2,12 @@ local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
 local state = require("package-info.state")
 
-local file = require("package-info.tests.utils.file")
-
 describe("Config", function()
     local default_options = config.options
 
     before_each(function()
         -- Reset options to default ones
         config.options = default_options
-    end)
-
-    describe("register_package_manager", function()
-        it("should detect npm package manager", function()
-            local file_name = "package-lock.json"
-
-            file.create(file_name)
-
-            config.__register_package_manager()
-
-            file.delete(file_name)
-
-            assert.are.equals(constants.PACKAGE_MANAGERS.npm, config.options.package_manager)
-        end)
-
-        it("should detect yarn package manager", function()
-            local file_name = "yarn.lock"
-
-            file.create(file_name)
-
-            config.__register_package_manager()
-
-            file.delete(file_name)
-
-            assert.are.equals(constants.PACKAGE_MANAGERS.yarn, config.options.package_manager)
-        end)
-
-        it("should detect pnpm package manager", function()
-            local file_name = "pnpm-lock.yaml"
-
-            file.create(file_name)
-
-            config.__register_package_manager()
-
-            file.delete(file_name)
-
-            assert.are.equals(constants.PACKAGE_MANAGERS.pnpm, config.options.package_manager)
-        end)
-    end)
-
-    describe("register_namespace", function()
-        it("should register namespace", function()
-            config.__register_namespace()
-
-            assert.are.equals(1, state.namespace.id)
-        end)
     end)
 
     describe("register_start", function()
