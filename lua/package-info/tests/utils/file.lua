@@ -5,6 +5,10 @@ local M = {}
 -- {
 --     go: boolean? - if true, goes to package.json instantly after creation
 -- }
+-- @return table
+-- {
+--     path: string - path to the created file
+-- }
 M.create_package_json = function(props)
     local path = "package.json"
 
@@ -31,6 +35,10 @@ M.create_package_json = function(props)
     if props.go then
         M.go(path)
     end
+
+    return {
+        path = path,
+    }
 end
 
 M.delete_package_json = function()

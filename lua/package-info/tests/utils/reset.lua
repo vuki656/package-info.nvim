@@ -5,12 +5,16 @@ local config = require("package-info.config")
 
 local M = {}
 
+-- Reset core state
+-- @return nil
 M.core = function()
     core.__dependencies = {}
     core.__outdated_dependencies = {}
     core.__buffer = {}
 end
 
+-- Reset config state and delete all plugin autocommands
+-- @return nil
 M.config = function()
     config.options = config.__DEFAULT_OPTIONS
 
@@ -24,12 +28,16 @@ M.config = function()
     end
 end
 
+-- Reset state state
+-- @return nil
 M.state = function()
     state.buffer.id = nil
     state.last_run.time = nil
     state.namespace.id = nil
 end
 
+-- Reset everything
+-- @return nil
 M.all = function()
     M.core()
     M.config()

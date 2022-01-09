@@ -701,36 +701,4 @@ describe("Core", function()
             file.delete(file_name)
         end)
     end)
-
-    describe("load_plugin", function()
-        it("shouldn return nil if not in package.json", function()
-            local is_loaded = to_boolean(core.load_plugin())
-
-            assert.is_false(is_loaded)
-        end)
-
-        it("shouldn return load the plugin if in package.json", function()
-            local file_name = "package.json"
-
-            file.create(
-                file_name,
-                [[
-                {
-                    "dependencies": {
-                        "react": "16.0.0"
-                    }
-                }
-                ]]
-            )
-            file.go(file_name)
-
-            spy.on(core, "parser_buffer")
-
-            core.load_plugin()
-
-            assert.spy(core.parse_buffer).was_called()
-
-            file.delete(file_name)
-        end)
-    end)
 end)
