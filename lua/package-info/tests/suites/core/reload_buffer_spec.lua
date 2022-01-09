@@ -30,15 +30,15 @@ describe("Core reload_buffer", function()
         assert.spy(vim.fn.winrestview).was_called(1)
     end)
 
-    -- it("shouldn't reload the buffer if it's not in package.json", function()
-    --     spy.on(vim, "cmd")
-    --     spy.on(vim.fn, "winsaveview")
-    --     spy.on(vim.fn, "winrestview")
-    --
-    --     core.__reload_buffer()
-    --
-    --     assert.spy(vim.cmd).was_called(0)
-    --     assert.spy(vim.fn.winsaveview).was_called(0)
-    --     assert.spy(vim.fn.winrestview).was_called(0)
-    -- end)
+    it("shouldn't reload the buffer if it's not in package.json", function()
+        spy.on(vim, "cmd")
+        spy.on(vim.fn, "winsaveview")
+        spy.on(vim.fn, "winrestview")
+
+        core.__reload_buffer()
+
+        assert.spy(vim.cmd).was_called(0)
+        assert.spy(vim.fn.winsaveview).was_called(0)
+        assert.spy(vim.fn.winrestview).was_called(0)
+    end)
 end)

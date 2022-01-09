@@ -3,8 +3,6 @@ local register_highlight_group = require("package-info.utils.register-highlight-
 local register_autocmd = require("package-info.utils.register-autocmd")
 local state = require("package-info.state")
 
-local default = {}
-
 --- Default options
 local M = {
     __DEFAULT_OPTIONS = {

@@ -18,42 +18,6 @@ describe("Core", function()
         state.reset()
     end)
 
-    describe("reload_buffer", function()
-        it("should reload the buffer if it's package.json", function()
-            local file_name = "package.json"
-
-            file.create(file_name, '{ "name": "package" }')
-            file.go(file_name)
-
-            spy.on(vim, "cmd")
-            spy.on(vim.fn, "winsaveview")
-            spy.on(vim.fn, "winrestview")
-
-            core.load_plugin()
-            core.__reload_buffer()
-
-            file.delete(file_name)
-
-            assert.spy(vim.cmd).was_called(1)
-            assert.spy(vim.cmd).was_called_with("edit")
-            assert.spy(vim.fn.winsaveview).was_called(1)
-            assert.spy(vim.fn.winrestview).was_called(1)
-        end)
-
-        it("shouldn't reload the buffer if it's not in package.json", function()
-            spy.on(vim, "cmd")
-            spy.on(vim.fn, "winsaveview")
-            spy.on(vim.fn, "winrestview")
-
-            core.load_plugin()
-            core.__reload_buffer()
-
-            assert.spy(vim.cmd).was_called(0)
-            assert.spy(vim.fn.winsaveview).was_called(0)
-            assert.spy(vim.fn.winrestview).was_called(0)
-        end)
-    end)
-
     describe("set_virtual_text", function()
         it("should set the virtual text in the correct position", function()
             local dependency = {
