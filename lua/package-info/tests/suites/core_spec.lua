@@ -10,6 +10,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
 local logger = require("package-info.utils.logger")
+local to_boolean = require("package-info.utils.to-boolean")
 
 local file = require("package-info.tests.utils.file")
 
@@ -461,7 +462,6 @@ describe("Core", function()
                 }
                 ]]
             )
-
             file.go(file_name)
 
             spy.on(core, "__reload_buffer")
@@ -490,7 +490,6 @@ describe("Core", function()
                 }
                 ]]
             )
-
             file.go(file_name)
 
             config.setup()
@@ -526,7 +525,6 @@ describe("Core", function()
                 }
                 ]]
             )
-
             file.go(file_name)
 
             config.setup()
@@ -558,7 +556,6 @@ describe("Core", function()
                 }
                 ]]
             )
-
             file.go(file_name)
 
             config.setup()
@@ -578,7 +575,6 @@ describe("Core", function()
             local file_name = "package.json"
 
             file.create(file_name, nil)
-
             file.go(file_name)
 
             config.setup()
@@ -598,7 +594,6 @@ describe("Core", function()
             local file_name = "test.txt"
 
             file.create(file_name, nil)
-
             file.go(file_name)
 
             config.setup()
@@ -622,7 +617,6 @@ describe("Core", function()
             local file_name = "package.json"
 
             file.create(file_name, nil)
-
             file.go(file_name)
 
             config.setup()
@@ -634,6 +628,48 @@ describe("Core", function()
             assert.is_false(is_valid)
             assert.spy(state.buffer.save).was_called(0)
             assert.is_nil(state.buffer.id)
+
+            file.delete(file_name)
+        end)
+    end)
+
+    describe("parse_buffer", function()
+        it("should map and set all dependancies to state", function()
+            local buffer_raw_value = [[
+                {
+                    "dependencies": {
+                        "react": "16.0.0"
+                    },
+                    "devDependencies": {
+                        "eslint": "^8.0.0"
+                    }
+                }
+            ]]
+
+            local file_name = "package.json"
+
+            file.create(file_name, buffer_raw_value)
+            file.go(file_name)
+
+            config.setup()
+            core.load_plugin()
+
+            core.parse_buffer()
+
+            assert.are.same(core.__dependencies, {
+                ["eslint"] = {
+                    version = {
+                        current = "8.0.0",
+                        latest = nil,
+                    },
+                },
+                ["react"] = {
+                    version = {
+                        current = "16.0.0",
+                        latest = nil,
+                    },
+                },
+            })
 
             file.delete(file_name)
         end)

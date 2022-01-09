@@ -160,16 +160,18 @@ end
 --- Rereads the current buffer value and reloads the buffer
 -- @return nil
 M.reload = function()
-    M.__reload_buffer()
+    if M.is_valid_package_json() == true then
+        M.__reload_buffer()
 
-    M.parse_buffer()
+        M.parse_buffer()
 
-    if state.displayed then
-        M.clear_virtual_text()
-        M.display_virtual_text()
+        if state.displayed then
+            M.clear_virtual_text()
+            M.display_virtual_text()
+        end
+
+        M.__reload_buffer()
     end
-
-    M.__reload_buffer()
 end
 
 --- Handles virtual text displaying
@@ -222,10 +224,6 @@ M.parse_buffer = function()
     local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = M.__decode_json_string(buffer_string_value)
-
-    if buffer_json_value == nil then
-        return nil
-    end
 
     local dev_dependencies = buffer_json_value["devDependencies"] or {}
     local prod_dependencies = buffer_json_value["dependencies"] or {}
