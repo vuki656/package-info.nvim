@@ -163,7 +163,7 @@ end
 --- Rereads the current buffer value and reloads the buffer
 -- @return nil
 M.reload = function()
-    if M.is_valid_package_json() == true then
+    if M.is_valid_package_json() then
         M.__reload_buffer()
 
         M.parse_buffer()

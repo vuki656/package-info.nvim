@@ -21,7 +21,7 @@ M.run = function(options)
 
     options = options or { force = false }
 
-    if state.last_run.should_skip() and options.force == false then
+    if state.last_run.should_skip() and not options.force then
         core.display_virtual_text()
         core.reload()
 
