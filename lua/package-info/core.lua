@@ -208,15 +208,12 @@ end
 -- @return boolean
 M.is_valid_package_json = function()
     local current_buffer_name = vim.api.nvim_buf_get_name(0)
+    local current_buffer_content = vim.api.nvim_buf_get_lines(0, 1, -1, false)
 
     local is_package_json = to_boolean(string.match(current_buffer_name, "package.json$"))
-    local buffer_size = vim.fn.getfsize(current_buffer_name)
+    local has_content = to_boolean(current_buffer_content[1])
 
-    local is_valid = is_package_json and buffer_size > 0
-
-    if is_valid then
-        state.buffer.save()
-    end
+    local is_valid = is_package_json and has_content
 
     return is_valid
 end
@@ -287,6 +284,8 @@ M.load_plugin = function()
     if not M.is_valid_package_json() then
         return nil
     end
+
+    state.buffer.save()
 
     M.parse_buffer()
 end

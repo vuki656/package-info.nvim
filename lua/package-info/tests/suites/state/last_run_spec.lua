@@ -4,7 +4,11 @@ local reset = require("package-info.tests.utils.reset")
 describe("State last_run", function()
     describe("update", function()
         before_each(function()
-            reset.state()
+            reset.all()
+        end)
+
+        after_each(function()
+            reset.all()
         end)
 
         it("should update last run time", function()
@@ -16,7 +20,11 @@ describe("State last_run", function()
 
     describe("should_skip", function()
         before_each(function()
-            reset.state()
+            reset.all()
+        end)
+
+        after_each(function()
+            reset.all()
         end)
 
         it("should return false if there was no last run", function()

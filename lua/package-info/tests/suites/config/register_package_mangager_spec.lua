@@ -6,7 +6,11 @@ local reset = require("package-info.tests.utils.reset")
 
 describe("Config register_package_manager", function()
     before_each(function()
-        reset.config()
+        reset.all()
+    end)
+
+    after_each(function()
+        reset.all()
     end)
 
     it("should detect npm package manager", function()

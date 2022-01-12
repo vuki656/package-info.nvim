@@ -7,8 +7,11 @@ local file = require("package-info.tests.utils.file")
 
 describe("Core reload_buffer", function()
     before_each(function()
-        reset.core()
-        reset.state()
+        reset.all()
+    end)
+
+    before_each(function()
+        reset.all()
     end)
 
     it("should reload the buffer if it's package.json", function()
