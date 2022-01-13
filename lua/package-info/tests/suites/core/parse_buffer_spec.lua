@@ -23,7 +23,7 @@ describe("Core parse_buffer", function()
         for _, dependency in pairs(package_json.dependencies) do
             expected_dependency_list[dependency.name] = {
                 version = {
-                    current = core.__clean_version(dependency.version),
+                    current = core.__clean_version(dependency.version.current),
                 },
             }
         end

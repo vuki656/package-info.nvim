@@ -33,15 +33,27 @@ M.create_package_json = function(props)
     local dependencies = {
         react = {
             name = "react",
-            version = "16.0.0",
+            version = {
+                current = "16.0.0",
+                latest = "18.0.0",
+            },
+            position = 7,
         },
         next = {
             name = "next",
-            version = "12.0.3",
+            version = {
+                current = "12.0.3",
+                latest = "12.0.3",
+            },
+            position = 8,
         },
         eslint = {
             name = "eslint",
-            version = "^8.0.0",
+            version = {
+                current = "^8.0.0",
+                latest = "9.0.0",
+            },
+            position = 11,
         },
     }
 

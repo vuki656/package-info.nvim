@@ -1,11 +1,4 @@
-local spy = require("luassert.spy")
-
 local core = require("package-info.core")
-local state = require("package-info.state")
-local config = require("package-info.config")
-local constants = require("package-info.utils.constants")
-local logger = require("package-info.utils.logger")
-local to_boolean = require("package-info.utils.to-boolean")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
@@ -49,7 +42,11 @@ describe("Core get_dependency_name_from_line", function()
         core.load_plugin()
 
         local dependency_name = core.get_dependency_name_from_line(
-            string.format('"%s": "%s"', package_json.dependencies.react.name, package_json.dependencies.react.version)
+            string.format(
+                '"%s": "%s"',
+                package_json.dependencies.react.name,
+                package_json.dependencies.react.version.current
+            )
         )
 
         assert.are.equals(package_json.dependencies.react.name, dependency_name)
