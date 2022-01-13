@@ -22,13 +22,28 @@ M.create_package_json = function(props)
             },
             "dependencies": {
                 "react": "16.0.0",
-                "nextjs": "16.0.0"
+                "next": "12.0.3"
             },
             "devDependencies": {
                 "eslint": "^8.0.0"
             }
         }
     ]])
+
+    local dependencies = {
+        react = {
+            name = "react",
+            version = "16.0.0",
+        },
+        next = {
+            name = "next",
+            version = "12.0.3",
+        },
+        eslint = {
+            name = "eslint",
+            version = "^8.0.0",
+        },
+    }
 
     file:close()
 
@@ -38,6 +53,7 @@ M.create_package_json = function(props)
 
     return {
         path = path,
+        dependencies = dependencies,
     }
 end
 
