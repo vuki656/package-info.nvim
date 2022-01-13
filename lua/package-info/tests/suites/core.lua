@@ -554,48 +554,6 @@ describe("Core", function()
         end)
     end)
 
-    describe("parse_buffer", function()
-        it("should map and set all dependancies to state", function()
-            local buffer_raw_value = [[
-                {
-                    "dependencies": {
-                        "react": "16.0.0"
-                    },
-                    "devDependencies": {
-                        "eslint": "^8.0.0"
-                    }
-                }
-            ]]
-
-            local file_name = "package.json"
-
-            file.create(file_name, buffer_raw_value)
-            file.go(file_name)
-
-            config.setup()
-            core.load_plugin()
-
-            core.parse_buffer()
-
-            assert.are.same(core.__dependencies, {
-                ["eslint"] = {
-                    version = {
-                        current = "8.0.0",
-                        latest = nil,
-                    },
-                },
-                ["react"] = {
-                    version = {
-                        current = "16.0.0",
-                        latest = nil,
-                    },
-                },
-            })
-
-            file.delete(file_name)
-        end)
-    end)
-
     describe("clear_virtual_text", function()
         it("shouldn't run if nothing is displayed", function()
             state.displayed = false
