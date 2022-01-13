@@ -225,8 +225,14 @@ M.parse_buffer = function()
     local buffer_string_value = table.concat(buffer_raw_value)
     local buffer_json_value = M.__decode_json_string(buffer_string_value)
 
-    local dev_dependencies = buffer_json_value["devDependencies"] or {}
-    local prod_dependencies = buffer_json_value["dependencies"] or {}
+    local dev_dependencies = {}
+    local prod_dependencies = {}
+
+    if to_boolean(buffer_json_value) then
+        dev_dependencies = buffer_json_value["devDependencies"]
+        prod_dependencies = buffer_json_value["dependencies"]
+    end
+
     local all_dependencies = vim.tbl_extend("error", {}, dev_dependencies, prod_dependencies)
 
     local dependencies = {}
