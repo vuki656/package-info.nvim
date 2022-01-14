@@ -214,9 +214,7 @@ M.is_valid_package_json = function()
     local is_package_json = to_boolean(string.match(current_buffer_name, "package.json$"))
     local has_content = to_boolean(current_buffer_content[1])
 
-    local is_valid = is_package_json and has_content
-
-    return is_valid
+    return is_package_json and has_content
 end
 
 --- Loads current buffer into state
