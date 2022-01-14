@@ -66,6 +66,7 @@ M.create_package_json = function(props)
     return {
         path = path,
         dependencies = dependencies,
+        total_count = 3,
     }
 end
 

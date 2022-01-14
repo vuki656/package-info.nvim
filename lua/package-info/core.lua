@@ -1,5 +1,6 @@
 -- TODO: make sure all functions are atomic if possible
 -- TODO: consider moving stuff out of the core that's not coupled with it
+-- TODO: move test package json deletion to before assertion to not mess up next tests
 
 local json_parser
 

@@ -18,37 +18,6 @@ describe("Core", function()
         state.reset()
     end)
 
-    describe("display_virtual_text", function()
-        it("should be called for each dependency in package.json", function()
-            local file_name = "package.json"
-
-            file.create(
-                file_name,
-                [[
-                {
-                    "dependencies": {
-                        "react": "16.0.0",
-                        "nextjs": "12.1.1"
-                    }
-                }
-                ]]
-            )
-            file.go(file_name)
-
-            config.setup()
-            core.load_plugin()
-
-            spy.on(core, "__set_virtual_text")
-
-            core.reload()
-
-            assert.is_true(state.displayed)
-            assert.spy(core.__set_virtual_text).was_called(2)
-
-            file.delete(file_name)
-        end)
-    end)
-
     describe("is_valid_package_json", function()
         it("should return true for valid package.json", function()
             local file_name = "package.json"
