@@ -46,4 +46,4 @@ jobs:
             curl -Lo build/neovim/v0.6.0/nvim https://github.com/neovim/neovim/releases/download/v0.6.0/nvim.appimage
             chmod +x build/neovim/v0.6.0/nvim
           }
-          build/neovim/v0.6.0/nvim --headless --noplugin -u lua/package-info/tests/minimal.vim -c "PlenaryBustedDirectory lua/package-info/tests { minimal_init = 'lua/package-info/tests/minimal.vim' }"
+          build/neovim/v0.6.0/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
