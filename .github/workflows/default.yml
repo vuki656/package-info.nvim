@@ -13,6 +13,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --color always --check .
 
+  luacheck:
+    name: Lint Code - Luacheck
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: Jayrgo/luacheck-action@v1
+
   test:
     name: Test
     runs-on: ubuntu-latest

@@ -1,5 +1,3 @@
--- FIXME: Sometimes randomly fails
-
 local core = require("package-info.core")
 local state = require("package-info.state")
 local config = require("package-info.config")
