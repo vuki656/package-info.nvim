@@ -2,7 +2,7 @@
 -- TODO: yarn 1 support
 -- TODO: add luacheck in pipeline
 -- TODO: rename package to dependency everywhere
--- TODO: check if there is a text changes event, if so, redraw the dependencies in the buffer
+-- TODO: check if there is a text changes event, if so, redraw the dependencies in the buffer, TextChanged autocmd
 
 local M = {}
 

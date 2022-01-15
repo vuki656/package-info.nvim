@@ -4,6 +4,7 @@ local config = require("package-info.config")
 local loading = require("package-info.ui.generic.loading-status")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
+local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
 
 local dependency_version_select = require("package-info.ui.dependency-version-select")
@@ -99,6 +100,10 @@ end
 --- Runs the change version action
 -- @return nil
 M.run = function()
+    if not state.is_loaded() then
+        return
+    end
+
     local dependency_name = core.get_dependency_name_from_current_line()
 
     if not dependency_name then

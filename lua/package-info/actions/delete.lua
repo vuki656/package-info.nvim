@@ -2,6 +2,7 @@ local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
 local core = require("package-info.core")
 local config = require("package-info.config")
+local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
 
 local loading = require("package-info.ui.generic.loading-status")
@@ -28,6 +29,10 @@ end
 --- Runs the delete action
 -- @return nil
 M.run = function()
+    if not state.is_loaded() then
+        return
+    end
+
     local dependency_name = core.get_dependency_name_from_current_line()
 
     if dependency_name == nil then

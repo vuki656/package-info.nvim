@@ -1,6 +1,7 @@
 local core = require("package-info.core")
 local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
+local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
 
@@ -28,6 +29,10 @@ end
 --- Runs the update dependency action
 -- @return nil
 M.run = function()
+    if not state.is_loaded() then
+        return
+    end
+
     local dependency_name = core.get_dependency_name_from_current_line()
 
     if dependency_name == nil then

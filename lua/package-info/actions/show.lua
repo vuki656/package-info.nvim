@@ -9,7 +9,7 @@ local M = {}
 --- Runs the show outdated dependencies action
 -- @return nil
 M.run = function(options)
-    if not core.is_valid_package_json() then
+    if not state.is_loaded() then
         return
     end
 

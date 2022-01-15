@@ -1,5 +1,7 @@
 -- TODO: make sure all functions are atomic if possible
 -- TODO: consider moving stuff out of the core that's not coupled with it
+-- TODO: if you have invalid json, then fix it, plugin still wont run
+-- TODO: action tests
 
 local json_parser
 
@@ -65,23 +67,6 @@ M.__is_valid_package_version = function(value)
     end
 
     return is_valid
-end
-
---- Try and decode json from string and panic if invalid
--- @param value: string - json string to try and decode
--- @return json?: table - converted json value
-M.__decode_json_string = function(value)
-    local function decode()
-        json_parser.decode(value)
-    end
-
-    if pcall(decode) then
-        return json_parser.decode(value)
-    else
-        logger.error("Invalid JSON format in package.json")
-
-        return nil
-    end
 end
 
 --- Reloads the buffer if it's package.json
@@ -163,18 +148,20 @@ end
 --- Rereads the current buffer value and reloads the buffer
 -- @return nil
 M.reload = function()
-    if M.is_valid_package_json() then
-        M.__reload_buffer()
-
-        M.parse_buffer()
-
-        if state.displayed then
-            M.clear_virtual_text()
-            M.display_virtual_text()
-        end
-
-        M.__reload_buffer()
+    if not state.loaded then
+        return
     end
+
+    M.__reload_buffer()
+
+    M.parse_buffer()
+
+    if state.displayed then
+        M.clear_virtual_text()
+        M.display_virtual_text()
+    end
+
+    M.__reload_buffer()
 end
 
 --- Handles virtual text displaying
@@ -202,18 +189,35 @@ M.display_virtual_text = function(outdated_dependencies)
     state.displayed = true
 end
 
--- TODO: this should also try and parse buffer to make sure its in a valid format
--- TODO: merge with other checker
---- Checks if the currently opened file is package.json and has content
+--- Checks if the currently opened file
+---    - Is a file named package.json
+---    - Has content
+---    - Json is in valid format
 -- @return boolean
 M.is_valid_package_json = function()
-    local current_buffer_name = vim.api.nvim_buf_get_name(0)
-    local current_buffer_content = vim.api.nvim_buf_get_lines(0, 1, -1, false)
+    local buffer_name = vim.api.nvim_buf_get_name(0)
+    local is_package_json = to_boolean(string.match(buffer_name, "package.json$"))
 
-    local is_package_json = to_boolean(string.match(current_buffer_name, "package.json$"))
-    local has_content = to_boolean(current_buffer_content[1])
+    if not is_package_json then
+        return false
+    end
 
-    return is_package_json and has_content
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 1, -1, false)
+    local has_content = to_boolean(buffer_content[1])
+
+    if not has_content then
+        return false
+    end
+
+    buffer_content = vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false)
+
+    if pcall(function()
+        json_parser.decode(table.concat(buffer_content))
+    end) then
+        return true
+    end
+
+    return false
 end
 
 --- Loads current buffer into state
@@ -221,7 +225,7 @@ end
 M.parse_buffer = function()
     local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     local buffer_string_value = table.concat(buffer_raw_value)
-    local buffer_json_value = M.__decode_json_string(buffer_string_value)
+    local buffer_json_value = json_parser.decode(buffer_string_value)
 
     local dev_dependencies = {}
     local prod_dependencies = {}
@@ -286,10 +290,13 @@ end
 -- @return nil
 M.load_plugin = function()
     if not M.is_valid_package_json() then
+        state.loaded = false
+
         return nil
     end
 
     state.buffer.save()
+    state.loaded = true
 
     M.parse_buffer()
 end

@@ -1,4 +1,5 @@
 local core = require("package-info.core")
+local state = require("package-info.state")
 local job = require("package-info.utils.job")
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
@@ -74,6 +75,8 @@ end
 --- Runs the install new dependency action
 -- @return nil
 M.run = function()
+    -- TODO: this should detect if its a project with package json
+
     dependency_type_select.new({
         on_submit = function(selected_dependency_type)
             M.__display_dependency_name_input(selected_dependency_type)

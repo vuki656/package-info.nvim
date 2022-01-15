@@ -1,6 +1,22 @@
+local logger = require("package-info.utils.logger")
+
 local M = {
+    -- TODO: rename to virtual_text_displayed
+    --- If true the virtual text has been displayed
     displayed = false,
+    --- If true the current buffer is package json, with content and correct format
+    loaded = false,
 }
+
+M.is_loaded = function()
+    if not M.loaded then
+        logger.warn("Not in valid package.json file")
+
+        return false
+    end
+
+    return true
+end
 
 M.buffer = {
     id = nil,
