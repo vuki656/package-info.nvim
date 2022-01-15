@@ -3,7 +3,6 @@
 -- TODO: add luacheck in pipeline
 -- TODO: rename package to dependency everywhere
 -- TODO: check if there is a text changes event, if so, redraw the dependencies in the buffer
--- TODO replace os.stuff with :e :w
 
 local M = {}
 

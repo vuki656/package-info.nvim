@@ -72,6 +72,7 @@ end
 
 M.delete_package_json = function()
     os.remove("package.json")
+    vim.cmd("edit void")
 end
 
 --- Create a file under the given path
@@ -110,6 +111,7 @@ end
 -- @return nil
 M.delete = function(path)
     os.remove(path)
+    vim.cmd("edit void")
 end
 
 return M

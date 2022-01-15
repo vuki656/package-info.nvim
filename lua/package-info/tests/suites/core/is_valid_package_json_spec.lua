@@ -1,9 +1,4 @@
-local spy = require("luassert.spy")
-
 local core = require("package-info.core")
-local state = require("package-info.state")
-local config = require("package-info.config")
-local constants = require("package-info.utils.constants")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
@@ -25,6 +20,8 @@ describe("Core is_valid_package_json", function()
         file.delete_package_json()
 
         assert.is_true(is_valid)
+
+        file.delete_package_json()
     end)
 
     it("should return false if buffer empty", function()
