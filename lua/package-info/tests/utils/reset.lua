@@ -36,6 +36,10 @@ end
 M.all = function()
     M.config()
     M.state()
+
+    -- FIXME: this shouldn't be needed
+    vim.cmd(":e void")
+    os.remove("package.json")
 end
 
 return M
