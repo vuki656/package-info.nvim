@@ -27,7 +27,7 @@ describe("Core reload_buffer", function()
 
         file.delete_package_json()
 
-        assert.spy(vim.cmd).was_called(1)
+        assert.spy(vim.cmd).was_called(2)
         assert.spy(vim.cmd).was_called_with("edit")
         assert.spy(vim.fn.winsaveview).was_called(1)
         assert.spy(vim.fn.winrestview).was_called(1)
