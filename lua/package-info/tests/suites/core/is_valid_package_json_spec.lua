@@ -20,8 +20,6 @@ describe("Core is_valid_package_json", function()
         file.delete_package_json()
 
         assert.is_true(is_valid)
-
-        file.delete_package_json()
     end)
 
     it("should return false if buffer empty", function()

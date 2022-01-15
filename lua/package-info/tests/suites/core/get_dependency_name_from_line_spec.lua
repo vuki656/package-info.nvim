@@ -31,9 +31,9 @@ describe("Core get_dependency_name_from_line", function()
 
         local dependency_name = core.get_dependency_name_from_line('"dep_that_does_not_exist": "1.0.0"')
 
-        assert.is_nil(dependency_name)
-
         file.delete_package_json()
+
+        assert.is_nil(dependency_name)
     end)
 
     it("should return dependency name if line is valid and dependency is in package.json", function()
@@ -49,8 +49,8 @@ describe("Core get_dependency_name_from_line", function()
             )
         )
 
-        assert.are.equals(package_json.dependencies.react.name, dependency_name)
-
         file.delete_package_json()
+
+        assert.are.equals(package_json.dependencies.react.name, dependency_name)
     end)
 end)

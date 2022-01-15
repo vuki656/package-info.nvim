@@ -33,9 +33,9 @@ describe("Core set_virtual_text", function()
 
         local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 
-        assert.are.equals(virtual_text_positions[1][2], dependency.position)
-
         file.delete_package_json()
+
+        assert.are.equals(virtual_text_positions[1][2], dependency.position)
     end)
 
     it("should set the virtual text with no icon if icons are disabled", function()
@@ -52,9 +52,9 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
-        assert.are.equals("", dependency_metadata.icon)
-
         file.delete_package_json()
+
+        assert.are.equals("", dependency_metadata.icon)
     end)
 
     it("shouldn't set the virtual text for up to date dependencies if hide_up_to_date is true", function()
@@ -71,10 +71,10 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
+        file.delete_package_json()
+
         assert.are.equals("", dependency_metadata.icon)
         assert.are.equals("", dependency_metadata.version)
-
-        file.delete_package_json()
     end)
 
     it("should display the latest version if the current one is out of date", function()
@@ -91,11 +91,11 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
+        file.delete_package_json()
+
         assert.are.equals(config.options.icons.style.outdated, dependency_metadata.icon)
         assert.are.equals(dependency.version.latest, dependency_metadata.version)
         assert.are.equals(constants.HIGHLIGHT_GROUPS.outdated, dependency_metadata.group)
-
-        file.delete_package_json()
     end)
 
     it("should display the existing version when the latest is the same", function()
@@ -112,10 +112,10 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
+        file.delete_package_json()
+
         assert.are.equals(config.options.icons.style.up_to_date, dependency_metadata.icon)
         assert.are.equals(dependency.version.current, dependency_metadata.version)
         assert.are.equals(constants.HIGHLIGHT_GROUPS.up_to_date, dependency_metadata.group)
-
-        file.delete_package_json()
     end)
 end)

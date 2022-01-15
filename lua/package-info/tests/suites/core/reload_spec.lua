@@ -25,10 +25,10 @@ describe("Core reload", function()
         core.load_plugin()
         core.reload()
 
+        file.delete_package_json()
+
         assert.spy(core.__reload_buffer).was_called(2)
         assert.spy(core.parse_buffer).was_called(2)
-
-        file.delete_package_json()
     end)
 
     it("should reload the buffer and re-render virtual text if it's displayed and in package.json", function()
@@ -45,11 +45,11 @@ describe("Core reload", function()
         core.load_plugin()
         core.reload()
 
+        file.delete_package_json()
+
         assert.spy(core.__reload_buffer).was_called(2)
         assert.spy(core.parse_buffer).was_called(2)
         assert.spy(core.clear_virtual_text).was_called(1)
         assert.spy(core.display_virtual_text).was_called(1)
-
-        file.delete_package_json()
     end)
 end)

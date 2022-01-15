@@ -36,9 +36,9 @@ describe("Core clear_virtual_text", function()
 
         local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 
+        file.delete_package_json()
+
         assert.spy(vim.api.nvim_buf_clear_namespace).was_called(1)
         assert.is_true(vim.tbl_isempty(virtual_text_positions))
-
-        file.delete_package_json()
     end)
 end)

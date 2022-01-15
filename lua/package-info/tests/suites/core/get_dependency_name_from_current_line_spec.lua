@@ -24,9 +24,9 @@ describe("Core get_dependency_name_from_current_line", function()
 
         local dependency_name = core.get_dependency_name_from_current_line()
 
-        assert.are.equals(package_json.dependencies.eslint.name, dependency_name)
-
         file.delete_package_json()
+
+        assert.are.equals(package_json.dependencies.eslint.name, dependency_name)
     end)
 
     it("should return nil if no valid dependency is on the current line", function()
