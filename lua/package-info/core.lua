@@ -18,7 +18,7 @@ local logger = require("package-info.utils.logger")
 local to_boolean = require("package-info.utils.to-boolean")
 
 local M = {
-    -- All found dependancies from package.json as a list of
+    -- All found dependencies from package.json as a list of
     -- ["dependency_name"] = {
     --     version = {
     --         current: string - current package version,
@@ -31,6 +31,36 @@ local M = {
     -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
     __buffer = {},
 }
+
+--- Checks if the currently opened file
+---    - Is a file named package.json
+---    - Has content
+---    - JSON is in valid format
+-- @return boolean
+M.__is_valid_package_json = function()
+    local buffer_name = vim.api.nvim_buf_get_name(0)
+    local is_package_json = to_boolean(string.match(buffer_name, "package.json$"))
+
+    if not is_package_json then
+        return false
+    end
+
+    local has_content = to_boolean(vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false))
+
+    if not has_content then
+        return false
+    end
+
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false)
+
+    if pcall(function()
+        json_parser.decode(table.concat(buffer_content))
+    end) then
+        return true
+    end
+
+    return false
+end
 
 --- Strips ^ from version
 -- @param value: string - value from which to strip ^ from
@@ -83,7 +113,7 @@ M.__reload_buffer = function()
 end
 
 --- Draws virtual text on given buffer line
--- @param outdated_dependencies: table - outdated dependancies
+-- @param outdated_dependencies: table - outdated dependencies
 -- {
 --     [dependency_name]: {
 --         current: string - currently installed version
@@ -165,7 +195,7 @@ M.reload = function()
 end
 
 --- Handles virtual text displaying
--- @param outdated_dependencies?: table - outdated dependancies
+-- @param outdated_dependencies?: table - outdated dependencies
 -- {
 --     [dependency_name]: {
 --         current: string - currently installed version
@@ -189,66 +219,31 @@ M.display_virtual_text = function(outdated_dependencies)
     state.displayed = true
 end
 
---- Checks if the currently opened file
----    - Is a file named package.json
----    - Has content
----    - Json is in valid format
--- @return boolean
-M.is_valid_package_json = function()
-    local buffer_name = vim.api.nvim_buf_get_name(0)
-    local is_package_json = to_boolean(string.match(buffer_name, "package.json$"))
-
-    if not is_package_json then
-        return false
-    end
-
-    local has_content = to_boolean(vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false))
-
-    if not has_content then
-        return false
-    end
-
-    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false)
-
-    if pcall(function()
-        json_parser.decode(table.concat(buffer_content))
-    end) then
-        return true
-    end
-
-    return false
-end
-
 --- Loads current buffer into state
 -- @return nil
 M.parse_buffer = function()
     local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
-    local buffer_string_value = table.concat(buffer_raw_value)
-    local buffer_json_value = json_parser.decode(buffer_string_value)
+    local buffer_json_value = json_parser.decode(table.concat(buffer_raw_value))
 
-    local dev_dependencies = {}
-    local prod_dependencies = {}
+    local dependencies = vim.tbl_extend(
+        "error",
+        {},
+        buffer_json_value["devDependencies"],
+        buffer_json_value["dependencies"]
+    )
 
-    if to_boolean(buffer_json_value) then
-        dev_dependencies = buffer_json_value["devDependencies"]
-        prod_dependencies = buffer_json_value["dependencies"]
-    end
+    local mapped_dependencies = {}
 
-    local all_dependencies = vim.tbl_extend("error", {}, dev_dependencies, prod_dependencies)
-
-    local dependencies = {}
-
-    for name, version in pairs(all_dependencies) do
-        dependencies[name] = {
+    for name, version in pairs(dependencies) do
+        mapped_dependencies[name] = {
             version = {
                 current = M.__clean_version(version),
-                latest = nil,
             },
         }
     end
 
     M.__buffer = buffer_raw_value
-    M.__dependencies = dependencies
+    M.__dependencies = mapped_dependencies
 end
 
 --- Clears plugin virtual text from current buffer
@@ -288,7 +283,7 @@ end
 --- Parser current buffer if valid
 -- @return nil
 M.load_plugin = function()
-    if not M.is_valid_package_json() then
+    if not M.__is_valid_package_json() then
         state.loaded = false
 
         return nil

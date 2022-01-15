@@ -15,7 +15,7 @@ describe("Core is_valid_package_json", function()
     it("should return true for valid package.json", function()
         local package_json = file.create_package_json({ go = true })
 
-        local is_valid = core.is_valid_package_json()
+        local is_valid = core.__is_valid_package_json()
 
         file.delete(package_json.path)
 
@@ -23,7 +23,7 @@ describe("Core is_valid_package_json", function()
     end)
 
     it("should return false if buffer empty", function()
-        local is_valid = core.is_valid_package_json()
+        local is_valid = core.__is_valid_package_json()
 
         assert.is_false(is_valid)
     end)
@@ -36,7 +36,7 @@ describe("Core is_valid_package_json", function()
             go = true,
         })
 
-        local is_valid = core.is_valid_package_json()
+        local is_valid = core.__is_valid_package_json()
 
         file.delete(path)
 
@@ -49,7 +49,7 @@ describe("Core is_valid_package_json", function()
             go = true,
         })
 
-        local is_valid = core.is_valid_package_json()
+        local is_valid = core.__is_valid_package_json()
 
         file.delete(package_json.path)
 
