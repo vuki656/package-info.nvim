@@ -29,7 +29,7 @@ M.options = M.__DEFAULT_OPTIONS
 --- Register namespace for usage for virtual text
 -- @return nil
 M.__register_namespace = function()
-    state.namespace.register()
+    state.namespace.create()
 end
 
 -- Check which lock file exists and set package manager accordingly

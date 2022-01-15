@@ -28,8 +28,8 @@ local M = {
     __dependencies = {},
     -- JSON output from npm outdated --json
     __outdated_dependencies = {},
-    -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
-    __buffer = {},
+    -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
+    __buffer_lines = {},
 }
 
 --- Checks if the currently opened file
@@ -45,13 +45,13 @@ M.__is_valid_package_json = function()
         return false
     end
 
-    local has_content = to_boolean(vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false))
+    local has_content = to_boolean(vim.api.nvim_buf_get_lines(0, 0, -1, false))
 
     if not has_content then
         return false
     end
 
-    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, 0 - 1, false)
+    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
     if pcall(function()
         json_parser.decode(table.concat(buffer_content))
@@ -206,7 +206,7 @@ end
 M.display_virtual_text = function(outdated_dependencies)
     outdated_dependencies = outdated_dependencies or M.__outdated_dependencies
 
-    for line_number, line_content in ipairs(M.__buffer) do
+    for line_number, line_content in ipairs(M.__buffer_lines) do
         local dependency_name = M.get_dependency_name_from_line(line_content)
 
         if dependency_name then
@@ -222,28 +222,28 @@ end
 --- Loads current buffer into state
 -- @return nil
 M.parse_buffer = function()
-    local buffer_raw_value = vim.api.nvim_buf_get_lines(state.buffer.id, 0, 0 - 1, false)
-    local buffer_json_value = json_parser.decode(table.concat(buffer_raw_value))
+    local buffer_lines = vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
+    local buffer_json_value = json_parser.decode(table.concat(buffer_lines))
 
-    local dependencies = vim.tbl_extend(
+    local all_dependencies_json = vim.tbl_extend(
         "error",
         {},
         buffer_json_value["devDependencies"],
         buffer_json_value["dependencies"]
     )
 
-    local mapped_dependencies = {}
+    local formatted_dependencies = {}
 
-    for name, version in pairs(dependencies) do
-        mapped_dependencies[name] = {
+    for name, version in pairs(all_dependencies_json) do
+        formatted_dependencies[name] = {
             version = {
                 current = M.__clean_version(version),
             },
         }
     end
 
-    M.__buffer = buffer_raw_value
-    M.__dependencies = mapped_dependencies
+    M.__buffer_lines = buffer_lines
+    M.__dependencies = formatted_dependencies
 end
 
 --- Clears plugin virtual text from current buffer

@@ -50,9 +50,9 @@ M.last_run = {
 
 M.namespace = {
     id = nil,
-    --- Registers plugin specific namespace
+    --- Creates plugin specific namespace
     -- @return nil
-    register = function()
+    create = function()
         M.namespace.id = vim.api.nvim_create_namespace("package-info")
     end,
 }
