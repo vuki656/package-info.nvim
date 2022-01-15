@@ -25,7 +25,7 @@ describe("Core clear_virtual_text", function()
     end)
 
     it("should clear all existing virtual text", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         spy.on(vim.api, "nvim_buf_clear_namespace")
 
@@ -36,7 +36,7 @@ describe("Core clear_virtual_text", function()
 
         local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.spy(vim.api.nvim_buf_clear_namespace).was_called(1)
         assert.is_true(vim.tbl_isempty(virtual_text_positions))

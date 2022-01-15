@@ -25,13 +25,13 @@ describe("Core get_dependency_name_from_line", function()
     end)
 
     it("should return nil if dependency not on the list", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         core.load_plugin()
 
         local dependency_name = core.get_dependency_name_from_line('"dep_that_does_not_exist": "1.0.0"')
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.is_nil(dependency_name)
     end)
@@ -49,7 +49,7 @@ describe("Core get_dependency_name_from_line", function()
             )
         )
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals(package_json.dependencies.react.name, dependency_name)
     end)

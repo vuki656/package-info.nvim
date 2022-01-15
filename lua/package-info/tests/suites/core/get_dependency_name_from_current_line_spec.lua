@@ -24,13 +24,13 @@ describe("Core get_dependency_name_from_current_line", function()
 
         local dependency_name = core.get_dependency_name_from_current_line()
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals(package_json.dependencies.eslint.name, dependency_name)
     end)
 
     it("should return nil if no valid dependency is on the current line", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         core.load_plugin()
 
@@ -44,6 +44,6 @@ describe("Core get_dependency_name_from_current_line", function()
         assert.spy(logger.warn).was_called(1)
         assert.spy(logger.warn).was_called_with("No valid package on current line")
 
-        file.delete_package_json()
+        file.delete(package_json.path)
     end)
 end)

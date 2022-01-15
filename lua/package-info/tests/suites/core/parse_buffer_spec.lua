@@ -28,7 +28,7 @@ describe("Core parse_buffer", function()
             }
         end
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.same(core.__dependencies, expected_dependency_list)
     end)

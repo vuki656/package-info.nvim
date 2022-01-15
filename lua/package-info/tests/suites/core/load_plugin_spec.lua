@@ -24,14 +24,14 @@ describe("Core load_plugin", function()
     end)
 
     it("should load the plugin if in package.json", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         spy.on(core, "parse_buffer")
         spy.on(state.buffer, "save")
 
         core.load_plugin()
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.spy(state.buffer.save).was_called(1)
         assert.spy(core.parse_buffer).was_called(1)

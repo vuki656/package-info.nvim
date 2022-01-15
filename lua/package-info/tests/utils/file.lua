@@ -1,34 +1,52 @@
+local uuid = require("package-info.utils.uuid")
+
 local M = {}
+
+--- Creates the file in a random directory
+-- @return string - path to the created file
+M.generate_file = function(suffix)
+    local id = uuid()
+    local path = "./temp/" .. id .. "/"
+
+    os.execute("rm -rf " .. path)
+    os.execute("mkdir " .. path)
+
+    return "./temp/" .. id .. "/" .. (suffix or "")
+end
 
 --- Creata generic package.json file
 -- @param props: table? - possible options
 -- {
 --     go: boolean? - if true, goes to package.json instantly after creation
+--     content: string? - content to put in the file
 -- }
 -- @return table
 -- {
 --     path: string - path to the created file
 -- }
 M.create_package_json = function(props)
-    local path = "package.json"
-
+    local path = M.generate_file("package.json")
     local file = io.open(path, "w")
 
-    file:write([[
-        {
-            "name": "repo-name",
-            "scripts": {
-                "lint": "eslint ./*"
-            },
-            "dependencies": {
-                "react": "16.0.0",
-                "next": "12.0.3"
-            },
-            "devDependencies": {
-                "eslint": "^8.0.0"
+    if props.content then
+        file:write(props.content)
+    else
+        file:write([[
+            {
+                "name": "repo-name",
+                "scripts": {
+                    "lint": "eslint ./*"
+                },
+                "dependencies": {
+                    "react": "16.0.0",
+                    "next": "12.0.3"
+                },
+                "devDependencies": {
+                    "eslint": "^8.0.0"
+                }
             }
-        }
-    ]])
+        ]])
+    end
 
     local dependencies = {
         react = {
@@ -70,21 +88,23 @@ M.create_package_json = function(props)
     }
 end
 
-M.delete_package_json = function()
-    os.remove("package.json")
-    vim.cmd("edit void")
-end
-
 --- Create a file under the given path
 -- @param props: table? -- contains
 -- {
 --      path: string path with file name to create
 --      content: string? - content to put in the file
 --      go: boolean? - if true, switch to the created file right away
+--      randomize: boolean? - if true, file will be placed in a folder with a unique path
 -- }
 -- @return nil
 M.create = function(props)
-    local file = io.open(props.path, "w")
+    local path = props.name
+
+    if props.randomize then
+        path = M.generate_file(props.name)
+    end
+
+    local file = io.open(path, "w")
 
     if props.content ~= nil then
         file:write(props.content)
@@ -93,10 +113,10 @@ M.create = function(props)
     file:close()
 
     if props.go then
-        M.go(props.path)
+        M.go(path)
     end
 
-    return { path = props.path }
+    return { path = path }
 end
 
 --- Go to a file under the given path
@@ -110,8 +130,8 @@ end
 -- @param path: path with file name to delete
 -- @return nil
 M.delete = function(path)
-    os.remove(path)
     vim.cmd("edit void")
+    os.remove(path)
 end
 
 return M

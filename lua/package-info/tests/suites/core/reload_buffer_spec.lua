@@ -15,7 +15,7 @@ describe("Core reload_buffer", function()
     end)
 
     it("should reload the buffer if it's package.json", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         core.load_plugin()
 
@@ -25,9 +25,8 @@ describe("Core reload_buffer", function()
 
         core.__reload_buffer()
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
-        assert.spy(vim.cmd).was_called(2)
         assert.spy(vim.cmd).was_called_with("edit")
         assert.spy(vim.fn.winsaveview).was_called(1)
         assert.spy(vim.fn.winrestview).was_called(1)

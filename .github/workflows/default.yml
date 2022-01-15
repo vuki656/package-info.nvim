@@ -5,7 +5,7 @@ on: [pull_request, push]
 jobs:
   stylua:
     name: Lint Code - Stylua
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: JohnnyMorganz/stylua-action@1.0.0
@@ -15,7 +15,7 @@ jobs:
 
   luacheck:
     name: Lint Code - Luacheck
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: Jayrgo/luacheck-action@v1
@@ -46,4 +46,6 @@ jobs:
             curl -Lo build/neovim/v0.6.0/nvim https://github.com/neovim/neovim/releases/download/v0.6.0/nvim.appimage
             chmod +x build/neovim/v0.6.0/nvim
           }
+          mkdir temp
           build/neovim/v0.6.0/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
+          rm -rf temp

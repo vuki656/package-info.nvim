@@ -1,5 +1,4 @@
 local core = require("package-info.core")
-local state = require("package-info.state")
 local job = require("package-info.utils.job")
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")

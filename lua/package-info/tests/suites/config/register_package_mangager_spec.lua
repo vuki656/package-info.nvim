@@ -14,7 +14,7 @@ describe("Config register_package_manager", function()
     end)
 
     it("should detect npm package manager", function()
-        local created_file = file.create({ path = "package-lock.json" })
+        local created_file = file.create({ name = "package-lock.json" })
 
         config.__register_package_manager()
 
@@ -24,7 +24,7 @@ describe("Config register_package_manager", function()
     end)
 
     it("should detect yarn package manager", function()
-        local created_file = file.create({ path = "yarn.lock" })
+        local created_file = file.create({ name = "yarn.lock" })
 
         config.__register_package_manager()
 
@@ -34,7 +34,7 @@ describe("Config register_package_manager", function()
     end)
 
     it("should detect pnpm package manager", function()
-        local created_file = file.create({ path = "pnpm-lock.yaml" })
+        local created_file = file.create({ name = "pnpm-lock.yaml" })
 
         config.__register_package_manager()
 

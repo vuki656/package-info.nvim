@@ -31,7 +31,7 @@ describe("Core set_virtual_text", function()
 
         local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals(virtual_text_positions[1][2], dependency.position)
     end)
@@ -50,7 +50,7 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals("", dependency_metadata.icon)
     end)
@@ -69,7 +69,7 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals("", dependency_metadata.icon)
         assert.are.equals("", dependency_metadata.version)
@@ -89,7 +89,7 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals(config.options.icons.style.outdated, dependency_metadata.icon)
         assert.are.equals(dependency.version.latest, dependency_metadata.version)
@@ -110,7 +110,7 @@ describe("Core set_virtual_text", function()
             },
         }, dependency.position + 1, dependency.name)
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.are.equals(config.options.icons.style.up_to_date, dependency_metadata.icon)
         assert.are.equals(dependency.version.current, dependency_metadata.version)

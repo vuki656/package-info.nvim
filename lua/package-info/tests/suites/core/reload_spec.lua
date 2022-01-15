@@ -17,7 +17,7 @@ describe("Core reload", function()
     end)
 
     it("should reload the buffer if it's package.json", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         spy.on(core, "__reload_buffer")
         spy.on(core, "parse_buffer")
@@ -25,7 +25,7 @@ describe("Core reload", function()
         core.load_plugin()
         core.reload()
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.spy(core.__reload_buffer).was_called(2)
         assert.spy(core.parse_buffer).was_called(2)
@@ -34,7 +34,7 @@ describe("Core reload", function()
     it("should reload the buffer and re-render virtual text if it's displayed and in package.json", function()
         state.displayed = true
 
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         spy.on(core, "__reload_buffer")
         spy.on(core, "parse_buffer")
@@ -45,7 +45,7 @@ describe("Core reload", function()
         core.load_plugin()
         core.reload()
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.spy(core.__reload_buffer).was_called(2)
         assert.spy(core.parse_buffer).was_called(2)

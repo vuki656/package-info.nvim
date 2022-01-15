@@ -13,11 +13,11 @@ describe("Core is_valid_package_json", function()
     end)
 
     it("should return true for valid package.json", function()
-        file.create_package_json({ go = true })
+        local package_json = file.create_package_json({ go = true })
 
         local is_valid = core.is_valid_package_json()
 
-        file.delete_package_json()
+        file.delete(package_json.path)
 
         assert.is_true(is_valid)
     end)
@@ -29,10 +29,12 @@ describe("Core is_valid_package_json", function()
     end)
 
     it("should return false if file not called package.json", function()
-        local path = "test.txt"
+        local path = "some_random_file_that_is_dead.txt"
 
-        file.create({ path = path })
-        file.go(path)
+        file.create({
+            name = path,
+            go = true,
+        })
 
         local is_valid = core.is_valid_package_json()
 
@@ -41,7 +43,16 @@ describe("Core is_valid_package_json", function()
         assert.is_false(is_valid)
     end)
 
-    -- it("should return false json is invalid format", function()
-    --     -- TODO: implement when core:201 is solved
-    -- end)
+    it("should return false if json is invalid format", function()
+        local package_json = file.create_package_json({
+            content = '{ "name" = function () { }',
+            go = true,
+        })
+
+        local is_valid = core.is_valid_package_json()
+
+        file.delete(package_json.path)
+
+        assert.is_false(is_valid)
+    end)
 end)
