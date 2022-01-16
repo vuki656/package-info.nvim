@@ -5,6 +5,7 @@ local job = require("package-info.utils.job")
 local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
+local get_dependency_name_from_current_line = require("lua.package-info.helpers.get_dependency_name_from_current_line")
 
 local loading = require("package-info.ui.generic.loading-status")
 
@@ -36,7 +37,7 @@ M.run = function()
         return
     end
 
-    local dependency_name = core.get_dependency_name_from_current_line()
+    local dependency_name = get_dependency_name_from_current_line()
 
     if dependency_name == nil then
         return

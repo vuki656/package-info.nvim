@@ -7,6 +7,7 @@ local logger = require("package-info.utils.logger")
 local core = require("package-info.core")
 local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
+local get_dependency_name_from_current_line = require("lua.package-info.helpers.get_dependency_name_from_current_line")
 
 local dependency_version_select = require("package-info.ui.dependency-version-select")
 
@@ -107,7 +108,7 @@ M.run = function()
         return
     end
 
-    local dependency_name = core.get_dependency_name_from_current_line()
+    local dependency_name = get_dependency_name_from_current_line()
 
     if not dependency_name then
         return

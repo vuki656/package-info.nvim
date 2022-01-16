@@ -2,11 +2,12 @@ local spy = require("luassert.spy")
 
 local core = require("package-info.core")
 local logger = require("package-info.utils.logger")
+local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
 
-describe("Core get_dependency_name_from_current_line", function()
+describe("Helpers get_dependency_name_from_current_line", function()
     before_each(function()
         reset.all()
     end)
@@ -22,7 +23,7 @@ describe("Core get_dependency_name_from_current_line", function()
 
         vim.cmd(tostring(package_json.dependencies.eslint.position))
 
-        local dependency_name = core.get_dependency_name_from_current_line()
+        local dependency_name = get_dependency_name_from_current_line()
 
         file.delete(package_json.path)
 
@@ -38,7 +39,7 @@ describe("Core get_dependency_name_from_current_line", function()
 
         vim.cmd("999")
 
-        local dependency_name = core.get_dependency_name_from_current_line()
+        local dependency_name = get_dependency_name_from_current_line()
 
         assert.is_nil(dependency_name)
         assert.spy(logger.warn).was_called(1)
