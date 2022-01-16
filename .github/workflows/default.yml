@@ -20,6 +20,18 @@ jobs:
       - uses: actions/checkout@v2
       - uses: Jayrgo/luacheck-action@v1
 
+  prettier:
+    name: Lint Code - Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run Prettier
+        uses: creyD/prettier_action@v4.2
+        with:
+          dry: true
+          prettier_options: --check **/*.md
+
   test:
     name: Test
     runs-on: ubuntu-latest
