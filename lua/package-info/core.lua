@@ -222,14 +222,14 @@ M.get_dependency_name_from_line = function(line)
     end
 
     -- If no version or name fail
-    if value[1] == nil or value[2] == nil then
+    if not value[1] or not value[2] then
         return nil
     end
 
-    local is_valid_name = to_boolean(state.dependencies.installed[value[1]])
+    local is_installed = to_boolean(state.dependencies.installed[value[1]])
     local is_valid_version = M.__is_valid_package_version(value[2])
 
-    if is_valid_name and is_valid_version then
+    if is_installed and is_valid_version then
         return value[1]
     end
 
