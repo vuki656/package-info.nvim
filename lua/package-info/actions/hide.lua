@@ -1,5 +1,6 @@
 local state = require("package-info.state")
 local logger = require("package-info.utils.logger")
+local virtual_text = require("package-info.helpers.virtual_text")
 
 local M = {}
 
@@ -12,7 +13,7 @@ M.run = function()
         return
     end
 
-    state.virtual_text.clear()
+    virtual_text.clear()
 end
 
 return M

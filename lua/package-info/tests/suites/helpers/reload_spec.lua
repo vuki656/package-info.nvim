@@ -5,6 +5,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local parser = require("package-info.parser")
 local reload = require("package-info.helpers.reload")
+local virtual_text = require("package-info.helpers.virtual_text")
 
 local reset = require("package-info.tests.utils.reset")
 local file = require("package-info.tests.utils.file")
@@ -32,13 +33,13 @@ describe("Helpers reload", function()
     end)
 
     it("should reload the buffer and re-render virtual text if it's displayed and in package.json", function()
-        state.virtual_text.is_displayed = true
+        state.is_virtual_text_displayed = true
 
         local package_json = file.create_package_json({ go = true })
 
-        spy.on(core, "display_virtual_text")
         spy.on(parser, "parse_buffer")
-        spy.on(state.virtual_text, "clear")
+        spy.on(virtual_text, "display")
+        spy.on(virtual_text, "clear")
 
         config.setup()
         core.load_plugin()
@@ -46,8 +47,8 @@ describe("Helpers reload", function()
 
         file.delete(package_json.path)
 
-        assert.spy(core.display_virtual_text).was_called(1)
+        assert.spy(virtual_text.display).was_called(1)
+        assert.spy(virtual_text.clear).was_called(1)
         assert.spy(parser.parse_buffer).was_called(2)
-        assert.spy(state.virtual_text.clear).was_called(1)
     end)
 end)

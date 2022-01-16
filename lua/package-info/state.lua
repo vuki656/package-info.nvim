@@ -1,19 +1,8 @@
 local M = {
     --- If true the current buffer is package json, with content and correct format
     is_loaded = false,
-}
-
-M.virtual_text = {
-    is_displayed = false,
-    --- Clear all virtual text by clearing the namespace
-    -- @return nil
-    clear = function()
-        if M.virtual_text.is_displayed then
-            vim.api.nvim_buf_clear_namespace(M.buffer.id, M.namespace.id, 0, -1)
-
-            M.virtual_text.is_displayed = false
-        end
-    end,
+    --- If true the virtual text versions are displayed in package.json
+    is_virtual_text_displayed = false,
 }
 
 M.dependencies = {

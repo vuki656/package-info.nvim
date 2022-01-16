@@ -1,5 +1,5 @@
 local parser = require("package-info.parser")
-local core = require("package-info.core")
+local virtual_text = require("package-info.helpers.virtual_text")
 local state = require("package-info.state")
 
 --- Reloads the buffer if it's package.json
@@ -26,10 +26,9 @@ return function()
 
     parser.parse_buffer()
 
-    if state.virtual_text.is_displayed then
-        state.virtual_text.clear()
-
-        core.display_virtual_text()
+    if state.is_virtual_text_displayed then
+        virtual_text.clear()
+        virtual_text.display()
     end
 
     reload_buffer()

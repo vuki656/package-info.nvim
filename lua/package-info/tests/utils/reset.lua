@@ -23,7 +23,7 @@ end
 -- @return nil
 M.state = function()
     state.is_loaded = false
-    state.virtual_text.is_displayed = false
+    state.is_virtual_text_displayed = false
     state.dependencies.outdated = {}
     state.dependencies.installed = {}
     state.buffer.id = nil

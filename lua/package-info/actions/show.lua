@@ -2,7 +2,7 @@ local state = require("package-info.state")
 local parser = require("package-info.parser")
 local job = require("package-info.utils.job")
 local logger = require("package-info.utils.logger")
-local core = require("package-info.core")
+local virtual_text = require("package-info.helpers.virtual_text")
 local reload = require("package-info.helpers.reload")
 
 local loading = require("package-info.ui.generic.loading-status")
@@ -21,7 +21,7 @@ M.run = function(options)
     options = options or { force = false }
 
     if state.last_run.should_skip() and not options.force then
-        core.display_virtual_text()
+        virtual_text.display()
         reload()
 
         return
@@ -40,7 +40,7 @@ M.run = function(options)
             state.dependencies.outdated = outdated_dependencies
 
             parser.parse_buffer()
-            core.display_virtual_text()
+            virtual_text.display()
             reload()
 
             loading.stop(id)
