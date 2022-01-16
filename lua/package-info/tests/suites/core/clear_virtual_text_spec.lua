@@ -7,7 +7,7 @@ local config = require("package-info.config")
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
 
-describe("Core clear_virtual_text", function()
+describe("State virtual_text clear", function()
     before_each(function()
         reset.all()
     end)
@@ -19,7 +19,7 @@ describe("Core clear_virtual_text", function()
     it("shouldn't run if nothing is displayed", function()
         spy.on(vim.api, "nvim_buf_clear_namespace")
 
-        core.clear_virtual_text()
+        state.virtual_text.clear()
 
         assert.spy(vim.api.nvim_buf_clear_namespace).was_called(0)
     end)
@@ -32,7 +32,7 @@ describe("Core clear_virtual_text", function()
         config.setup()
         core.load_plugin()
         core.display_virtual_text()
-        core.clear_virtual_text()
+        state.virtual_text.clear()
 
         local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 

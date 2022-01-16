@@ -162,7 +162,7 @@ M.reload = function()
     M.parse_buffer()
 
     if state.virtual_text.is_displayed then
-        M.clear_virtual_text()
+        state.virtual_text.clear()
         M.display_virtual_text()
     end
 
@@ -213,14 +213,6 @@ M.parse_buffer = function()
 
     state.buffer.lines = buffer_lines
     state.dependencies.installed = formatted_dependencies
-end
-
---- Clears plugin virtual text from current buffer
--- @return nil
-M.clear_virtual_text = function()
-    if state.virtual_text.is_displayed then
-        vim.api.nvim_buf_clear_namespace(state.buffer.id, state.namespace.id, 0, -1)
-    end
 end
 
 --- Gets the package name from the given buffer line

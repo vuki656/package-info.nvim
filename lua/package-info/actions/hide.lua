@@ -1,6 +1,5 @@
 local state = require("package-info.state")
 local logger = require("package-info.utils.logger")
-local core = require("package-info.core")
 
 local M = {}
 
@@ -13,9 +12,7 @@ M.run = function()
         return
     end
 
-    core.clear_virtual_text()
-
-    state.virtual_text.is_displayed = false
+    state.virtual_text.clear()
 end
 
 return M

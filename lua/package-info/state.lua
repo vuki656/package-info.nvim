@@ -5,6 +5,15 @@ local M = {
 
 M.virtual_text = {
     is_displayed = false,
+    --- Clear all virtual text by clearing the namespace
+    -- @return nil
+    clear = function()
+        if M.virtual_text.is_displayed then
+            vim.api.nvim_buf_clear_namespace(M.buffer.id, M.namespace.id, 0, -1)
+
+            M.virtual_text.is_displayed = false
+        end
+    end,
 }
 
 M.dependencies = {

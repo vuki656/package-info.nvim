@@ -38,8 +38,8 @@ describe("Core reload", function()
 
         spy.on(core, "__reload_buffer")
         spy.on(core, "parse_buffer")
-        spy.on(core, "clear_virtual_text")
         spy.on(core, "display_virtual_text")
+        spy.on(state.virtual_text, "clear")
 
         config.setup()
         core.load_plugin()
@@ -49,7 +49,7 @@ describe("Core reload", function()
 
         assert.spy(core.__reload_buffer).was_called(2)
         assert.spy(core.parse_buffer).was_called(2)
-        assert.spy(core.clear_virtual_text).was_called(1)
+        assert.spy(state.virtual_text.clear).was_called(1)
         assert.spy(core.display_virtual_text).was_called(1)
     end)
 end)
