@@ -2,7 +2,7 @@ local state = require("package-info.state")
 local parser = require("package-info.parser")
 local job = require("package-info.utils.job")
 local logger = require("package-info.utils.logger")
-local virtual_text = require("package-info.helpers.virtual_text")
+local virtual_text = require("package-info.virtual_text")
 local reload = require("package-info.helpers.reload")
 
 local loading = require("package-info.ui.generic.loading-status")

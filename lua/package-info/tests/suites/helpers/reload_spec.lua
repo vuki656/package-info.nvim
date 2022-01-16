@@ -5,7 +5,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local parser = require("package-info.parser")
 local reload = require("package-info.helpers.reload")
-local virtual_text = require("package-info.helpers.virtual_text")
+local virtual_text = require("package-info.virtual_text")
 
 local reset = require("package-info.tests.utils.reset")
 local file = require("package-info.tests.utils.file")

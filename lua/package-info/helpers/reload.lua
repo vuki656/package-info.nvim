@@ -1,5 +1,5 @@
 local parser = require("package-info.parser")
-local virtual_text = require("package-info.helpers.virtual_text")
+local virtual_text = require("package-info.virtual_text")
 local state = require("package-info.state")
 
 --- Reloads the buffer if it's package.json

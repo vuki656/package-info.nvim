@@ -1,6 +1,6 @@
 local state = require("package-info.state")
 local logger = require("package-info.utils.logger")
-local virtual_text = require("package-info.helpers.virtual_text")
+local virtual_text = require("package-info.virtual_text")
 
 local M = {}
 

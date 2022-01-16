@@ -31,6 +31,6 @@ describe("Parser parse_buffer", function()
 
         file.delete(package_json.path)
 
-        assert.are.same(state.dependencies.installed, expected_dependency_list)
+        assert.are.same(expected_dependency_list, state.dependencies.installed)
     end)
 end)
