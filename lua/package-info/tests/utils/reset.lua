@@ -26,8 +26,9 @@ M.state = function()
     state.buffer.id = nil
     state.last_run.time = nil
     state.namespace.id = nil
-    core.__dependencies = {}
-    core.outdated_dependencies = {}
+    state.dependencies.outdated = {}
+    state.dependencies.installed = {}
+
     core.__buffer = {}
 end
 

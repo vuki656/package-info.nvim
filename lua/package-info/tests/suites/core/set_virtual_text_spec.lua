@@ -22,7 +22,7 @@ describe("Core set_virtual_text", function()
         config.setup()
         core.load_plugin()
 
-        core.outdated_dependencies = {
+        state.dependencies.outdated = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
@@ -45,7 +45,7 @@ describe("Core set_virtual_text", function()
         config.setup({ icons = { enable = false } })
         core.load_plugin()
 
-        core.outdated_dependencies = {
+        state.dependencies.outdated = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
@@ -66,7 +66,7 @@ describe("Core set_virtual_text", function()
         config.setup({ hide_up_to_date = true })
         core.load_plugin()
 
-        core.outdated_dependencies = {
+        state.dependencies.outdated = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
@@ -88,7 +88,7 @@ describe("Core set_virtual_text", function()
         config.setup()
         core.load_plugin()
 
-        core.outdated_dependencies = {
+        state.dependencies.outdated = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
@@ -111,7 +111,7 @@ describe("Core set_virtual_text", function()
         config.setup()
         core.load_plugin()
 
-        core.outdated_dependencies = {
+        state.dependencies.outdated = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,

@@ -20,8 +20,6 @@ local to_boolean = require("package-info.utils.to-boolean")
 local M = {
     -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
     __buffer_lines = {},
-    -- JSON output from npm outdated --json
-    outdated_dependencies = {},
 }
 
 --- Checks if the currently opened file
@@ -105,13 +103,6 @@ M.__reload_buffer = function()
 end
 
 --- Draws virtual text on given buffer line
--- @param outdated_dependencies: table - outdated dependencies
--- {
---     [dependency_name]: {
---         current: string - currently installed version
---         latest: string - latest available version
---     }
--- }
 -- @param line_number: number - line on which to place virtual text
 -- @param dependency_name: string - dependency based on which to get the virtual text
 -- @return nil
@@ -127,7 +118,7 @@ M.__set_virtual_text = function(line_number, dependency_name)
         package_metadata.icon = ""
     end
 
-    local outdated_dependency = M.outdated_dependencies[dependency_name]
+    local outdated_dependency = state.dependencies.outdated[dependency_name]
 
     if not outdated_dependency then
         return nil
