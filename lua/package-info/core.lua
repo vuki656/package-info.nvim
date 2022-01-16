@@ -89,7 +89,6 @@ M.__reload_buffer = function()
     end
 end
 
--- FIXME: not showing up to date versions
 --- Draws virtual text on given buffer line
 -- @param line_number: number - line on which to place virtual text
 -- @param dependency_name: string - dependency based on which to get the virtual text
@@ -108,11 +107,7 @@ M.__set_virtual_text = function(line_number, dependency_name)
 
     local outdated_dependency = state.dependencies.outdated[dependency_name]
 
-    if not outdated_dependency then
-        return nil
-    end
-
-    if outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current then
+    if outdated_dependency and outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current then
         package_metadata = {
             group = constants.HIGHLIGHT_GROUPS.outdated,
             icon = config.options.icons.style.outdated,
