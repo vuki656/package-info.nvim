@@ -11,6 +11,7 @@ else
     json_parser = require("package-info.libs.json_parser")
 end
 
+local parser = require("package-info.parser")
 local constants = require("package-info.utils.constants")
 local state = require("package-info.state")
 local config = require("package-info.config")
@@ -154,7 +155,7 @@ M.reload = function()
 
     M.__reload_buffer()
 
-    M.parse_buffer()
+    parser.parse_buffer()
 
     if state.virtual_text.is_displayed then
         state.virtual_text.clear()
@@ -183,31 +184,6 @@ M.display_virtual_text = function()
     end
 
     state.virtual_text.is_displayed = true
-end
-
---- Loads current buffer into state
--- @return nil
-M.parse_buffer = function()
-    local buffer_lines = vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
-    local buffer_json_value = json_parser.decode(table.concat(buffer_lines))
-
-    local all_dependencies_json = vim.tbl_extend(
-        "error",
-        {},
-        buffer_json_value["devDependencies"],
-        buffer_json_value["dependencies"]
-    )
-
-    local formatted_dependencies = {}
-
-    for name, version in pairs(all_dependencies_json) do
-        formatted_dependencies[name] = {
-            current = clean_version(version),
-        }
-    end
-
-    state.buffer.lines = buffer_lines
-    state.dependencies.installed = formatted_dependencies
 end
 
 --- Gets the package name from the given buffer line
@@ -248,7 +224,7 @@ M.load_plugin = function()
     state.buffer.save()
     state.is_loaded = true
 
-    M.parse_buffer()
+    parser.parse_buffer()
 end
 
 return M

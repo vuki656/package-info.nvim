@@ -1,11 +1,12 @@
 local core = require("package-info.core")
+local parser = require("package-info.parser")
 local state = require("package-info.state")
 local clean_version = require("package-info.helpers.clean_version")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
 
-describe("Core parse_buffer", function()
+describe("Parser parse_buffer", function()
     before_each(function()
         reset.all()
     end)
@@ -18,7 +19,7 @@ describe("Core parse_buffer", function()
         local package_json = file.create_package_json({ go = true })
 
         core.load_plugin()
-        core.parse_buffer()
+        parser.parse_buffer()
 
         local expected_dependency_list = {}
 

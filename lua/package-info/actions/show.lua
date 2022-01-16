@@ -1,4 +1,5 @@
 local state = require("package-info.state")
+local parser = require("package-info.parser")
 local job = require("package-info.utils.job")
 local logger = require("package-info.utils.logger")
 local core = require("package-info.core")
@@ -37,7 +38,7 @@ M.run = function(options)
         on_success = function(outdated_dependencies)
             state.dependencies.outdated = outdated_dependencies
 
-            core.parse_buffer()
+            parser.parse_buffer()
             core.display_virtual_text()
             core.reload()
 
