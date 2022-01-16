@@ -15,7 +15,6 @@ describe("Config register_colorscheme_initialization", function()
 
     it("should register colors", function()
         vim.cmd('let g:colors_name="weird-theme"')
-        vim.cmd("colorscheme")
 
         config.__register_colorscheme_initialization()
 
@@ -30,7 +29,6 @@ describe("Config register_colorscheme_initialization", function()
 
     it("should register colors if default theme is registered", function()
         vim.cmd('let g:colors_name="default"')
-        vim.cmd("colorscheme")
 
         config.__register_colorscheme_initialization()
 
