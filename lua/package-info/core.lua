@@ -190,7 +190,7 @@ M.reload = function()
 
     M.parse_buffer()
 
-    if state.displayed then
+    if state.virtual_text.is_displayed then
         M.clear_virtual_text()
         M.display_virtual_text()
     end
@@ -216,7 +216,7 @@ M.display_virtual_text = function()
         end
     end
 
-    state.displayed = true
+    state.virtual_text.is_displayed = true
 end
 
 --- Loads current buffer into state
@@ -249,7 +249,7 @@ end
 --- Clears plugin virtual text from current buffer
 -- @return nil
 M.clear_virtual_text = function()
-    if state.displayed then
+    if state.virtual_text.is_displayed then
         vim.api.nvim_buf_clear_namespace(state.buffer.id, state.namespace.id, 0, -1)
     end
 end

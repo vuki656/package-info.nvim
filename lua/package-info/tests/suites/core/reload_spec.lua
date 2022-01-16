@@ -32,7 +32,7 @@ describe("Core reload", function()
     end)
 
     it("should reload the buffer and re-render virtual text if it's displayed and in package.json", function()
-        state.displayed = true
+        state.virtual_text.is_displayed = true
 
         local package_json = file.create_package_json({ go = true })
 

@@ -29,6 +29,6 @@ describe("Core display_virtual_text", function()
         file.delete(package_json.path)
 
         assert.spy(core.__set_virtual_text).was_called(package_json.total_count)
-        assert.is_true(state.displayed)
+        assert.is_true(state.virtual_text.is_displayed)
     end)
 end)

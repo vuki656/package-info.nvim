@@ -13,7 +13,7 @@ M.run = function()
 
     core.clear_virtual_text()
 
-    state.displayed = false
+    state.virtual_text.is_displayed = false
 end
 
 return M
