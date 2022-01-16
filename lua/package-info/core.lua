@@ -17,10 +17,7 @@ local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
 local to_boolean = require("package-info.utils.to-boolean")
 
-local M = {
-    -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
-    __buffer_lines = {},
-}
+local M = {}
 
 --- Checks if the currently opened file
 ---    - Is a file named package.json
@@ -191,7 +188,7 @@ end
 -- }
 -- @return nil
 M.display_virtual_text = function()
-    for line_number, line_content in ipairs(M.__buffer_lines) do
+    for line_number, line_content in ipairs(state.buffer.lines) do
         local dependency_name = M.get_dependency_name_from_line(line_content)
 
         if dependency_name then
@@ -223,7 +220,7 @@ M.parse_buffer = function()
         }
     end
 
-    M.__buffer_lines = buffer_lines
+    state.buffer.lines = buffer_lines
     state.dependencies.installed = formatted_dependencies
 end
 
