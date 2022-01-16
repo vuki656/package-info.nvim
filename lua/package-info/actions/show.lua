@@ -32,8 +32,10 @@ M.run = function(options)
             loading.start(id)
         end,
         on_success = function(outdated_dependencies)
+            core.outdated_dependencies = outdated_dependencies
+
             core.parse_buffer()
-            core.display_virtual_text(outdated_dependencies)
+            core.display_virtual_text()
             core.reload()
 
             loading.stop(id)

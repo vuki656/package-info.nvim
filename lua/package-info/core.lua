@@ -26,10 +26,10 @@ local M = {
     --     },
     -- }
     __dependencies = {},
-    -- JSON output from npm outdated --json
-    __outdated_dependencies = {},
     -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
     __buffer_lines = {},
+    -- JSON output from npm outdated --json
+    outdated_dependencies = {},
 }
 
 --- Checks if the currently opened file
@@ -123,7 +123,7 @@ end
 -- @param line_number: number - line on which to place virtual text
 -- @param dependency_name: string - dependency based on which to get the virtual text
 -- @return nil
-M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_name)
+M.__set_virtual_text = function(line_number, dependency_name)
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
         icon = config.options.icons.style.up_to_date,
@@ -135,14 +135,18 @@ M.__set_virtual_text = function(outdated_dependencies, line_number, dependency_n
         package_metadata.icon = ""
     end
 
-    if outdated_dependencies[dependency_name] then
-        if outdated_dependencies[dependency_name].latest ~= M.__dependencies[dependency_name].version.current then
-            package_metadata = {
-                group = constants.HIGHLIGHT_GROUPS.outdated,
-                icon = config.options.icons.style.outdated,
-                version = M.__clean_version(outdated_dependencies[dependency_name].latest),
-            }
-        end
+    local outdated_dependency = M.outdated_dependencies[dependency_name]
+
+    if not outdated_dependency then
+        return nil
+    end
+
+    if outdated_dependency.latest ~= M.__dependencies[dependency_name].version.current then
+        package_metadata = {
+            group = constants.HIGHLIGHT_GROUPS.outdated,
+            icon = config.options.icons.style.outdated,
+            version = M.__clean_version(outdated_dependency.latest),
+        }
     end
 
     if not config.options.icons.enable then
@@ -203,18 +207,14 @@ end
 --     }
 -- }
 -- @return nil
-M.display_virtual_text = function(outdated_dependencies)
-    outdated_dependencies = outdated_dependencies or M.__outdated_dependencies
-
+M.display_virtual_text = function()
     for line_number, line_content in ipairs(M.__buffer_lines) do
         local dependency_name = M.get_dependency_name_from_line(line_content)
 
         if dependency_name then
-            M.__set_virtual_text(outdated_dependencies, line_number, dependency_name)
+            M.__set_virtual_text(line_number, dependency_name)
         end
     end
-
-    M.__outdated_dependencies = outdated_dependencies
 
     state.displayed = true
 end

@@ -22,12 +22,14 @@ describe("Core set_virtual_text", function()
         config.setup()
         core.load_plugin()
 
-        core.__set_virtual_text({
+        core.outdated_dependencies = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
             },
-        }, dependency.position + 1, dependency.name)
+        }
+
+        core.__set_virtual_text(dependency.position + 1, dependency.name)
 
         local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 
@@ -43,12 +45,14 @@ describe("Core set_virtual_text", function()
         config.setup({ icons = { enable = false } })
         core.load_plugin()
 
-        local dependency_metadata = core.__set_virtual_text({
+        core.outdated_dependencies = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
             },
-        }, dependency.position + 1, dependency.name)
+        }
+
+        local dependency_metadata = core.__set_virtual_text(dependency.position + 1, dependency.name)
 
         file.delete(package_json.path)
 
@@ -62,12 +66,14 @@ describe("Core set_virtual_text", function()
         config.setup({ hide_up_to_date = true })
         core.load_plugin()
 
-        local dependency_metadata = core.__set_virtual_text({
+        core.outdated_dependencies = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
             },
-        }, dependency.position + 1, dependency.name)
+        }
+
+        local dependency_metadata = core.__set_virtual_text(dependency.position + 1, dependency.name)
 
         file.delete(package_json.path)
 
@@ -82,12 +88,14 @@ describe("Core set_virtual_text", function()
         config.setup()
         core.load_plugin()
 
-        local dependency_metadata = core.__set_virtual_text({
+        core.outdated_dependencies = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
             },
-        }, dependency.position + 1, dependency.name)
+        }
+
+        local dependency_metadata = core.__set_virtual_text(dependency.position + 1, dependency.name)
 
         file.delete(package_json.path)
 
@@ -103,12 +111,14 @@ describe("Core set_virtual_text", function()
         config.setup()
         core.load_plugin()
 
-        local dependency_metadata = core.__set_virtual_text({
+        core.outdated_dependencies = {
             [dependency.name] = {
                 latest = dependency.version.latest,
                 current = dependency.version.current,
             },
-        }, dependency.position + 1, dependency.name)
+        }
+
+        local dependency_metadata = core.__set_virtual_text(dependency.position + 1, dependency.name)
 
         file.delete(package_json.path)
 
