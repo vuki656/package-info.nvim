@@ -1,4 +1,5 @@
 local core = require("package-info.core")
+local state = require("package-info.state")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
@@ -22,14 +23,12 @@ describe("Core parse_buffer", function()
 
         for _, dependency in pairs(package_json.dependencies) do
             expected_dependency_list[dependency.name] = {
-                version = {
-                    current = core.__clean_version(dependency.version.current),
-                },
+                current = core.__clean_version(dependency.version.current),
             }
         end
 
         file.delete(package_json.path)
 
-        assert.are.same(core.__dependencies, expected_dependency_list)
+        assert.are.same(state.dependencies.installed, expected_dependency_list)
     end)
 end)

@@ -18,14 +18,6 @@ local logger = require("package-info.utils.logger")
 local to_boolean = require("package-info.utils.to-boolean")
 
 local M = {
-    -- All found dependencies from package.json as a list of
-    -- ["dependency_name"] = {
-    --     version = {
-    --         current: string - current package version,
-    --         latest: string - latest package version,
-    --     },
-    -- }
-    __dependencies = {},
     -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
     __buffer_lines = {},
     -- JSON output from npm outdated --json
@@ -127,7 +119,7 @@ M.__set_virtual_text = function(line_number, dependency_name)
     local package_metadata = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
         icon = config.options.icons.style.up_to_date,
-        version = M.__dependencies[dependency_name].version.current,
+        version = state.dependencies.installed[dependency_name].current,
     }
 
     if config.options.hide_up_to_date then
@@ -141,7 +133,7 @@ M.__set_virtual_text = function(line_number, dependency_name)
         return nil
     end
 
-    if outdated_dependency.latest ~= M.__dependencies[dependency_name].version.current then
+    if outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current then
         package_metadata = {
             group = constants.HIGHLIGHT_GROUPS.outdated,
             icon = config.options.icons.style.outdated,
@@ -170,7 +162,7 @@ M.get_dependency_name_from_current_line = function()
 
     local dependency_name = M.get_dependency_name_from_line(current_line)
 
-    if M.__dependencies[dependency_name] then
+    if state.dependencies.installed[dependency_name] then
         return dependency_name
     else
         logger.warn("No valid package on current line")
@@ -236,14 +228,12 @@ M.parse_buffer = function()
 
     for name, version in pairs(all_dependencies_json) do
         formatted_dependencies[name] = {
-            version = {
-                current = M.__clean_version(version),
-            },
+            current = M.__clean_version(version),
         }
     end
 
     M.__buffer_lines = buffer_lines
-    M.__dependencies = formatted_dependencies
+    state.dependencies.installed = formatted_dependencies
 end
 
 --- Clears plugin virtual text from current buffer
@@ -270,7 +260,7 @@ M.get_dependency_name_from_line = function(line)
         return nil
     end
 
-    local is_valid_name = to_boolean(M.__dependencies[value[1]])
+    local is_valid_name = to_boolean(state.dependencies.installed[value[1]])
     local is_valid_version = M.__is_valid_package_version(value[2])
 
     if is_valid_name and is_valid_version then

@@ -19,6 +19,20 @@ M.is_loaded = function()
     return true
 end
 
+M.dependencies = {
+    -- Outdated dependencies from `npm outdated --json` as a list of
+    -- [name]: {
+    --     current: string
+    --     latest: string
+    -- }
+    outdated = {},
+    -- Installed dependencies from package.json as a list of
+    -- ["dependency_name"] = {
+    --     current: string - current package version,
+    -- }
+    installed = {},
+}
+
 M.buffer = {
     id = nil,
     --- Set the buffer id to current buffer id
