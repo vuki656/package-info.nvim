@@ -1,5 +1,6 @@
 local state = require("package-info.state")
 local job = require("package-info.utils.job")
+local logger = require("package-info.utils.logger")
 local core = require("package-info.core")
 
 local loading = require("package-info.ui.generic.loading-status")
@@ -9,7 +10,9 @@ local M = {}
 --- Runs the show outdated dependencies action
 -- @return nil
 M.run = function(options)
-    if not state.is_loaded() then
+    if not state.is_loaded then
+        logger.warn("Not in valid package.json file")
+
         return
     end
 

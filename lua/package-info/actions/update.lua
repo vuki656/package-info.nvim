@@ -1,4 +1,5 @@
 local core = require("package-info.core")
+local logger = require("package-info.utils.logger")
 local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
 local state = require("package-info.state")
@@ -29,7 +30,9 @@ end
 --- Runs the update dependency action
 -- @return nil
 M.run = function()
-    if not state.is_loaded() then
+    if not state.is_loaded then
+        logger.warn("Not in valid package.json file")
+
         return
     end
 

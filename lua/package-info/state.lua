@@ -1,23 +1,11 @@
-local logger = require("package-info.utils.logger")
-
 local M = {
     --- If true the current buffer is package json, with content and correct format
-    loaded = false,
+    is_loaded = false,
 }
 
 M.virtual_text = {
     is_displayed = false,
 }
-
-M.is_loaded = function()
-    if not M.loaded then
-        logger.warn("Not in valid package.json file")
-
-        return false
-    end
-
-    return true
-end
 
 M.dependencies = {
     -- Outdated dependencies from `npm outdated --json` as a list of

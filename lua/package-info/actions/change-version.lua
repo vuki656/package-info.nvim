@@ -3,6 +3,7 @@ local Menu = require("nui.menu")
 local config = require("package-info.config")
 local loading = require("package-info.ui.generic.loading-status")
 local job = require("package-info.utils.job")
+local logger = require("package-info.utils.logger")
 local core = require("package-info.core")
 local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
@@ -100,7 +101,9 @@ end
 --- Runs the change version action
 -- @return nil
 M.run = function()
-    if not state.is_loaded() then
+    if not state.is_loaded then
+        logger.warn("Not in valid package.json file")
+
         return
     end
 

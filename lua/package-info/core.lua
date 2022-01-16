@@ -162,7 +162,7 @@ end
 --- Rereads the current buffer value and reloads the buffer
 -- @return nil
 M.reload = function()
-    if not state.loaded then
+    if not state.is_loaded then
         return
     end
 
@@ -262,13 +262,13 @@ end
 -- @return nil
 M.load_plugin = function()
     if not M.__is_valid_package_json() then
-        state.loaded = false
+        state.is_loaded = false
 
         return nil
     end
 
     state.buffer.save()
-    state.loaded = true
+    state.is_loaded = true
 
     M.parse_buffer()
 end

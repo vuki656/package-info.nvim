@@ -1,5 +1,5 @@
 local state = require("package-info.state")
-
+local logger = require("package-info.utils.logger")
 local core = require("package-info.core")
 
 local M = {}
@@ -7,7 +7,9 @@ local M = {}
 --- Runs the hide virtual text action
 -- @return nil
 M.run = function()
-    if not state.is_loaded() then
+    if not state.is_loaded then
+        logger.warn("Not in valid package.json file")
+
         return
     end
 
