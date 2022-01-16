@@ -1,4 +1,3 @@
-local core = require("package-info.core")
 local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
@@ -23,13 +22,14 @@ end
 -- Reset state state
 -- @return nil
 M.state = function()
-    state.buffer.id = nil
-    state.last_run.time = nil
-    state.namespace.id = nil
+    state.is_loaded = false
+    state.virtual_text.is_displayed = false
     state.dependencies.outdated = {}
     state.dependencies.installed = {}
-
-    core.__buffer = {}
+    state.buffer.id = nil
+    state.buffer.lines = {}
+    state.last_run.time = nil
+    state.namespace.id = nil
 end
 
 -- Reset everything
