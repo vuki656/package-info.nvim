@@ -1,7 +1,7 @@
-local core = require("package-info.core")
 local job = require("package-info.utils.job")
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
+local reload = require("package-info.helpers.reload")
 
 local dependency_type_select = require("package-info.ui.dependency-type-select")
 local dependency_name_input = require("package-info.ui.dependency-name-input")
@@ -57,7 +57,7 @@ M.__display_dependency_name_input = function(selected_dependency_type)
                     loading.start(id)
                 end,
                 on_success = function()
-                    core.reload()
+                    reload()
 
                     loading.stop(id)
                 end,

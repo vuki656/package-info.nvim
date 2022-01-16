@@ -1,11 +1,4 @@
-local json_parser
-
-if vim.json then
-    json_parser = vim.json
-else
-    json_parser = require("package-info.libs.json_parser")
-end
-
+local json_parser = require("package-info.libs.json_parser")
 local state = require("package-info.state")
 local clean_version = require("package-info.helpers.clean_version")
 

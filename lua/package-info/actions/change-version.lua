@@ -4,10 +4,10 @@ local config = require("package-info.config")
 local loading = require("package-info.ui.generic.loading-status")
 local job = require("package-info.utils.job")
 local logger = require("package-info.utils.logger")
-local core = require("package-info.core")
 local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
-local get_dependency_name_from_current_line = require("lua.package-info.helpers.get_dependency_name_from_current_line")
+local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
+local reload = require("package-info.helpers.reload")
 
 local dependency_version_select = require("package-info.ui.dependency-version-select")
 
@@ -63,7 +63,7 @@ M.__display_dependency_version_select = function(version_list, dependency_name)
                     loading.start(id)
                 end,
                 on_success = function()
-                    core.reload()
+                    reload()
 
                     loading.stop(id)
                 end,

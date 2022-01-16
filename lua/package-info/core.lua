@@ -1,16 +1,7 @@
--- TODO: make sure all functions are atomic if possible
--- TODO: consider moving stuff out of the core that's not coupled with it
 -- TODO: if you have invalid json, then fix it, plugin still wont run
 -- TODO: action tests
 
-local json_parser
-
-if vim.json then
-    json_parser = vim.json
-else
-    json_parser = require("package-info.libs.json_parser")
-end
-
+local json_parser = require("package-info.libs.json_parser")
 local parser = require("package-info.parser")
 local constants = require("package-info.utils.constants")
 local state = require("package-info.state")
@@ -51,19 +42,6 @@ M.__is_valid_package_json = function()
     return false
 end
 
---- Reloads the buffer if it's package.json
--- @return nil
-M.__reload_buffer = function()
-    local current_buffer_number = vim.fn.bufnr()
-
-    if current_buffer_number == state.buffer.id then
-        local view = vim.fn.winsaveview()
-
-        vim.cmd("edit")
-        vim.fn.winrestview(view)
-    end
-end
-
 --- Draws virtual text on given buffer line
 -- @param line_number: number - line on which to place virtual text
 -- @param dependency_name: string - dependency based on which to get the virtual text
@@ -100,27 +78,8 @@ M.__set_virtual_text = function(line_number, dependency_name)
         priority = 200,
     })
 
-    -- NOTE: used for testing only since there's not way to get virtual text content via nvim API
+    -- NOTE: used for testing only since there's no way to get virtual text content via nvim API
     return virtual_text
-end
-
---- Rereads the current buffer value and reloads the buffer
--- @return nil
-M.reload = function()
-    if not state.is_loaded then
-        return
-    end
-
-    M.__reload_buffer()
-
-    parser.parse_buffer()
-
-    if state.virtual_text.is_displayed then
-        state.virtual_text.clear()
-        M.display_virtual_text()
-    end
-
-    M.__reload_buffer()
 end
 
 --- Handles virtual text displaying

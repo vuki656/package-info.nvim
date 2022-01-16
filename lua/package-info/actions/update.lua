@@ -1,11 +1,11 @@
-local core = require("package-info.core")
 local logger = require("package-info.utils.logger")
 local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
 local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
-local get_dependency_name_from_current_line = require("lua.package-info.helpers.get_dependency_name_from_current_line")
+local reload = require("package-info.helpers.reload")
+local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
 
 local loading = require("package-info.ui.generic.loading-status")
 
@@ -55,7 +55,7 @@ M.run = function()
                     loading.start(id)
                 end,
                 on_success = function()
-                    core.reload()
+                    reload()
 
                     loading.stop(id)
                 end,
@@ -68,7 +68,7 @@ M.run = function()
             loading.stop(id)
         end,
         on_error = function()
-            core.reload()
+            reload()
 
             loading.stop(id)
         end,

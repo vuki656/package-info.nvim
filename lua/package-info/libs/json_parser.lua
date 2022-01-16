@@ -1,3 +1,7 @@
+if vim.json then
+    return vim.json
+end
+
 --
 -- json.lua
 --
