@@ -16,6 +16,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
 local to_boolean = require("package-info.utils.to-boolean")
+local clean_version = require("package-info.helpers.clean_version")
 
 local M = {}
 
@@ -49,22 +50,11 @@ M.__is_valid_package_json = function()
     return false
 end
 
---- Strips ^ from version
--- @param value: string - value from which to strip ^ from
--- @return string
-M.__clean_version = function(value)
-    if value == nil then
-        return nil
-    end
-
-    return value:gsub("%^", "")
-end
-
 --- Checks if the given string conforms to 1.0.0 version format
 -- @param value: string - value to check if conforms
 -- @return boolean
 M.__is_valid_package_version = function(value)
-    local cleaned_version = M.__clean_version(value)
+    local cleaned_version = clean_version(value)
 
     if cleaned_version == nil then
         return false
@@ -99,6 +89,7 @@ M.__reload_buffer = function()
     end
 end
 
+-- FIXME: not showing up to date versions
 --- Draws virtual text on given buffer line
 -- @param line_number: number - line on which to place virtual text
 -- @param dependency_name: string - dependency based on which to get the virtual text
@@ -125,7 +116,7 @@ M.__set_virtual_text = function(line_number, dependency_name)
         package_metadata = {
             group = constants.HIGHLIGHT_GROUPS.outdated,
             icon = config.options.icons.style.outdated,
-            version = M.__clean_version(outdated_dependency.latest),
+            version = clean_version(outdated_dependency.latest),
         }
     end
 
@@ -216,7 +207,7 @@ M.parse_buffer = function()
 
     for name, version in pairs(all_dependencies_json) do
         formatted_dependencies[name] = {
-            current = M.__clean_version(version),
+            current = clean_version(version),
         }
     end
 

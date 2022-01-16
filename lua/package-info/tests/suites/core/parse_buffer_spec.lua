@@ -1,5 +1,6 @@
 local core = require("package-info.core")
 local state = require("package-info.state")
+local clean_version = require("package-info.helpers.clean_version")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
@@ -23,7 +24,7 @@ describe("Core parse_buffer", function()
 
         for _, dependency in pairs(package_json.dependencies) do
             expected_dependency_list[dependency.name] = {
-                current = core.__clean_version(dependency.version.current),
+                current = clean_version(dependency.version.current),
             }
         end
 

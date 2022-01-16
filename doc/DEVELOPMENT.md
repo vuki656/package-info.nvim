@@ -7,6 +7,7 @@
     ├── tests                               # Project tests for all the functionality
     ├── ui                                  # User interface components
     ├── utils                               # Generic helper variables and functions
+    ├── helpers                             # Plugin specific helper functions
     ├── config.lua                          # Setup of user passed configuration options
     ├── core.lua                            # Responsible for parsing package.json file
     ├── init.lua                            # Exports all the user facing commands
