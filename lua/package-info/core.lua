@@ -69,21 +69,21 @@ end
 -- @param dependency_name: string - dependency based on which to get the virtual text
 -- @return nil
 M.__set_virtual_text = function(line_number, dependency_name)
-    local package_metadata = {
+    local virtual_text = {
         group = constants.HIGHLIGHT_GROUPS.up_to_date,
         icon = config.options.icons.style.up_to_date,
         version = state.dependencies.installed[dependency_name].current,
     }
 
     if config.options.hide_up_to_date then
-        package_metadata.version = ""
-        package_metadata.icon = ""
+        virtual_text.version = ""
+        virtual_text.icon = ""
     end
 
     local outdated_dependency = state.dependencies.outdated[dependency_name]
 
     if outdated_dependency and outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current then
-        package_metadata = {
+        virtual_text = {
             group = constants.HIGHLIGHT_GROUPS.outdated,
             icon = config.options.icons.style.outdated,
             version = clean_version(outdated_dependency.latest),
@@ -91,17 +91,17 @@ M.__set_virtual_text = function(line_number, dependency_name)
     end
 
     if not config.options.icons.enable then
-        package_metadata.icon = ""
+        virtual_text.icon = ""
     end
 
     vim.api.nvim_buf_set_extmark(state.buffer.id, state.namespace.id, line_number - 1, 0, {
-        virt_text = { { package_metadata.icon .. package_metadata.version, package_metadata.group } },
+        virt_text = { { virtual_text.icon .. virtual_text.version, virtual_text.group } },
         virt_text_pos = "eol",
         priority = 200,
     })
 
     -- NOTE: used for testing only since there's not way to get virtual text content via nvim API
-    return package_metadata
+    return virtual_text
 end
 
 --- Rereads the current buffer value and reloads the buffer
