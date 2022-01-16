@@ -43,10 +43,10 @@ M.run = function()
         return
     end
 
-    local id = loading.new("|  Deleting " .. dependency_name .. " package")
+    local id = loading.new("|  Deleting " .. dependency_name .. " dependency")
 
     prompt.new({
-        title = " Delete [" .. dependency_name .. "] Package ",
+        title = " Delete [" .. dependency_name .. "] Dependency ",
         on_submit = function()
             job({
                 json = false,

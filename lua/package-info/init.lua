@@ -1,6 +1,5 @@
 -- TODO: tests
 -- TODO: yarn 1 support
--- TODO: rename package to dependency everywhere
 -- TODO: check if there is a text changes event, if so, redraw the dependencies in the buffer, TextChanged autocmd
 
 local M = {}

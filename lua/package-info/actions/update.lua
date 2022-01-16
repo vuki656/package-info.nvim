@@ -43,10 +43,10 @@ M.run = function()
         return
     end
 
-    local id = loading.new("| ﯁ Updating " .. dependency_name .. " package")
+    local id = loading.new("| ﯁ Updating " .. dependency_name .. " dependency")
 
     prompt.new({
-        title = " Update [" .. dependency_name .. "] Package ",
+        title = " Update [" .. dependency_name .. "] Dependency ",
         on_submit = function()
             job({
                 json = false,

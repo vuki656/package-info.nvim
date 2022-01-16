@@ -5,7 +5,7 @@ local clean_version = require("package-info.helpers.clean_version")
 --- Checks if the given string conforms to 1.0.0 version format
 -- @param value: string - value to check if conforms
 -- @return boolean
-local is_valid_package_version = function(value)
+local is_valid_dependency_version = function(value)
     local cleaned_version = clean_version(value)
 
     if cleaned_version == nil then
@@ -28,7 +28,7 @@ local is_valid_package_version = function(value)
     return is_valid
 end
 
---- Gets the package name from the given buffer line
+--- Gets the dependency name from the given buffer line
 -- @param line: string - buffer line from which to get the name from
 -- @return string?
 return function(line)
@@ -45,7 +45,7 @@ return function(line)
     end
 
     local is_installed = to_boolean(state.dependencies.installed[value[1]])
-    local is_valid_version = is_valid_package_version(value[2])
+    local is_valid_version = is_valid_dependency_version(value[2])
 
     if is_installed and is_valid_version then
         return value[1]

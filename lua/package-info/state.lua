@@ -8,13 +8,13 @@ local M = {
 M.dependencies = {
     -- Outdated dependencies from `npm outdated --json` as a list of
     -- [name]: {
-    --     current: string
-    --     latest: string
+    --     current: string - current dependency version
+    --     latest: string - latest dependency version
     -- }
     outdated = {},
     -- Installed dependencies from package.json as a list of
     -- ["dependency_name"] = {
-    --     current: string - current package version,
+    --     current: string - current dependency version
     -- }
     installed = {},
 }

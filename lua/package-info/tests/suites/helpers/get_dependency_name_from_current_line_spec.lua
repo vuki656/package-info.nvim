@@ -43,7 +43,7 @@ describe("Helpers get_dependency_name_from_current_line", function()
 
         assert.is_nil(dependency_name)
         assert.spy(logger.warn).was_called(1)
-        assert.spy(logger.warn).was_called_with("No valid package on current line")
+        assert.spy(logger.warn).was_called_with("No valid dependency on current line")
 
         file.delete(package_json.path)
     end)

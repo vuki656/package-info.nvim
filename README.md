@@ -22,11 +22,11 @@
 
 ## ✨ Features
 
-- Display latest package versions as virtual text
-- Upgrade package on current line to latest version
-- Delete package on current line
-- Install a different version of a package on current line
-- Install new package
+- Display latest dependency versions as virtual text
+- Upgrade dependency on current line to latest version
+- Delete dependency on current line
+- Install a different version of a dependency on current line
+- Install new dependency
 - Automatic package manager detection
 - Loading animation hook (to be placed in status bar or anywhere else)
 
@@ -65,7 +65,7 @@ vim.api.nvim_set_keymap(
 
 <div align="center">
 
-### Delete Package
+### Delete Dependency
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/delete.gif" width=500>
 
@@ -90,7 +90,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/change.gif" width=500>
 
-Runs `npm install package@version`, `yarn upgrade package@version`, or `pnpm update package` in the background and reloads the buffer.
+Runs `npm install dependency@version`, `yarn upgrade dependency@version`, or `pnpm update dependency` in the background and reloads the buffer.
 
 </div>
 
@@ -107,11 +107,11 @@ vim.api.nvim_set_keymap(
 
 <div align="center">
 
-### Install New Package
+### Install New Dependency
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/install.gif" width=500>
 
-Runs `npm install package`, `yarn add package`, or `pnpm add package` in the background and reloads the buffer.
+Runs `npm install dependency`, `yarn add dependency`, or `pnpm add dependency` in the background and reloads the buffer.
 
 </div>
 
@@ -141,13 +141,13 @@ Function that can be placed anywhere to display the loading status from the plug
 - It can be used anywhere in `neovim` by invoking `return require('package-info').get_status()`
 
 ```lua
-local package = require("package-info")
+local package_info = require("package-info")
 
 -- Galaxyline
 section.left[10] = {
     PackageInfoStatus = {
         provider = function()
-            return package.get_status()
+            return package_info.get_status()
         end,
     },
 }
@@ -155,7 +155,7 @@ section.left[10] = {
 -- Feline
 components.right.active[5] = {
     provider = function()
-        return package.get_status()
+        return package_info.get_status()
     end,
     hl = {
         style = "bold",
@@ -195,14 +195,14 @@ require('package-info').setup()
 ```lua
 {
     colors = {
-        up_to_date = "#3C4048", -- Text color for up to date package virtual text
-        outdated = "#d19a66", -- Text color for outdated package virtual text
+        up_to_date = "#3C4048", -- Text color for up to date dependency virtual text
+        outdated = "#d19a66", -- Text color for outdated dependency virtual text
     },
     icons = {
         enable = true, -- Whether to display icons
         style = {
-            up_to_date = "|  ", -- Icon for up to date packages
-            outdated = "|  ", -- Icon for outdated packages
+            up_to_date = "|  ", -- Icon for up to date dependencies
+            outdated = "|  ", -- Icon for outdated dependencies
         },
     },
     autostart = true -- Whether to autostart when `package.json` is opened
@@ -231,40 +231,33 @@ colors = {
 
 ## ⌨️ All Keybindings
 
-**Package info has no default Keybindings**.
+**Plugin has no default Keybindings**.
 
 You can copy the ones below:
 
 ```lua
--- Show package versions
-vim.api.nvim_set_keymap("n", "<leader>ns", ":lua require('package-info').show()<CR>", { silent = true, noremap = true })
+-- Show dependency versions
+vim.keymap.set({ "n" }, "<LEADER>ns", require("package-info").show, { silent = true, noremap = true })
 
--- Hide package versions
-vim.api.nvim_set_keymap("n", "<leader>nc", ":lua require('package-info').hide()<CR>", { silent = true, noremap = true })
+-- Hide dependency versions
+vim.keymap.set({ "n" }, "<LEADER>nc", require("package-info").hide, { silent = true, noremap = true })
 
--- Update package on line
-vim.api.nvim_set_keymap("n", "<leader>nu", ":lua require('package-info').update()<CR>", { silent = true, noremap = true })
+-- Update dependency on the line
+vim.keymap.set({ "n" }, "<LEADER>nu", require("package-info").update, { silent = true, noremap = true })
 
--- Delete package on line
-vim.api.nvim_set_keymap("n", "<leader>nd", ":lua require('package-info').delete()<CR>", { silent = true, noremap = true })
+-- Delete dependency on the line
+vim.keymap.set({ "n" }, "<LEADER>nd", require("package-info").delete, { silent = true, noremap = true })
 
--- Install a new package
-vim.api.nvim_set_keymap("n", "<leader>ni", ":lua require('package-info').install()<CR>", { silent = true, noremap = true })
+-- Install a new dependency
+vim.keymap.set({ "n" }, "<LEADER>ni", require("package-info").install, { silent = true, noremap = true })
 
--- Install a different package version
-vim.api.nvim_set_keymap("n", "<leader>np", ":lua require('package-info').change_version()<CR>", { silent = true, noremap = true })
+-- Install a different dependency version
+vim.keymap.set({ "n" }, "<LEADER>np", require("package-info").change_version, { silent = true, noremap = true })
 ```
 
 ## 📝 Notes
 
-- If you want to test out new features use the `develop` branch. `master` should be stable and tested by me. I test features
-  on develop for a couple of days before merging them to master
-
-- Display might be slow on a project with a lot of packages. This is due to the
-  `npm outdated` command taking a long time. Nothing can be done about that
-
+- Display might be slow on a project with a lot of dependencies. This is due to the
+  `npm outdated --json` command taking a long time. Nothing can be done about that
 - Idea was inspired by [akinsho](https://github.com/akinsho) and his [dependency-assist.nvim](https://github.com/akinsho/dependency-assist.nvim)
-
 - Readme template stolen from [folke](https://github.com/folke)
-
-- This is my first `neovim` plugin so please don't hesitate to open an issue an tell me if you find anything stupid in the code :D.

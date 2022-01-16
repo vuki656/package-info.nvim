@@ -8,7 +8,7 @@ local M = {}
 --- Spawn a new input for the package name
 -- @param props.on_submit: function - executed after selection
 -- @param props.on_close?: function - executed if user closes the input
--- @param props.on_error?: function - executed if users enters an invalid package name
+-- @param props.on_error?: function - executed if users enters an invalid dependency name
 -- @return nil
 M.new = function(props)
     local style = {
@@ -25,7 +25,7 @@ M.new = function(props)
         border = {
             style = "rounded",
             text = {
-                top = " Enter Package Name ",
+                top = " Enter Dependency Name ",
                 top_align = "center",
             },
         },

@@ -49,7 +49,7 @@ end
 M.__display_dependency_name_input = function(selected_dependency_type)
     dependency_name_input.new({
         on_submit = function(dependency_name)
-            local id = loading.new("|  Installing " .. dependency_name .. " package")
+            local id = loading.new("|  Installing " .. dependency_name .. " dependency")
 
             job({
                 command = M.__get_command(selected_dependency_type, dependency_name),
