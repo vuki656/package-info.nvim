@@ -89,8 +89,10 @@ M.__create_select_items = function(versions)
         local is_unstable = string.match(version, "-")
 
         --  Skip unstable version e.g next@11.1.0-canary
-        if config.options.hide_unstable_versions and is_unstable then
-            table.insert(version_list)
+        if is_unstable then
+            if not config.options.hide_unstable_versions then
+                table.insert(version_list, Menu.item(version))
+            end
         else
             table.insert(version_list, Menu.item(version))
         end
