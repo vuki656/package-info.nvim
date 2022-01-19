@@ -1,5 +1,4 @@
 -- TODO: if you have invalid json, then fix it, plugin still wont run
--- TODO: action tests
 
 local json_parser = require("package-info.libs.json_parser")
 local parser = require("package-info.parser")
