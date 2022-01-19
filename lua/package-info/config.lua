@@ -41,6 +41,7 @@ M.__register_package_manager = function()
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
 
         io.close(yarn_lock)
+        state.is_in_project = true
 
         return
     end
@@ -51,6 +52,7 @@ M.__register_package_manager = function()
         M.options.package_manager = constants.PACKAGE_MANAGERS.npm
 
         io.close(package_lock)
+        state.is_in_project = true
 
         return
     end
@@ -61,6 +63,7 @@ M.__register_package_manager = function()
         M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
 
         io.close(pnpm_lock)
+        state.is_in_project = true
 
         return
     end

@@ -1,4 +1,6 @@
 local M = {
+    --- If true, the plugin has detected JS/TS project
+    is_in_project = false,
     --- If true the current buffer is package json, with content and correct format
     is_loaded = false,
     --- If true the virtual text versions are displayed in package.json

@@ -1,6 +1,8 @@
 local job = require("package-info.utils.job")
 local constants = require("package-info.utils.constants")
+local state = require("package-info.state")
 local config = require("package-info.config")
+local logger = require("package-info.utils.logger")
 local reload = require("package-info.helpers.reload")
 
 local dependency_type_select = require("package-info.ui.dependency-type-select")
@@ -74,7 +76,11 @@ end
 --- Runs the install new dependency action
 -- @return nil
 M.run = function()
-    -- TODO: this should detect if its a project with package json
+    if not state.is_in_project then
+        logger.info("Not in a JS/TS project")
+
+        return
+    end
 
     dependency_type_select.new({
         on_submit = function(selected_dependency_type)
