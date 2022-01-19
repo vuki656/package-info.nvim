@@ -16,6 +16,10 @@ local M = {}
 -- @return string
 M.__get_command = function(dependency_name)
     if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
+        if state.has_old_yarn then
+            return "yarn upgrade " .. dependency_name .. " --latest"
+        end
+
         return "yarn up " .. dependency_name
     end
 

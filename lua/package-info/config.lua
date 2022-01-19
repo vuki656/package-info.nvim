@@ -2,6 +2,8 @@ local constants = require("package-info.utils.constants")
 local register_highlight_group = require("package-info.utils.register-highlight-group")
 local register_autocmd = require("package-info.utils.register-autocmd")
 local state = require("package-info.state")
+local job = require("package-info.utils.job")
+local logger = require("package-info.utils.logger")
 
 local M = {
     __DEFAULT_OPTIONS = {
@@ -39,6 +41,20 @@ M.__register_package_manager = function()
 
     if yarn_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
+
+        job({
+            command = "yarn -v",
+            on_success = function(full_version)
+                local major_version = full_version:sub(1, 1)
+
+                if major_version == "1" then
+                    state.has_old_yarn = true
+                end
+            end,
+            on_error = function()
+                logger.error("Error detecting yarn version. Falling back to yarn <2")
+            end,
+        })
 
         io.close(yarn_lock)
         state.is_in_project = true

@@ -1,4 +1,3 @@
--- TODO: yarn 1 support
 -- TODO: check if there is a text changes event, if so, redraw the dependencies in the buffer, TextChanged autocmd
 
 local M = {}

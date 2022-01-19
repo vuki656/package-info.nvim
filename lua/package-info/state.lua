@@ -5,6 +5,8 @@ local M = {
     is_loaded = false,
     --- If true the virtual text versions are displayed in package.json
     is_virtual_text_displayed = false,
+    --- If true the project is using yarn 2<
+    has_old_yarn = false,
 }
 
 M.dependencies = {
