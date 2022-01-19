@@ -1,5 +1,5 @@
 local spy = require("luassert.spy")
-local hide = require("lua.package-info.actions.hide")
+local hide_action = require("package-info.actions.hide")
 
 local config = require("package-info.config")
 local core = require("package-info.core")
@@ -25,7 +25,7 @@ describe("Actions hide", function()
         config.setup()
         core.load_plugin()
 
-        hide.run()
+        hide_action.run()
 
         assert.spy(virtual_text.clear).was_called(1)
     end)
@@ -35,7 +35,7 @@ describe("Actions hide", function()
 
         spy.on(virtual_text, "clear")
 
-        hide.run()
+        hide_action.run()
 
         assert.spy(virtual_text.clear).was_called(0)
     end)
