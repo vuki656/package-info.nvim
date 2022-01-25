@@ -312,11 +312,8 @@ M.update = function()
     if package_name then
         utils.loading.start("| ﯁ Updating " .. package_name .. " package")
 
-        local command = utils.get_command.update(package_name)
-        print(vim.inspect(command))
-
         ui.display_prompt({
-            command = command,
+            command = utils.get_command.update(package_name),
             title = " Update [" .. package_name .. "] Package ",
             on_submit = function()
                 M.__reload()
@@ -379,12 +376,9 @@ M.change_version = function()
     if package_name then
         utils.loading.start("|  Fetching " .. package_name .. " versions")
 
-        local command = utils.get_command.version_list(package_name)
-        print(vim.inspect(command))
-
         utils.job({
             json = true,
-            command = command,
+            command = utils.get_command.version_list(package_name),
             on_success = function(versions)
                 utils.loading.stop()
 

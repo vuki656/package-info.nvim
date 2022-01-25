@@ -81,11 +81,7 @@ M.__detect_package_manager = function()
         job({
             command = "yarn -v",
             on_success = function(full_version)
-                print(vim.inspect(full_version))
-
                 local major_version = full_version:sub(1, 1)
-
-                print(vim.inspect(major_version))
 
                 if major_version == "1" then
                     M.options.yarn_version = "1"
