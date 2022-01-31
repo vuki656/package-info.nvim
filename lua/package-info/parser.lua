@@ -11,8 +11,8 @@ M.parse_buffer = function()
     local all_dependencies_json = vim.tbl_extend(
         "error",
         {},
-        buffer_json_value["devDependencies"],
-        buffer_json_value["dependencies"]
+        buffer_json_value["devDependencies"] or {},
+        buffer_json_value["dependencies"] or {}
     )
 
     local installed_dependencies = {}
