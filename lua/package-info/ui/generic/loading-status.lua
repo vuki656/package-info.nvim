@@ -91,7 +91,7 @@ M.get = function()
     if not active_instance then
         -- FIXME: this is killing all timers, so if a user has any timers, it will interrupt them
         -- like lsp status
-        vim.fn.timer_stopall()
+        -- vim.fn.timer_stopall()
 
         M.state.is_running = false
         M.state.current_spinner = ""
@@ -106,7 +106,7 @@ M.get = function()
         M.update_spinner()
     end
 
-    return M.state.current_spinner .. " " .. active_instance.message
+    return "Loading: " .. active_instance.message
 end
 
 return M
