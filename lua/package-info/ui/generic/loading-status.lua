@@ -106,7 +106,7 @@ M.get = function()
         M.update_spinner()
     end
 
-    return "Loading: " .. active_instance.message
+    return active_instance.message
 end
 
 return M
