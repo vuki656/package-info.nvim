@@ -10,7 +10,7 @@ local constants = require("package-info.constants")
 local logger = require("package-info.logger")
 local config = require("package-info.config")
 
-M = {}
+local M = {}
 
 --- Manages loading animation state
 M.loading = {
