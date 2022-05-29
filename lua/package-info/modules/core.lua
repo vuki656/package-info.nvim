@@ -255,6 +255,8 @@ M.show = function(options)
         return
     end
 
+    M.__reload()
+
     options = options or { force = false }
 
     if config.state.last_run.should_skip() and options.force == false then
