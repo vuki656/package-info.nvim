@@ -225,4 +225,10 @@ M.get_command = {
     end,
 }
 
+M.prequire = function(...)
+    local status, mod = pcall(require, ...)
+    if not status then return nil, mod end
+    return mod
+end
+
 return M

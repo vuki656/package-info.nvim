@@ -1,5 +1,3 @@
-local Menu = require("nui.menu")
-
 local json_parser
 if vim.json then
     json_parser = vim.json
@@ -388,11 +386,8 @@ M.change_version = function()
                 for index = #versions, 1, -1 do
                     local version = versions[index]
 
-                    --  Skip unstable version e.g next@11.1.0-canary
-                    if config.options.hide_unstable_versions and string.match(version, "-") then
-                    else
-                        table.insert(menu_items, Menu.item(version))
-                    end
+                    -- TODO: Skip unstable versions e.g next@11.1.0-canary when config.options.hide_unstable_versions
+                    table.insert(menu_items, version)
                 end
 
                 ui.display_change_version_menu({

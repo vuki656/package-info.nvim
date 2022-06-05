@@ -1,8 +1,8 @@
-local Menu = require("nui.menu")
-local Input = require("nui.input")
+local utils = require("package-info.utils")
+local Menu = utils.prequire("nui.menu")
+local Input = utils.prequire("nui.input")
 
 local constants = require("package-info.constants")
-local utils = require("package-info.utils")
 
 local PROMPT_ACTIONS = {
     confirm = "Confirm",
@@ -31,7 +31,29 @@ local M = {}
 -- @param options.command - string used as command executed on confirm
 -- @param options.callback - function used after command executed
 M.display_prompt = function(options)
-    local menu = Menu({
+
+    local function on_submit(choice)
+        choice = choice.text or choice
+        if choice == "Cancel" then
+            return options.on_cancel()
+        end
+        utils.job({
+            json = false,
+            command = options.command,
+            on_success = function()
+                options.on_submit()
+            end,
+            on_error = function()
+                options.on_cancel()
+            end,
+        })
+    end
+
+    if not Menu or not Input then
+        return vim.ui.select({ "Confirm", "Cancel" }, { prompt = "Do you want to" .. options.title .. "?:" }, on_submit)
+    end
+
+    Menu({
         relative = "cursor",
         border = {
             style = "rounded",
@@ -62,30 +84,32 @@ M.display_prompt = function(options)
             close = { "<Esc>", "<C-c>" },
             submit = { "<CR>", "<Space>" },
         },
-        on_submit = function(selected_action)
-            if selected_action.text == PROMPT_ACTIONS.confirm then
-                utils.job({
-                    json = false,
-                    command = options.command,
-                    on_success = function()
-                        options.on_submit()
-                    end,
-                    on_error = function()
-                        options.on_cancel()
-                    end,
-                })
-            else
-                options.on_cancel()
-            end
-        end,
-    })
-
-    menu:mount()
+        on_submit = on_submit,
+    }):mount()
 end
 
 --- Menu to choose the type of dependency to be installed
 M.display_install_menu = function(callback)
-    local menu = Menu({
+
+    local function on_submit(dependency_type)
+        dependency_type = dependency_type.text or dependency_type
+        if dependency_type == "Cancel" then
+            return
+        end
+        local id
+        for _, value in pairs(INSTALL_ACTIONS) do
+            if value.text == dependency_type then
+                id = value.id
+            end
+        end
+        callback(id)
+    end
+
+    if not Menu or not Input then
+        return vim.ui.select({ "Production", "Development", "Cancel" }, { prompt = "" }, on_submit)
+    end
+
+    Menu({
         relative = "cursor",
         position = {
             row = 0,
@@ -107,28 +131,31 @@ M.display_install_menu = function(callback)
         },
     }, {
         lines = {
-            Menu.item(INSTALL_ACTIONS.prod),
-            Menu.item(INSTALL_ACTIONS.dev),
-            Menu.item(INSTALL_ACTIONS.cancel),
+            Menu.item("Production"),
+            Menu.item("Development"),
+            Menu.item("Cancel"),
         },
         keymap = {
             close = { "<Esc>", "<C-c>" },
             submit = { "<CR>", "<Space>" },
         },
-        on_submit = function(answer)
-            if answer.id == INSTALL_ACTIONS.dev.id or answer.id == INSTALL_ACTIONS.prod.id then
-                callback(answer.id)
-            end
-        end,
-    })
-
-    menu:mount()
+        on_submit = on_submit,
+    }):mount()
 end
 
 --- Input for entering package name to be installed
 -- @param callback - function used after user enters the package name
 M.display_install_input = function(callback)
-    local input = Input({
+
+    local function on_submit(package)
+        callback(package)
+    end
+
+    if not Menu or not Input then
+        return vim.ui.input({ prompt = "Enter Package Name: " }, on_submit)
+    end
+
+    Input({
         relative = "cursor",
         position = {
             row = 0,
@@ -150,19 +177,44 @@ M.display_install_input = function(callback)
         },
     }, {
         prompt = "> ",
-        on_submit = function(package_name)
-            callback(package_name)
-        end,
-    })
-
-    input:mount()
+        on_submit = on_submit,
+    }):mount()
 end
 
 --- Menu for selecting another version for the package
 -- @param options.callback - function to use after the action has finished
 -- @param options.package_name - string used to identify the package
 M.display_change_version_menu = function(options)
-    local menu = Menu({
+
+    local function on_submit(version)
+        version = version.text or version
+        local command = utils.get_command.change_version(options.package_name, version)
+
+        utils.loading.start("|  Installing " .. options.package_name .. "@" .. version)
+
+        utils.job({
+            command = command,
+            on_success = function()
+                options.on_success()
+
+                utils.loading.stop()
+            end,
+            on_error = function()
+                utils.loading.stop()
+            end,
+        })
+    end
+
+    if not Menu or not Input then
+        return vim.ui.select(options.menu_items, { prompt = "Select a version: " }, on_submit)
+    end
+
+    local versions = {}
+    for _, version in ipairs(options.menu_items) do
+        table.insert(versions, Menu.item(version))
+    end
+
+    Menu({
         relative = "cursor",
         position = {
             row = 0,
@@ -183,31 +235,13 @@ M.display_change_version_menu = function(options)
             },
         },
     }, {
-        lines = options.menu_items,
+        lines = versions,
         keymap = {
             close = { "<Esc>", "<C-c>" },
             submit = { "<CR>", "<Space>" },
         },
-        on_submit = function(answer)
-            local command = utils.get_command.change_version(options.package_name, answer.text)
-
-            utils.loading.start("|  Installing " .. options.package_name .. "@" .. answer.text)
-
-            utils.job({
-                command = command,
-                on_success = function()
-                    options.on_success()
-
-                    utils.loading.stop()
-                end,
-                on_error = function()
-                    utils.loading.stop()
-                end,
-            })
-        end,
-    })
-
-    menu:mount()
+        on_submit = on_submit,
+    }):mount()
 end
 
 return M
