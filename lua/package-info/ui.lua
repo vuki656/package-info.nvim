@@ -31,7 +31,6 @@ local M = {}
 -- @param options.command - string used as command executed on confirm
 -- @param options.callback - function used after command executed
 M.display_prompt = function(options)
-
     local function on_submit(choice)
         choice = choice.text or choice
         if choice == "Cancel" then
@@ -90,7 +89,6 @@ end
 
 --- Menu to choose the type of dependency to be installed
 M.display_install_menu = function(callback)
-
     local function on_submit(dependency_type)
         dependency_type = dependency_type.text or dependency_type
         if dependency_type == "Cancel" then
@@ -146,7 +144,6 @@ end
 --- Input for entering package name to be installed
 -- @param callback - function used after user enters the package name
 M.display_install_input = function(callback)
-
     local function on_submit(package)
         callback(package)
     end
@@ -185,7 +182,6 @@ end
 -- @param options.callback - function to use after the action has finished
 -- @param options.package_name - string used to identify the package
 M.display_change_version_menu = function(options)
-
     local function on_submit(version)
         version = version.text or version
         local command = utils.get_command.change_version(options.package_name, version)
