@@ -227,7 +227,9 @@ M.get_command = {
 
 M.prequire = function(...)
     local status, mod = pcall(require, ...)
-    if not status then return nil, mod end
+    if not status then
+        return nil, mod
+    end
     return mod
 end
 
