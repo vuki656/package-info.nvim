@@ -18,6 +18,8 @@ M.run = function(options)
         return
     end
 
+    reload()
+
     options = options or { force = false }
 
     if state.last_run.should_skip() and not options.force then
