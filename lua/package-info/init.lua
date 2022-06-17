@@ -1,46 +1,53 @@
--- FILE DESCRIPTION: Plugin entry point
-
-local config = require("package-info.config")
-local utils = require("package-info.utils")
-
-local core = require("package-info.modules.core")
+-- TODO: check if there is a text changes event, if so, redraw the dependencies in the buffer, TextChanged autocmd
 
 local M = {}
 
 M.setup = function(options)
+    local config = require("package-info.config")
+
     config.setup(options)
 end
 
 M.show = function(options)
-    core.show(options)
+    local show_action = require("package-info.actions.show")
+
+    show_action.run(options)
 end
 
 M.hide = function()
-    core.hide()
+    local hide_action = require("package-info.actions.hide")
+
+    hide_action.run()
 end
 
 M.delete = function()
-    core.delete()
+    local delete_action = require("package-info.actions.delete")
+
+    delete_action.run()
 end
 
 M.update = function()
-    core.update()
+    local update_action = require("package-info.actions.update")
+
+    update_action.run()
 end
 
 M.install = function()
-    core.install()
-end
+    local install_action = require("package-info.actions.install")
 
-M.reinstall = function()
-    core.reinstall()
+    install_action.run()
 end
 
 M.change_version = function()
-    core.change_version()
+    local change_version_action = require("package-info.actions.change-version")
+
+    change_version_action.run()
 end
 
 M.get_status = function()
-    return utils.loading.fetch()
+    local loading = require("package-info.ui.generic.loading-status")
+
+    return loading.get()
 end
 
 return M

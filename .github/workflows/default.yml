@@ -1,11 +1,11 @@
 name: default
 
-on: [pull_request]
+on: [pull_request, push]
 
 jobs:
   stylua:
-    name: Lint Code
-    runs-on: ubuntu-20.04
+    name: Lint Code - Stylua
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: JohnnyMorganz/stylua-action@1.0.0
@@ -13,15 +13,24 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --color always --check .
 
-  markdownlint:
-    name: Lint Documentation
-    runs-on: ubuntu-20.04
+  luacheck:
+    name: Lint Code - Luacheck
+    runs-on: ubuntu-latest
     steps:
-      - name: Lint changelog file
-        uses: avto-dev/markdown-lint@v1
+      - uses: actions/checkout@v2
+      - uses: Jayrgo/luacheck-action@v1
+
+  prettier:
+    name: Lint Code - Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run Prettier
+        uses: creyD/prettier_action@v4.2
         with:
-          config: "../../.markdownlint.json"
-          args: "../../README.md"
+          dry: true
+          prettier_options: --check **/*.md
 
   test:
     name: Test
@@ -30,21 +39,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Get neovim v0.5.1
+      - name: Get neovim v0.6.0
         uses: actions/cache@v2
         with:
-          path: build/neovim/v0.5.1
-          key: ${{ runner.os }}-appimage-0.5.1
+          path: build/neovim/v0.6.0
+          key: ${{ runner.os }}-appimage-0.6.0
 
       - name: Fetch dependencies
         run: |
           git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
+          git clone --depth 1 https://github.com/MunifTanjim/nui.nvim ~/.local/share/nvim/site/pack/vendor/start/nui.nvim
+
           ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
       - name: Run Tests
         run: |
-          test -d build/neovim/v0.5.1 || {
-            mkdir -p build/neovim/v0.5.1
-            curl -Lo build/neovim/v0.5.1/nvim https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage
-            chmod +x build/neovim/v0.5.1/nvim
+          test -d build/neovim/v0.6.0 || {
+            mkdir -p build/neovim/v0.6.0
+            curl -Lo build/neovim/v0.6.0/nvim https://github.com/neovim/neovim/releases/download/v0.6.0/nvim.appimage
+            chmod +x build/neovim/v0.6.0/nvim
           }
-          build/neovim/v0.5.1/nvim --headless --noplugin -u lua/package-info/tests/minimal.vim -c "PlenaryBustedDirectory lua/package-info/tests { minimal_init = 'lua/package-info/tests/minimal.vim' }"
+          mkdir temp
+          build/neovim/v0.6.0/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
+          rm -rf temp
