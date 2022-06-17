@@ -14,7 +14,6 @@ local M = {}
 M.run = function(options)
     if not state.is_loaded then
         logger.warn("Not in valid package.json file")
-
         return
     end
 

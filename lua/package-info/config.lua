@@ -95,14 +95,14 @@ end
 --- Register autocommand for loading the plugin
 -- @return nil
 M.__register_start = function()
-    register_autocmd("BufEnter", "lua require('package-info.core').load_plugin()")
+    register_autocmd("BufEnter", "*", "lua require('package-info.core').load_plugin()")
 end
 
 --- Register autocommand for auto-starting plugin
 -- @return nil
 M.__register_autostart = function()
     if M.options.autostart then
-        register_autocmd("BufEnter", "lua require('package-info').show()")
+        register_autocmd("BufEnter", "package.json", "lua require('package-info').show()")
     end
 end
 
@@ -118,7 +118,7 @@ M.__register_colorscheme_initialization = function()
         return
     end
 
-    register_autocmd("ColorScheme", "lua require('package-info.config').__register_highlight_groups()")
+    register_autocmd("ColorScheme", "*", "lua require('package-info.config').__register_highlight_groups()")
 end
 
 --- Register all highlight groups
