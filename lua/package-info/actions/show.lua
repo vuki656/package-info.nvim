@@ -11,10 +11,6 @@ local M = {}
 --- Runs the show outdated dependencies action
 -- @return nil
 M.run = function(options)
-    if not state.is_loaded then
-        return
-    end
-
     reload()
 
     options = options or { force = false }
