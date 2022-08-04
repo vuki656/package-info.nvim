@@ -8,10 +8,8 @@ local reload_buffer = function()
     local current_buffer_number = vim.fn.bufnr()
 
     if current_buffer_number == state.buffer.id then
-        local view = vim.fn.winsaveview()
-
-        vim.cmd("edit")
-        vim.fn.winrestview(view)
+        vim.bo.autoread = true
+        vim.cmd(":checktime")
     end
 end
 
