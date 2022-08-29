@@ -5,7 +5,6 @@ local reset = require("package-info.tests.utils.reset")
 
 describe("Config register_autostart", function()
     before_each(function()
-        config.__prepare_augroup()
         reset.all()
     end)
 

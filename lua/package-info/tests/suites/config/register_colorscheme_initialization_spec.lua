@@ -6,7 +6,6 @@ local reset = require("package-info.tests.utils.reset")
 
 describe("Config register_colorscheme_initialization", function()
     before_each(function()
-        config.__prepare_augroup()
         reset.all()
     end)
 

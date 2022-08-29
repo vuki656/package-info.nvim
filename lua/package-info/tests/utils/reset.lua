@@ -8,15 +8,7 @@ local M = {}
 -- @return nil
 M.config = function()
     config.options = config.__DEFAULT_OPTIONS
-
-    -- Delete all registered autocommands from plugin autogroup
-    local function reset_autocommands()
-        vim.cmd("autocmd! " .. constants.AUTOGROUP)
-    end
-
-    if pcall(reset_autocommands) then
-        reset_autocommands()
-    end
+    config.__prepare_augroup()
 end
 
 -- Reset state state
