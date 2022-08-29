@@ -5,6 +5,7 @@ local reset = require("package-info.tests.utils.reset")
 
 describe("Config register_autostart", function()
     before_each(function()
+        config.__prepare_augroup()
         reset.all()
     end)
 
@@ -13,6 +14,8 @@ describe("Config register_autostart", function()
     end)
 
     it("should register autostart if autostart option is true", function()
+        config.options.autostart = true
+
         config.__register_autostart()
 
         local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
