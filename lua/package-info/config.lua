@@ -92,6 +92,14 @@ M.__register_user_options = function(user_options)
     M.options = vim.tbl_deep_extend("keep", user_options or {}, M.__DEFAULT_OPTIONS)
 end
 
+--- Prepare a clean augroup for the plugin to use
+-- @return nil
+M.__prepare_augroup = function()
+    vim.cmd("augroup " .. constants.AUTOGROUP)
+    vim.cmd("autocmd!")
+    vim.cmd("augroup end")
+end
+
 --- Register autocommand for loading the plugin
 -- @return nil
 M.__register_start = function()
@@ -161,6 +169,7 @@ M.setup = function(user_options)
 
     M.__register_package_manager()
     M.__register_namespace()
+    M.__prepare_augroup()
     M.__register_start()
     M.__register_colorscheme_initialization()
     M.__register_autostart()
