@@ -1,5 +1,4 @@
 local state = require("package-info.state")
-local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
 
 local M = {}
