@@ -8,12 +8,8 @@ M.parse_buffer = function()
     local buffer_lines = vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
     local buffer_json_value = json_parser.decode(table.concat(buffer_lines))
 
-    local all_dependencies_json = vim.tbl_extend(
-        "error",
-        {},
-        buffer_json_value["devDependencies"] or {},
-        buffer_json_value["dependencies"] or {}
-    )
+    local all_dependencies_json =
+        vim.tbl_extend("error", {}, buffer_json_value["devDependencies"] or {}, buffer_json_value["dependencies"] or {})
 
     local installed_dependencies = {}
 

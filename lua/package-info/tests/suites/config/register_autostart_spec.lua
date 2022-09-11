@@ -13,6 +13,8 @@ describe("Config register_autostart", function()
     end)
 
     it("should register autostart if autostart option is true", function()
+        config.options.autostart = true
+
         config.__register_autostart()
 
         local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)

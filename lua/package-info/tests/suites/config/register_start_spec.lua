@@ -17,9 +17,8 @@ describe("Config register_start", function()
 
         local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
 
-        local is_registered = to_boolean(
-            string.find(autocommands, "require('package-info.core').load_plugin()", 0, true)
-        )
+        local is_registered =
+            to_boolean(string.find(autocommands, "require('package-info.core').load_plugin()", 0, true))
 
         assert.is_true(is_registered)
     end)

@@ -28,7 +28,7 @@ M.__get_command = function(dependency_name)
     end
 
     if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
-        return "pnpm update " .. dependency_name
+        return "pnpm update --latest " .. dependency_name
     end
 end
 
