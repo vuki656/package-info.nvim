@@ -24,6 +24,8 @@ return function(props)
     end
 
     vim.fn.jobstart(props.command, {
+        -- Set the directory of the package.json as working directory for the job
+        cwd = string.sub(vim.fn.expand('%:p'), 1, -13),
         on_exit = function(_, exit_code)
             if exit_code ~= 0 and not props.ignore_error then
                 on_error()
