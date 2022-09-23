@@ -23,9 +23,15 @@ return function(props)
         end
     end
 
+    -- If a package.json file is open, use the directory of the file
+    -- as working directory for the job
+    local cwd = vim.fn.getcwd()
+    if string.sub(vim.fn.expand("%:p"), -12) == "package.json" then
+        cwd = string.sub(vim.fn.expand("%:p"), 1, -13)
+    end
+
     vim.fn.jobstart(props.command, {
-        -- Set the directory of the package.json as working directory for the job
-        cwd = string.sub(vim.fn.expand('%:p'), 1, -13),
+        cwd = cwd,
         on_exit = function(_, exit_code)
             if exit_code ~= 0 and not props.ignore_error then
                 on_error()
