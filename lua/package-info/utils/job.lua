@@ -23,6 +23,10 @@ return function(props)
         end
     end
 
+    local test = 1
+
+    print(vim.inspect(test))
+
     vim.fn.jobstart(props.command, {
         on_exit = function(_, exit_code)
             if exit_code ~= 0 and not props.ignore_error then
