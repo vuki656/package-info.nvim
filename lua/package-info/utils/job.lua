@@ -23,7 +23,21 @@ return function(props)
         end
     end
 
+    -- Get the current cwd and use it as the value for
+    -- cwd in case no package.json is open right now
+    local cwd = vim.fn.getcwd()
+
+    -- Get the path of the opened file if there is one
+    local file_path = vim.fn.expand("%:p")
+
+    -- If the file is a package.json then use the directory
+    -- of the file as value for cwd
+    if string.sub(file_path, -12) == "package.json" then
+        cwd = string.sub(file_path, 1, -13)
+    end
+
     vim.fn.jobstart(props.command, {
+        cwd = cwd,
         on_exit = function(_, exit_code)
             if exit_code ~= 0 and not props.ignore_error then
                 on_error()
