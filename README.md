@@ -242,6 +242,9 @@ vim.keymap.set({ "n" }, "<LEADER>ns", require("package-info").show, { silent = t
 -- Hide dependency versions
 vim.keymap.set({ "n" }, "<LEADER>nc", require("package-info").hide, { silent = true, noremap = true })
 
+-- Toggle dependency versions
+vim.keymap.set({ "n" }, "<LEADER>nt", require("package-info").toggle, { silent = true, noremap = true })
+
 -- Update dependency on the line
 vim.keymap.set({ "n" }, "<LEADER>nu", require("package-info").update, { silent = true, noremap = true })
 

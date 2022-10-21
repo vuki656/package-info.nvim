@@ -20,6 +20,16 @@ M.hide = function()
     hide_action.run()
 end
 
+M.toggle = function(options)
+    local state = require("package-info.state")
+
+    if state.is_virtual_text_displayed then
+        M.hide()
+    else
+        M.show(options)
+    end
+end
+
 M.delete = function()
     local delete_action = require("package-info.actions.delete")
 
