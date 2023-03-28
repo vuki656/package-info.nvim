@@ -258,6 +258,31 @@ vim.keymap.set({ "n" }, "<LEADER>ni", require("package-info").install, { silent 
 vim.keymap.set({ "n" }, "<LEADER>np", require("package-info").change_version, { silent = true, noremap = true })
 ```
 
+## 🔭 Telescope
+
+> Highly inspired by [telescope-lazy.nvim](https://github.com/tsakirist/telescope-lazy.nvim)
+
+### Configuration
+
+```lua
+require("telescope").setup({
+    extensions = {
+        package_info = {
+            -- Optional theme (the extension doesn't set a default theme)
+            theme = "ivy",
+        },
+    },
+})
+
+require("telescope").load_extension("package_info")
+```
+
+### Available Commands
+
+```
+:Telescope package_info
+```
+
 ## 📝 Notes
 
 - Display might be slow on a project with a lot of dependencies. This is due to the
