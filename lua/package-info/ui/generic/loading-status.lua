@@ -17,8 +17,13 @@ local M = {
         current_spinner = "",
         index = 1,
         is_running = false,
+        notification = nil,
     },
 }
+
+-- nvim-notify support
+local nvim_notify = pcall(require, "notify")
+local title = "package-info.nvim"
 
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
@@ -28,7 +33,17 @@ M.new = function(message)
         id = math.random(),
         message = message,
         is_ready = false,
+        notification = nil,
     }
+
+    if nvim_notify then
+        instance.notification = vim.notify(message, vim.log.levels.INFO, {
+            title = title,
+            icon = SPINNERS[1],
+            timeout = false,
+            hide_from_history = true,
+        })
+    end
 
     table.insert(M.queue, instance)
 
@@ -42,6 +57,7 @@ M.start = function(id)
     for _, instance in ipairs(M.queue) do
         if instance.id == id then
             instance.is_ready = true
+            M.state.notification = instance.notification
         end
     end
 end
@@ -50,6 +66,17 @@ end
 -- @param id: string - id of the instance to stop and remove
 -- @return nil
 M.stop = function(id)
+    if nvim_notify and M.state.notification then
+        local new_notif = vim.notify("Complete", nil, {
+            title = title,
+            icon = "",
+            replace = M.state.notification,
+            timeout = 3000,
+        })
+        M.state.notification = new_notif
+        M.state.notification = nil
+    end
+
     local filtered_list = {}
 
     for _, instance in ipairs(M.queue) do
@@ -66,10 +93,16 @@ end
 M.update_spinner = function()
     M.state.current_spinner = SPINNERS[M.state.index]
 
-    M.state.index = M.state.index + 1
+    M.state.index = (M.state.index + 1) % #SPINNERS
 
-    if M.state.index == 10 then
-        M.state.index = 1
+    if nvim_notify and M.state.notification then
+        local new_notif = vim.notify(nil, nil, {
+            title = title,
+            hide_from_history = true,
+            icon = M.state.current_spinner,
+            replace = M.state.notification,
+        })
+        M.state.notification = new_notif
     end
 
     vim.fn.timer_start(60, function()
