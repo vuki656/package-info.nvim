@@ -26,7 +26,7 @@ M.run = function(options)
         return
     end
 
-    local id = loading.new("|  Fetching latest versions")
+    local id = loading.new("| 󰇚 Fetching latest versions")
 
     job({
         json = true,
