@@ -38,12 +38,13 @@ M.run = function(options)
         on_success = function(outdated_dependencies)
             state.dependencies.outdated = outdated_dependencies
 
-            parser.parse_buffer()
-            virtual_text.display()
-            reload()
-
+            if vim.api.nvim_buf_is_valid(state.buffer.id) and vim.api.nvim_buf_is_loaded(state.buffer.id) then
+                parser.parse_buffer()
+                virtual_text.display()
+                reload()
+            end
+            
             loading.stop(id)
-
             state.last_run.update()
         end,
         on_error = function()
