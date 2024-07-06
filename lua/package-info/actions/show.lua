@@ -43,7 +43,7 @@ M.run = function(options)
                 virtual_text.display()
                 reload()
             end
-            
+
             loading.stop(id)
             state.last_run.update()
         end,
