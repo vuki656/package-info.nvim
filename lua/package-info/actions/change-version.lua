@@ -59,7 +59,8 @@ M.__display_dependency_version_select = function(version_list, dependency_name)
     dependency_version_select.new({
         version_list = version_list,
         on_submit = function(selected_version)
-            local id = loading.new("|  Installing " .. dependency_name .. "@" .. selected_version)
+            local loading_name = dependency_name .. "@" .. selected_version
+            local id = loading.new("| 󰆓 Installing " .. loading_name)
 
             job({
                 command = M.__get_change_version_command(dependency_name, selected_version),
@@ -69,10 +70,10 @@ M.__display_dependency_version_select = function(version_list, dependency_name)
                 on_success = function()
                     reload()
 
-                    loading.stop(id)
+                    loading.stop(id, "| 󱣪 Installed " .. loading_name .. " successfully", vim.log.levels.INFO)
                 end,
                 on_error = function()
-                    loading.stop(id)
+                    loading.stop(id, "| 󱙃 Failed to install " .. loading_name, vim.log.levels.ERROR)
                 end,
             })
         end,
@@ -120,7 +121,8 @@ M.run = function()
         return
     end
 
-    local id = loading.new("|  Fetching " .. dependency_name .. " versions")
+    local loading_message = "| 󰇚 Fetching latest versions"
+    local id = loading.new(loading_message)
 
     job({
         json = true,
@@ -129,14 +131,14 @@ M.run = function()
             loading.start(id)
         end,
         on_success = function(versions)
-            loading.stop(id)
+            loading.stop(id, loading_message)
 
             local version_list = M.__create_select_items(versions)
 
             M.__display_dependency_version_select(version_list, dependency_name)
         end,
         on_error = function()
-            loading.stop(id)
+            loading.stop(id, loading_message, vim.log.levels.ERROR)
         end,
     })
 end
