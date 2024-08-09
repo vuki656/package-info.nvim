@@ -21,6 +21,11 @@ M.dependencies = {
     --     current: string - current dependency version
     -- }
     installed = {},
+    -- Detected dependencies with issues as a list of
+    -- ["dependency_name"] = {
+    --      diagnostic: string - feedback
+    -- }
+    invalid = {},
 }
 
 M.buffer = {

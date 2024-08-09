@@ -3,6 +3,7 @@ local M = {}
 M.HIGHLIGHT_GROUPS = {
     outdated = "PackageInfoOutdatedVersion",
     up_to_date = "PackageInfoUpToDateVersion",
+    invalid = "PackageInfoInErrorVersion",
 }
 
 M.PACKAGE_MANAGERS = {
@@ -19,6 +20,7 @@ M.DEPENDENCY_TYPE = {
 M.LEGACY_COLORS = {
     up_to_date = "237",
     outdated = "173",
+    invalid = "196",
 }
 
 M.COMMANDS = {

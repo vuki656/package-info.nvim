@@ -10,12 +10,14 @@ local M = {
         colors = {
             up_to_date = "#3C4048",
             outdated = "#d19a66",
+            invalid = "#ee4b2b",
         },
         icons = {
             enable = true,
             style = {
                 up_to_date = "|  ",
                 outdated = "|  ",
+                invalid = "|  ",
             },
         },
         autostart = true,
@@ -142,6 +144,7 @@ M.__register_highlight_groups = function()
         colors = {
             up_to_date = constants.LEGACY_COLORS.up_to_date,
             outdated = constants.LEGACY_COLORS.outdated,
+            invalid = constants.LEGACY_COLORS.invalid,
         }
     end
 

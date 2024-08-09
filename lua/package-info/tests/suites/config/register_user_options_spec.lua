@@ -17,12 +17,14 @@ describe("Config register_user_options", function()
             colors = {
                 up_to_date = "#ffffff",
                 outdated = "#333333",
+                invalid = "#ff0000",
             },
             icons = {
                 enable = false,
                 style = {
                     up_to_date = "GG",
                     outdated = "NN",
+                    invalid = "",
                 },
             },
             autostart = false,
