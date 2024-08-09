@@ -37,21 +37,22 @@ M.parse_buffer = function()
         vim.tbl_extend("force", {}, buffer_json_value["devDependencies"] or {}, buffer_json_value["dependencies"] or {})
 
     local installed_dependencies = {}
+    local errored_dependencies = {}
 
     for name, version in pairs(all_dependencies_json) do
+        installed_dependencies[name] = {
+            current = clean_version(version),
+        }
         if intersection[name] ~= nil then
-            installed_dependencies[name] = {
-                current = "[ERROR] DEPENDENCY IS DUPLICATED",
-            }
-        else
-            installed_dependencies[name] = {
-                current = clean_version(version),
+            errored_dependencies[name] = {
+                diagnostic = "DUPLICATED",
             }
         end
     end
 
     state.buffer.lines = buffer_lines
     state.dependencies.installed = installed_dependencies
+    state.dependencies.invalid = errored_dependencies
 end
 
 return M

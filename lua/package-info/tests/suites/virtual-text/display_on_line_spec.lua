@@ -127,4 +127,26 @@ describe("Virtual_text display_on_line", function()
         assert.are.equals(dependency.version.current, dependency_metadata.version)
         assert.are.equals(constants.HIGHLIGHT_GROUPS.up_to_date, dependency_metadata.group)
     end)
+
+    it("should display error diagnostics", function()
+        local package_json = file.create_package_json({ go = true })
+        local dependency = package_json.dependencies.next
+
+        config.setup()
+        core.load_plugin()
+
+        state.dependencies.invalid = {
+            [dependency.name] = {
+                diagnostic = "BAD",
+            },
+        }
+
+        local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+
+        file.delete(package_json.path)
+
+        assert.are.equals(config.options.icons.style.invalid, dependency_metadata.icon)
+        assert.are.equals("BAD", dependency_metadata.version)
+        assert.are.equals(constants.HIGHLIGHT_GROUPS.invalid, dependency_metadata.group)
+    end)
 end)

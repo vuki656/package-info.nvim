@@ -17,6 +17,7 @@ M.state = function()
     state.is_virtual_text_displayed = false
     state.dependencies.outdated = {}
     state.dependencies.installed = {}
+    state.dependencies.invalid = {}
     state.buffer.id = nil
     state.buffer.lines = {}
     state.last_run.time = nil

@@ -32,6 +32,15 @@ M.__display_on_line = function(line_number, dependency_name)
         }
     end
 
+    local error_dependency = state.dependencies.invalid[dependency_name]
+    if error_dependency then
+        virtual_text = {
+            group = constants.HIGHLIGHT_GROUPS.invalid,
+            icon = config.options.icons.style.invalid,
+            version = error_dependency.diagnostic,
+        }
+    end
+
     if not config.options.icons.enable then
         virtual_text.icon = ""
     end
