@@ -26,7 +26,8 @@ M.run = function(options)
         return
     end
 
-    local id = loading.new("| 󰇚 Fetching latest versions")
+    local loading_message = "| 󰇚 Fetching latest versions"
+    local id = loading.new(loading_message)
 
     job({
         json = true,
@@ -44,11 +45,12 @@ M.run = function(options)
                 reload()
             end
 
-            loading.stop(id)
+            loading.stop(id, loading_message)
+
             state.last_run.update()
         end,
         on_error = function()
-            loading.stop(id)
+            loading.stop(id, loading_message, vim.log.levels.ERROR)
         end,
     })
 end

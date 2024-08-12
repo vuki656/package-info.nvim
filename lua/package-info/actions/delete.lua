@@ -57,21 +57,25 @@ M.run = function()
                 on_success = function()
                     reload()
 
-                    loading.stop(id)
+                    loading.stop(id, "|  Deleted " .. dependency_name .. " dependency", vim.log.levels.INFO)
                 end,
                 on_error = function()
-                    loading.stop(id)
+                    loading.stop(
+                        id,
+                        "|  Failed to delete " .. dependency_name .. " dependency",
+                        vim.log.levels.ERROR
+                    )
                 end,
             })
         end,
         on_cancel = function()
-            loading.stop(id)
+            loading.stop(id, "|  Canceled deleting " .. dependency_name .. " dependency", vim.log.levels.WARN)
         end,
     })
 
     prompt.open({
         on_error = function()
-            loading.stop(id)
+            loading.stop(id, "|  Failed to delete " .. dependency_name .. " dependency", vim.log.levels.ERROR)
         end,
     })
 end
