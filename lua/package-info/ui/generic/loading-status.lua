@@ -19,11 +19,13 @@ local M = {
         is_running = false,
         notification = nil,
     },
+    timer = vim.loop.new_timer()
 }
 
 -- nvim-notify support
 local nvim_notify = pcall(require, "notify")
 local title = "package-info.nvim"
+local constants = require'package-info.utils.constants'
 
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
@@ -47,7 +49,10 @@ M.new = function(message)
 
     table.insert(M.queue, instance)
 
-    M.update_spinner(message)
+    if not M.timer then
+        M.timer = vim.loop.new_timer()
+        M.timer:start(60, 60, function() M.update_spinner(message) end)
+    end
 
     return instance.id
 end
@@ -121,41 +126,34 @@ M.update_spinner = function(message)
         M.state.notification = new_notif
     end
 
-    vim.fn.timer_start(60, function()
-        M.update_spinner()
-    end)
+    -- this can be used to post updates (ex. refresh the statusline)
+    vim.api.nvim_exec_autocmds('User', {
+      group = constants.AUTOGROUP,
+      pattern = constants.LOAD_EVENT
+    })
 end
 
 --- Get the first ready instance message if there are instances
 -- @return string
 M.get = function()
-    local active_instance = nil
-
     for _, instance in pairs(M.queue) do
-        if not active_instance and instance.is_ready then
-            active_instance = instance
+        if instance.is_ready then
+            if M.state.is_running then
+              return instance.message
+            end
+            M.state.is_running = true
+            M.update_spinner(instance.message)
+            return instance.message
         end
     end
 
-    if not active_instance then
-        -- FIXME: this is killing all timers, so if a user has any timers, it will interrupt them
-        -- like lsp status
-        -- vim.fn.timer_stopall()
-
-        M.state.is_running = false
-        M.state.current_spinner = ""
-        M.state.index = 1
-
-        return ""
-    end
-
-    if active_instance and not M.state.is_running then
-        M.state.is_running = true
-
-        M.update_spinner(active_instance.message)
-    end
-
-    return active_instance.message
+    M.timer:stop()
+    M.timer:close()
+    M.timer = nil
+    M.state.is_running = false
+    M.state.current_spinner = ""
+    M.state.index = 1
+    return ""
 end
 
 return M
