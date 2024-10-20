@@ -18,8 +18,8 @@ local M = {
         index = 1,
         is_running = false,
         notification = nil,
+        timer = nil
     },
-    timer = vim.loop.new_timer()
 }
 
 -- nvim-notify support
@@ -49,9 +49,9 @@ M.new = function(message)
 
     table.insert(M.queue, instance)
 
-    if not M.timer then
-        M.timer = vim.loop.new_timer()
-        M.timer:start(60, 60, function() M.update_spinner(message) end)
+    if not M.state.timer then
+        M.state.timer = vim.loop.new_timer()
+        M.state.timer:start(60, 60, function() M.update_spinner(message) end)
     end
 
     return instance.id
@@ -114,7 +114,7 @@ end
 M.update_spinner = function(message)
     M.state.current_spinner = SPINNERS[M.state.index]
 
-    M.state.index = (M.state.index + 1) % #SPINNERS
+    M.state.index = M.state.index  % #SPINNERS + 1
 
     if nvim_notify and M.state.notification then
         local new_notif = vim.notify(message, vim.log.levels.INFO, {
@@ -127,10 +127,13 @@ M.update_spinner = function(message)
     end
 
     -- this can be used to post updates (ex. refresh the statusline)
-    vim.api.nvim_exec_autocmds('User', {
-      group = constants.AUTOGROUP,
-      pattern = constants.LOAD_EVENT
-    })
+    vim.schedule(function()
+        vim.api.nvim_exec_autocmds('User', {
+            group = constants.AUTOGROUP,
+            pattern = constants.LOAD_EVENT
+        })
+    end)
+
 end
 
 --- Get the first ready instance message if there are instances
@@ -142,17 +145,24 @@ M.get = function()
               return instance.message
             end
             M.state.is_running = true
-            M.update_spinner(instance.message)
             return instance.message
         end
     end
-
-    M.timer:stop()
-    M.timer:close()
-    M.timer = nil
     M.state.is_running = false
     M.state.current_spinner = ""
     M.state.index = 1
+    if M.state.timer then
+        M.state.timer:stop()
+        M.state.timer:close()
+        M.state.timer = nil
+        -- ensure this gets called *after* last chedule from update_spinner
+        vim.schedule(function()
+            vim.api.nvim_exec_autocmds('User', {
+                group = constants.AUTOGROUP,
+                pattern = constants.LOAD_EVENT
+            })
+        end)
+    end
     return ""
 end
 
