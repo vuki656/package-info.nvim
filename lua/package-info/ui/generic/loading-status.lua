@@ -18,14 +18,14 @@ local M = {
         index = 1,
         is_running = false,
         notification = nil,
-        timer = nil
+        timer = nil,
     },
 }
 
 -- nvim-notify support
 local nvim_notify = pcall(require, "notify")
 local title = "package-info.nvim"
-local constants = require'package-info.utils.constants'
+local constants = require("package-info.utils.constants")
 
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
@@ -51,7 +51,9 @@ M.new = function(message)
 
     if not M.state.timer then
         M.state.timer = vim.loop.new_timer()
-        M.state.timer:start(60, 60, function() M.update_spinner(message) end)
+        M.state.timer:start(60, 60, function()
+            M.update_spinner(message)
+        end)
     end
 
     return instance.id
@@ -114,7 +116,7 @@ end
 M.update_spinner = function(message)
     M.state.current_spinner = SPINNERS[M.state.index]
 
-    M.state.index = M.state.index  % #SPINNERS + 1
+    M.state.index = M.state.index % #SPINNERS + 1
 
     if nvim_notify and M.state.notification then
         local new_notif = vim.notify(message, vim.log.levels.INFO, {
@@ -128,9 +130,9 @@ M.update_spinner = function(message)
 
     -- this can be used to post updates (ex. refresh the statusline)
     vim.schedule(function()
-        vim.api.nvim_exec_autocmds('User', {
+        vim.api.nvim_exec_autocmds("User", {
             group = constants.AUTOGROUP,
-            pattern = constants.LOAD_EVENT
+            pattern = constants.LOAD_EVENT,
         })
     end)
 
@@ -142,7 +144,7 @@ M.get = function()
     for _, instance in pairs(M.queue) do
         if instance.is_ready then
             if M.state.is_running then
-              return instance.message
+                return instance.message
             end
             M.state.is_running = true
             return instance.message
@@ -157,9 +159,9 @@ M.get = function()
         M.state.timer = nil
         -- ensure this gets called *after* last chedule from update_spinner
         vim.schedule(function()
-            vim.api.nvim_exec_autocmds('User', {
+            vim.api.nvim_exec_autocmds("User", {
                 group = constants.AUTOGROUP,
-                pattern = constants.LOAD_EVENT
+                pattern = constants.LOAD_EVENT,
             })
         end)
     end
