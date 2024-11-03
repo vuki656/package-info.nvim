@@ -135,7 +135,6 @@ M.update_spinner = function(message)
             pattern = constants.LOAD_EVENT,
         })
     end)
-
 end
 
 --- Get the first ready instance message if there are instances
