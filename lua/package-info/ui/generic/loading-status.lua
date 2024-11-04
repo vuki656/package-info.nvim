@@ -18,12 +18,14 @@ local M = {
         index = 1,
         is_running = false,
         notification = nil,
+        timer = nil,
     },
 }
 
 -- nvim-notify support
 local nvim_notify = pcall(require, "notify")
 local title = "package-info.nvim"
+local constants = require("package-info.utils.constants")
 
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
@@ -47,7 +49,12 @@ M.new = function(message)
 
     table.insert(M.queue, instance)
 
-    M.update_spinner(message)
+    if not M.state.timer then
+        M.state.timer = vim.loop.new_timer()
+        M.state.timer:start(60, 60, function()
+            M.update_spinner(message)
+        end)
+    end
 
     return instance.id
 end
@@ -109,7 +116,7 @@ end
 M.update_spinner = function(message)
     M.state.current_spinner = SPINNERS[M.state.index]
 
-    M.state.index = (M.state.index + 1) % #SPINNERS
+    M.state.index = M.state.index % #SPINNERS + 1
 
     if nvim_notify and M.state.notification then
         local new_notif = vim.notify(message, vim.log.levels.INFO, {
@@ -121,41 +128,43 @@ M.update_spinner = function(message)
         M.state.notification = new_notif
     end
 
-    vim.fn.timer_start(60, function()
-        M.update_spinner()
+    -- this can be used to post updates (ex. refresh the statusline)
+    vim.schedule(function()
+        vim.api.nvim_exec_autocmds("User", {
+            group = constants.AUTOGROUP,
+            pattern = constants.LOAD_EVENT,
+        })
     end)
 end
 
 --- Get the first ready instance message if there are instances
 -- @return string
 M.get = function()
-    local active_instance = nil
-
     for _, instance in pairs(M.queue) do
-        if not active_instance and instance.is_ready then
-            active_instance = instance
+        if instance.is_ready then
+            if M.state.is_running then
+                return instance.message
+            end
+            M.state.is_running = true
+            return instance.message
         end
     end
-
-    if not active_instance then
-        -- FIXME: this is killing all timers, so if a user has any timers, it will interrupt them
-        -- like lsp status
-        -- vim.fn.timer_stopall()
-
-        M.state.is_running = false
-        M.state.current_spinner = ""
-        M.state.index = 1
-
-        return ""
+    M.state.is_running = false
+    M.state.current_spinner = ""
+    M.state.index = 1
+    if M.state.timer then
+        M.state.timer:stop()
+        M.state.timer:close()
+        M.state.timer = nil
+        -- ensure this gets called *after* last chedule from update_spinner
+        vim.schedule(function()
+            vim.api.nvim_exec_autocmds("User", {
+                group = constants.AUTOGROUP,
+                pattern = constants.LOAD_EVENT,
+            })
+        end)
     end
-
-    if active_instance and not M.state.is_running then
-        M.state.is_running = true
-
-        M.update_spinner(active_instance.message)
-    end
-
-    return active_instance.message
+    return ""
 end
 
 return M

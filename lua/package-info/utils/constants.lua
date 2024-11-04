@@ -34,5 +34,6 @@ M.COMMANDS = {
 }
 
 M.AUTOGROUP = "PackageInfoAutogroup"
+M.LOAD_EVENT = "PackageInfoStatusUpdate"
 
 return M
