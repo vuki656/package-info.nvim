@@ -1,4 +1,5 @@
 local state = require("package-info.state")
+local config = require("package-info.config")
 local parser = require("package-info.parser")
 local job = require("package-info.utils.job")
 local virtual_text = require("package-info.virtual_text")
@@ -34,6 +35,10 @@ M.run = function(options)
         command = "npm outdated --json",
         ignore_error = true,
         on_start = function()
+            if not config.options.notifications then
+                return
+            end
+
             loading.start(id)
         end,
         on_success = function(outdated_dependencies)

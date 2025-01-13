@@ -56,6 +56,10 @@ M.__display_dependency_name_input = function(selected_dependency_type)
             job({
                 command = M.__get_command(selected_dependency_type, dependency_name),
                 on_start = function()
+                    if not config.options.notifications then
+                        return
+                    end
+
                     loading.start(id)
                 end,
                 on_success = function()
