@@ -46,7 +46,7 @@ M.__display_on_line = function(line_number, dependency_name)
     end
 
     vim.api.nvim_buf_set_extmark(state.buffer.id, state.namespace.id, line_number - 1, 0, {
-        virt_text = { { virtual_text.icon .. virtual_text.version, virtual_text.group } },
+        virt_text = { { virtual_text.icon .. (virtual_text.version or ""), virtual_text.group } },
         virt_text_pos = "eol",
         priority = 200,
     })
