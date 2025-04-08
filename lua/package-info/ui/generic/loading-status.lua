@@ -29,6 +29,9 @@ local nvim_notify = pcall(require, "notify")
 local title = "package-info.nvim"
 local constants = require("package-info.utils.constants")
 
+-- snacks.notifier support
+local snacks_notifier = pcall(require, "snacks.notifier")
+
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
 -- @return number - id of the created instance
@@ -40,7 +43,7 @@ M.new = function(message)
         notification = nil,
     }
 
-    if nvim_notify and config.options.notifications then
+    if nvim_notify or snacks_notifier and config.options.notifications then
         instance.notification = vim.notify(message, vim.log.levels.INFO, {
             title = title,
             icon = SPINNERS[1],
@@ -85,7 +88,7 @@ M.stop = function(id, message, level)
     if level == nil then
         level = vim.log.levels.INFO
     end
-    if nvim_notify and M.state.notification then
+    if nvim_notify or snacks_notifier and M.state.notification then
         local level_icon = {
             [vim.log.levels.INFO] = "󰗠 ",
             [vim.log.levels.ERROR] = "󰅙 ",
