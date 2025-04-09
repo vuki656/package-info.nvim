@@ -22,6 +22,8 @@ local M = {
     },
 }
 
+local config = require("package-info.config")
+
 -- nvim-notify support
 local nvim_notify = pcall(require, "notify")
 local title = "package-info.nvim"
@@ -38,7 +40,7 @@ M.new = function(message)
         notification = nil,
     }
 
-    if nvim_notify then
+    if nvim_notify and config.options.notifications then
         instance.notification = vim.notify(message, vim.log.levels.INFO, {
             title = title,
             icon = SPINNERS[1],

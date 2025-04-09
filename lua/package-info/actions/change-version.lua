@@ -65,6 +65,10 @@ M.__display_dependency_version_select = function(version_list, dependency_name)
             job({
                 command = M.__get_change_version_command(dependency_name, selected_version),
                 on_start = function()
+                    if not config.options.notifications then
+                        return
+                    end
+
                     loading.start(id)
                 end,
                 on_success = function()
@@ -128,6 +132,10 @@ M.run = function()
         json = true,
         command = M.__get_version_list_command(dependency_name),
         on_start = function()
+            if not config.options.notifications then
+                return
+            end
+
             loading.start(id)
         end,
         on_success = function(versions)
