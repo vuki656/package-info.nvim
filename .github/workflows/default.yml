@@ -61,7 +61,7 @@ jobs:
         run: |
           test -d build/neovim/v0.11.0 || {
             mkdir -p build/neovim/v0.11.0
-            curl -Lo build/neovim/v0.11.0/nvim https://github.com/neovim/neovim/releases/download/v0.11.0/nvim.appimage
+            curl -Lo build/neovim/v0.11.0/nvim https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-linux-x86_64.appimage
             chmod +x build/neovim/v0.11.0/nvim
           }
           mkdir temp
