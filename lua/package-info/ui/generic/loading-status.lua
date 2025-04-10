@@ -32,6 +32,14 @@ local constants = require("package-info.utils.constants")
 -- snacks.notifier support
 local snacks_notifier = pcall(require, "snacks.notifier")
 
+local snacks = nil
+if snacks_notifier then
+    local ok, mod = pcall(require, "snacks.notifier")
+    if ok then
+        snacks = mod
+    end
+end
+
 --- Spawn a new loading instance
 -- @param log: string - message to display in the loading status
 -- @return number - id of the created instance
@@ -43,11 +51,11 @@ M.new = function(message)
         notification = nil,
     }
 
-    if nvim_notify or snacks_notifier and config.options.notifications then
+    if (nvim_notify or snacks_notifier) and config.options.notifications then
         instance.notification = vim.notify(message, vim.log.levels.INFO, {
             title = title,
             icon = SPINNERS[1],
-            timeout = false,
+            timeout = 3000,
             hide_from_history = true,
         })
     end
@@ -88,7 +96,12 @@ M.stop = function(id, message, level)
     if level == nil then
         level = vim.log.levels.INFO
     end
-    if nvim_notify or snacks_notifier and M.state.notification then
+
+    if snacks_notifier and snacks and M.state.notification then
+        snacks.hide()
+    end
+
+    if (nvim_notify or snacks_notifier) and M.state.notification then
         local level_icon = {
             [vim.log.levels.INFO] = "󰗠 ",
             [vim.log.levels.ERROR] = "󰅙 ",
@@ -123,11 +136,12 @@ M.update_spinner = function(message)
 
     M.state.index = M.state.index % #SPINNERS + 1
 
-    if nvim_notify and M.state.notification then
+    if (nvim_notify or snacks_notifier) and M.state.notification then
         local new_notif = vim.notify(message, vim.log.levels.INFO, {
             title = title,
             hide_from_history = true,
             icon = M.state.current_spinner,
+            id = M.state.notification,
             replace = M.state.notification,
         })
         M.state.notification = new_notif
