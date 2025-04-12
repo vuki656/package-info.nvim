@@ -47,7 +47,7 @@ M.run = function()
         return
     end
 
-    local id = loading.new("| ﯁ Updating " .. dependency_name .. " dependency")
+    local id = loading.new("| ﯁ Updating " .. dependency_name .. " Dependency")
 
     prompt.new({
         title = " Update [" .. dependency_name .. "] Dependency ",
@@ -65,7 +65,7 @@ M.run = function()
                 on_success = function()
                     reload()
 
-                    loading.stop(id)
+                    loading.stop(id, "| 󱦟 Updated " .. dependency_name .. " Dependency")
                 end,
                 on_error = function()
                     loading.stop(id)
