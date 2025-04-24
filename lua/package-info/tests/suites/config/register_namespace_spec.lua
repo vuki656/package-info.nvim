@@ -15,6 +15,6 @@ describe("Config register_namespace", function()
     it("should register namespace", function()
         config.__register_namespace()
 
-        assert.are.equals(1, state.namespace.id)
+        assert.are.equals(2, state.namespace.id)
     end)
 end)

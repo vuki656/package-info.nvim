@@ -43,11 +43,13 @@ describe("Config register_colorscheme_initialization", function()
 
         config.__register_colorscheme_initialization()
 
-        local up_to_date_color = vim.api.nvim_exec("highlight " .. constants.HIGHLIGHT_GROUPS.up_to_date, true)
-        local outdated_color = vim.api.nvim_exec("highlight " .. constants.HIGHLIGHT_GROUPS.outdated, true)
+        local up_to_date_hl = vim.api.nvim_get_hl(0, { name = constants.HIGHLIGHT_GROUPS.up_to_date })
+        local outdated_hl = vim.api.nvim_get_hl(0, { name = constants.HIGHLIGHT_GROUPS.outdated })
 
-        local is_up_to_date_color_registered = string.find(up_to_date_color, config.options.colors.up_to_date, 0, true)
-        local is_outdated_color_registered = string.find(outdated_color, config.options.colors.outdated, 0, true)
+        local is_up_to_date_color_registered = up_to_date_hl.fg
+            == tonumber(config.options.colors.up_to_date:gsub("#", ""), 16)
+        local is_outdated_color_registered = outdated_hl.fg
+            == tonumber(config.options.colors.outdated:gsub("#", ""), 16)
 
         assert.is_not_nil(is_outdated_color_registered)
         assert.is_not_nil(is_up_to_date_color_registered)

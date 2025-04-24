@@ -45,11 +45,11 @@ jobs:
           sudo add-apt-repository universe
           sudo apt install libfuse2
 
-      - name: Get neovim v0.7.2
+      - name: Get neovim v0.11.0
         uses: actions/cache@v3
         with:
-          path: build/neovim/v0.7.2
-          key: ${{ runner.os }}-appimage-0.7.2
+          path: build/neovim/v0.11.0
+          key: ${{ runner.os }}-appimage-0.11.0
 
       - name: Fetch dependencies
         run: |
@@ -59,11 +59,11 @@ jobs:
           ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
       - name: Run Tests
         run: |
-          test -d build/neovim/v0.7.2 || {
-            mkdir -p build/neovim/v0.7.2
-            curl -Lo build/neovim/v0.7.2/nvim https://github.com/neovim/neovim/releases/download/v0.7.2/nvim.appimage
-            chmod +x build/neovim/v0.7.2/nvim
+          test -d build/neovim/v0.11.0 || {
+            mkdir -p build/neovim/v0.11.0
+            curl -Lo build/neovim/v0.11.0/nvim https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-linux-x86_64.appimage
+            chmod +x build/neovim/v0.11.0/nvim
           }
           mkdir temp
-          build/neovim/v0.7.2/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
+          build/neovim/v0.11.0/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
           rm -rf temp

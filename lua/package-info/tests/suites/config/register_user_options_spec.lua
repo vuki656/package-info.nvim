@@ -27,6 +27,7 @@ describe("Config register_user_options", function()
                     invalid = "",
                 },
             },
+            notifications = true,
             autostart = false,
             package_manager = constants.PACKAGE_MANAGERS.yarn,
             hide_up_to_date = true,

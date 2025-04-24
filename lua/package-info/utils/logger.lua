@@ -5,7 +5,7 @@ local M = {}
 -- @param highlight_group: string - highlight group to use when printing the message
 -- @return nil
 M.__print = function(message, highlight_group)
-    if pcall(require, "notify") then
+    if pcall(require, "notify") or pcall(require, "snacks.notifier") then
         if not highlight_group then
             highlight_group = "InfoMsg"
         end
