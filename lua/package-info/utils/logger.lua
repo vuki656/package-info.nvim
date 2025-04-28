@@ -1,11 +1,9 @@
 local M = {}
 
+-- Safely attempt to load the config to avoid circular dependency
 local function get_timeout()
     local ok, cfg = pcall(require, "package-info.config")
-    if ok then
-        return cfg.config.options.timeout
-    end
-    return 3000
+    return (ok and cfg.config.options.timeout) or 3000
 end
 
 --- Prints a message with a given highlight group
