@@ -55,7 +55,7 @@ M.new = function(message)
         instance.notification = vim.notify(message, vim.log.levels.INFO, {
             title = title,
             icon = SPINNERS[1],
-            timeout = 3000,
+            timeout = config.options.timeout,
             hide_from_history = true,
         })
     end
@@ -112,7 +112,7 @@ M.stop = function(id, message, level)
             title = title,
             icon = level_icon[level],
             replace = M.state.notification,
-            timeout = 3000,
+            timeout = config.options.timeout,
         })
         M.state.notification = new_notif
         M.state.notification = nil
