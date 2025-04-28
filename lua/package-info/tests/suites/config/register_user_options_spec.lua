@@ -32,6 +32,7 @@ describe("Config register_user_options", function()
             package_manager = constants.PACKAGE_MANAGERS.yarn,
             hide_up_to_date = true,
             hide_unstable_versions = true,
+            timeout = 5000,
         }
 
         config.__register_user_options(options)

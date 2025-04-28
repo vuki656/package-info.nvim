@@ -1,5 +1,13 @@
 local M = {}
 
+local function get_timeout()
+    local ok, cfg = pcall(require, "package-info.config")
+    if ok then
+        return cfg.config.options.timeout
+    end
+    return 3000
+end
+
 --- Prints a message with a given highlight group
 -- @param message: string - message to print
 -- @param highlight_group: string - highlight group to use when printing the message
@@ -27,7 +35,7 @@ M.__print = function(message, highlight_group)
         vim.notify(message, level[highlight_group].log_level, {
             title = "package-info.nvim",
             icon = level[highlight_group].log_symbol,
-            timeout = 3000,
+            timeout = get_timeout(),
         })
     else
         vim.api.nvim_echo({ { "PackageInfo: " .. message, highlight_group or "" } }, true, {})
