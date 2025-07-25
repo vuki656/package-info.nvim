@@ -41,10 +41,10 @@ end
 -- Check which lock file exists and set package manager accordingly
 -- @return nil
 M.__register_package_manager = function()
-    -- Obtener el directorio del package.json actual
+    -- Get the current package.json directory
     local package_json_dir = vim.fn.expand("%:p:h")
 
-    -- Si no estamos en un package.json, salir
+    -- If we're not in a package.json file, exit
     if vim.fn.expand("%:t") ~= "package.json" then
         return
     end
@@ -70,6 +70,7 @@ M.__register_package_manager = function()
 
         io.close(yarn_lock)
         state.is_in_project = true
+
         return
     end
 
@@ -77,8 +78,10 @@ M.__register_package_manager = function()
 
     if package_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.npm
+
         io.close(package_lock)
         state.is_in_project = true
+
         return
     end
 
@@ -86,8 +89,10 @@ M.__register_package_manager = function()
 
     if pnpm_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
+
         io.close(pnpm_lock)
         state.is_in_project = true
+
         return
     end
 end

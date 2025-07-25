@@ -14,9 +14,7 @@ describe("Config register_package_manager", function()
     end)
 
     it("should detect npm package manager", function()
-        -- Create a package.json file and navigate to it
         local package_json = file.create_package_json({ go = true })
-        -- Create lock file in the same directory
         local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/package-lock.json"
         local created_file = file.create({ name = lock_file_path })
 
@@ -29,9 +27,7 @@ describe("Config register_package_manager", function()
     end)
 
     it("should detect yarn package manager", function()
-        -- Create a package.json file and navigate to it
         local package_json = file.create_package_json({ go = true })
-        -- Create lock file in the same directory
         local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/yarn.lock"
         local created_file = file.create({ name = lock_file_path })
 
@@ -44,9 +40,7 @@ describe("Config register_package_manager", function()
     end)
 
     it("should detect pnpm package manager", function()
-        -- Create a package.json file and navigate to it
         local package_json = file.create_package_json({ go = true })
-        -- Create lock file in the same directory
         local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/pnpm-lock.yaml"
         local created_file = file.create({ name = lock_file_path })
 
