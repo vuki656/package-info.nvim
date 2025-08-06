@@ -41,7 +41,15 @@ end
 -- Check which lock file exists and set package manager accordingly
 -- @return nil
 M.__register_package_manager = function()
-    local yarn_lock = io.open("yarn.lock", "r")
+    -- Get the current package.json directory
+    local package_json_dir = vim.fn.expand("%:p:h")
+
+    -- If we're not in a package.json file, exit
+    if vim.fn.expand("%:t") ~= "package.json" then
+        return
+    end
+
+    local yarn_lock = io.open(package_json_dir .. "/yarn.lock", "r")
 
     if yarn_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
@@ -66,7 +74,7 @@ M.__register_package_manager = function()
         return
     end
 
-    local package_lock = io.open("package-lock.json", "r")
+    local package_lock = io.open(package_json_dir .. "/package-lock.json", "r")
 
     if package_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.npm
@@ -77,7 +85,7 @@ M.__register_package_manager = function()
         return
     end
 
-    local pnpm_lock = io.open("pnpm-lock.yaml", "r")
+    local pnpm_lock = io.open(package_json_dir .. "/pnpm-lock.yaml", "r")
 
     if pnpm_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
