@@ -47,9 +47,9 @@ describe("Config register_colorscheme_initialization", function()
         local outdated_hl = vim.api.nvim_get_hl(0, { name = constants.HIGHLIGHT_GROUPS.outdated })
 
         local is_up_to_date_color_registered = up_to_date_hl.fg
-            == tonumber(config.options.colors.up_to_date:gsub("#", ""), 16)
+            == tonumber(config.options.highlights.up_to_date.fg:gsub("#", ""), 16)
         local is_outdated_color_registered = outdated_hl.fg
-            == tonumber(config.options.colors.outdated:gsub("#", ""), 16)
+            == tonumber(config.options.highlights.outdated.fg:gsub("#", ""), 16)
 
         assert.is_not_nil(is_outdated_color_registered)
         assert.is_not_nil(is_up_to_date_color_registered)
@@ -64,8 +64,9 @@ describe("Config register_colorscheme_initialization", function()
         local outdated_color = vim.api.nvim_exec("highlight " .. constants.HIGHLIGHT_GROUPS.outdated, true)
 
         local is_up_to_date_color_registered =
-            string.find(up_to_date_color, constants.LEGACY_COLORS.up_to_date, 0, true)
-        local is_outdated_color_registered = string.find(outdated_color, constants.LEGACY_COLORS.outdated, 0, true)
+            string.find(up_to_date_color, config.options.highlights.up_to_date.ctermfg, 0, true)
+        local is_outdated_color_registered =
+            string.find(outdated_color, config.options.highlights.outdated.ctermfg, 0, true)
 
         assert.is_not_nil(is_outdated_color_registered)
         assert.is_not_nil(is_up_to_date_color_registered)
