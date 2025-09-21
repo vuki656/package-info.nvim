@@ -1,5 +1,5 @@
 local constants = require("package-info.utils.constants")
-local register_highlight_group = require("package-info.utils.register-highlight-group")
+local highlight_util = require("package-info.utils.register-highlight-group")
 local register_autocmd = require("package-info.utils.register-autocmd")
 local state = require("package-info.state")
 local job = require("package-info.utils.job")
@@ -7,10 +7,19 @@ local logger = require("package-info.utils.logger")
 
 local M = {
     __DEFAULT_OPTIONS = {
-        colors = {
-            up_to_date = "#3C4048",
-            outdated = "#d19a66",
-            invalid = "#ee4b2b",
+        highlights = {
+            up_to_date = {
+                fg = "#3C4048",
+                ctermfg = 237,
+            },
+            outdated = {
+                fg = "#d19a66",
+                ctermfg = 173,
+            },
+            invalid = {
+                fg = "#ee4b2b",
+                ctermfg = 196,
+            },
         },
         icons = {
             enable = true,
@@ -101,7 +110,36 @@ end
 -- @param user_options: M.__DEFAULT_OPTIONS - all the options user can provide in the plugin config
 -- @return nil
 M.__register_user_options = function(user_options)
-    M.options = vim.tbl_deep_extend("keep", user_options or {}, M.__DEFAULT_OPTIONS)
+    if user_options then
+        if user_options.colors and type(user_options.highlights) ~= "table" then
+            logger.warn([[
+`colors` option is deprecated and will be removed soon.
+Please migrate to `highlights` instead.
+See README for details.
+]])
+            user_options.highlights = {
+                up_to_date = {
+                    fg = type(user_options.colors.up_to_date) == "string" and user_options.colors.up_to_date or nil,
+                    ctermfg = type(user_options.colors.up_to_date) == "number" and user_options.colors.up_to_date
+                        or nil,
+                },
+                outdated = {
+                    fg = type(user_options.colors.outdated) == "string" and user_options.colors.outdated or nil,
+                    ctermfg = type(user_options.colors.outdated) == "number" and user_options.colors.outdated or nil,
+                },
+                invalid = {
+                    fg = type(user_options.colors.invalid) == "string" and user_options.colors.invalid or nil,
+                    ctermfg = type(user_options.colors.invalid) == "number" and user_options.colors.invalid or nil,
+                },
+            }
+        end
+        user_options.colors = nil
+    end
+
+    --- Priority: user highlights options > colorscheme > default
+    M.options = vim.tbl_deep_extend("keep", user_options or {}, {
+        highlights = highlight_util.get_colorscheme_hl(),
+    }, M.__DEFAULT_OPTIONS)
 end
 
 --- Prepare a clean augroup for the plugin to use
@@ -129,37 +167,16 @@ end
 --- Sets the plugin colors after the user colorscheme is loaded
 -- @return nil
 M.__register_colorscheme_initialization = function()
-    local colorscheme = vim.api.nvim_exec("colorscheme", true)
-
-    -- If user has no colorscheme(colorscheme is "default"), set the colors manually
-    if colorscheme == "default" then
-        M.__register_highlight_groups()
-
-        return
-    end
-
+    M.__register_highlight_groups()
     register_autocmd("ColorScheme", "lua require('package-info.config').__register_highlight_groups()")
 end
 
 --- Register all highlight groups
 -- @return nil
 M.__register_highlight_groups = function()
-    local colors = {
-        up_to_date = M.options.colors.up_to_date,
-        outdated = M.options.colors.outdated,
-    }
-
-    -- 256 color support
-    if not vim.o.termguicolors then
-        colors = {
-            up_to_date = constants.LEGACY_COLORS.up_to_date,
-            outdated = constants.LEGACY_COLORS.outdated,
-            invalid = constants.LEGACY_COLORS.invalid,
-        }
+    for hl_opts_name, hl_group_name in pairs(constants.HIGHLIGHT_GROUPS) do
+        highlight_util.set_hl(hl_group_name, M.options.highlights[hl_opts_name])
     end
-
-    register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, colors.outdated)
-    register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, colors.up_to_date)
 end
 
 --- Register all plugin commands

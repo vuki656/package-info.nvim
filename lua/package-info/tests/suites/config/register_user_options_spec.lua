@@ -14,10 +14,19 @@ describe("Config register_user_options", function()
 
     it("should register user options", function()
         local options = {
-            colors = {
-                up_to_date = "#ffffff",
-                outdated = "#333333",
-                invalid = "#ff0000",
+            highlights = {
+                up_to_date = {
+                    fg = "#ffffff",
+                    ctermfg = 15,
+                },
+                outdated = {
+                    fg = "#333333",
+                    ctermfg = 236,
+                },
+                invalid = {
+                    fg = "#ff0000",
+                    ctermfg = 196,
+                },
             },
             icons = {
                 enable = false,
@@ -42,9 +51,13 @@ describe("Config register_user_options", function()
 
     it("should keep default options if not changed by the user", function()
         local options = {
-            colors = {
-                up_to_date = "#ffffff",
-                outdated = "#333333",
+            highlights = {
+                up_to_date = {
+                    fg = "#ffffff",
+                },
+                outdated = {
+                    fg = "#333333",
+                },
             },
         }
 
@@ -53,5 +66,71 @@ describe("Config register_user_options", function()
         local merged_config = vim.tbl_deep_extend("keep", options, config.__DEFAULT_OPTIONS)
 
         assert.are.same(merged_config, config.options)
+    end)
+
+    it("should migrate old colors to highlights option if highlights option is not provided", function()
+        local options = {
+            colors = {
+                up_to_date = "#ffffff",
+                outdated = "#333333",
+                invalid = 123,
+            },
+        }
+
+        local expected_options = vim.deepcopy(config.__DEFAULT_OPTIONS)
+        expected_options.highlights = {
+            up_to_date = {
+                fg = "#ffffff",
+                ctermfg = 237,
+            },
+            outdated = {
+                fg = "#333333",
+                ctermfg = 173,
+            },
+            invalid = {
+                fg = "#ee4b2b",
+                ctermfg = 123,
+            },
+        }
+
+        config.__register_user_options(options)
+
+        assert.are.same(expected_options, config.options)
+    end)
+
+    it("should not migrate old colors to highlights option if highlights option is provided", function()
+        local options = {
+            colors = {
+                up_to_date = "#ffffff",
+                outdated = "#333333",
+                invalid = "#ff0000",
+            },
+            highlights = {
+                up_to_date = {
+                    fg = "#0D1117",
+                    ctermfg = 236,
+                },
+            },
+        }
+
+        local expected_options = vim.deepcopy(config.__DEFAULT_OPTIONS)
+        expected_options.highlights = {
+            up_to_date = {
+                fg = "#0D1117",
+                ctermfg = 236,
+            },
+            outdated = {
+                fg = "#d19a66",
+                ctermfg = 173,
+            },
+            invalid = {
+                fg = "#ee4b2b",
+                ctermfg = 196,
+            },
+        }
+
+        config.__register_user_options(options)
+
+        assert.are.same(expected_options, config.options)
     end)
 end)

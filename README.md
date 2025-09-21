@@ -167,7 +167,7 @@ components.right.active[5] = {
 
 ## ⚡️ Requirements
 
-- Neovim >= 0.6.0
+- Neovim >= 0.9.0
 - Npm
 - [Patched font](https://github.com/ryanoasis/nerd-fonts/tree/gh-pages) if you want icons
 
@@ -194,10 +194,17 @@ require('package-info').setup()
 
 ```lua
 {
-    colors = {
-        up_to_date = "#3C4048", -- Text color for up to date dependency virtual text
-        outdated = "#d19a66", -- Text color for outdated dependency virtual text
-        invalid = "#ee4b2b", -- Text color for invalid dependency virtual text
+    -- Check `:help nvim_set_hl()` for more attributes.
+    highlights = {
+        up_to_date = { -- highlight for up to date dependency virtual text
+            fg = "#3C4048"
+        },
+        outdated = { -- highlight for outdated dependency virtual text
+            fg = "#d19a66"
+        },
+        invalid = { -- highlight for invalid dependency virtual text
+            fg = "#ee4b2b"
+        },
     },
     icons = {
         enable = true, -- Whether to display icons
@@ -222,15 +229,51 @@ require('package-info').setup()
 #### 256 Color Terminals
 
 - If the vim option `termguicolors` is false, package-info switches to 256 color mode.
-- In this mode [cterm color numbers](https://jonasjacek.github.io/colors/) are used
-  instead of truecolor hex codes and the color defaults are:
+- In this mode [cterm color numbers (`ctermfg` `ctermbg`)](https://jonasjacek.github.io/colors/) are used
+  instead of truecolor hex codes (`fg` `bg`) and the color defaults are:
 
 ```lua
-colors = {
-    up_to_date = "237", -- cterm Grey237
-    outdated = "173", -- cterm LightSalmon3
-    invalid = "196", -- cterm Red1
+highlights = {
+    up_to_date = {
+        ctermfg = 237
+    },
+    outdated = {
+        ctermfg = 173
+    },
+    invalid = {
+        ctermfg = 196
+        fg = "#ee4b2b" -- Set both cterm and fg
+    }
 }
+```
+
+Check [:help nvim_set_hl()](<https://neovim.io/doc/user/api.html#nvim_set_hl()>) for more attributes.
+
+#### ⚠️ Migration Notice
+
+Old config (deprecated):
+
+```lua
+require("package-info").setup({
+  colors = {
+    up_to_date = "#3C4048",
+    outdated   = "#d19a66",
+    invalid    = "#ee4b2b",
+  },
+})
+
+```
+
+New config:
+
+```lua
+require("package-info").setup({
+  highlights = {
+    up_to_date = { fg = "#3C4048" },
+    outdated   = { fg = "#d19a66" },
+    invalid    = { fg = "#ee4b2b" },
+  },
+})
 ```
 
 ## ⌨️ All Keybindings
@@ -286,6 +329,23 @@ require("telescope").load_extension("package_info")
 ```
 :Telescope package_info
 ```
+
+## 🌈 Highlight Groups
+
+<details>
+<summary>Click to see all highlight groups</summary>
+
+<!-- hl_start -->
+
+| Highlight Group                | Default value              | Description                                     |
+| ------------------------------ | -------------------------- | ----------------------------------------------- |
+| **PackageInfoOutdatedVersion** | fg = #3C4048 ctermfg = 237 | Highlight out of date dependencies virtual text |
+| **PackageInfoUpToDateVersion** | fg = #d19a66 ctermfg = 173 | Highlight up of date dependencies virtual text  |
+| **PackageInfoInErrorVersion**  | fg = #ee4b2b ctermfg = 196 | Highlight invalid dependencies virtual text     |
+
+<!-- hl_end -->
+
+</details>
 
 ## 📝 Notes
 
