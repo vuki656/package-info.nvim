@@ -2,7 +2,7 @@
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/logo.png" width=315>
 
-## All the `npm`/`yarn`/`pnpm` commands I don't want to type
+## All the `npm`/`yarn`/`pnpm`/`bun` commands I don't want to type
 
 </div>
 
@@ -69,7 +69,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/delete.gif" width=500>
 
-Runs `yarn remove`, `npm uninstall`, or `pnpm uninstall` in the background and reloads the buffer.
+Runs `yarn remove`, `npm uninstall`, `pnpm uninstall` or `bun remove` in the background and reloads the buffer.
 
 </div>
 
@@ -90,7 +90,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/change.gif" width=500>
 
-Runs `npm install dependency@version`, `yarn upgrade dependency@version`, or `pnpm update dependency` in the background and reloads the buffer.
+Runs `npm install dependency@version`, `yarn upgrade dependency@version`, `pnpm update dependency` or `bun add dependency@version` in the background and reloads the buffer.
 
 </div>
 
@@ -111,7 +111,7 @@ vim.api.nvim_set_keymap(
 
 <img src="https://github.com/vuki656/vuki656/blob/master/media/package-info/install.gif" width=500>
 
-Runs `npm install dependency`, `yarn add dependency`, or `pnpm add dependency` in the background and reloads the buffer.
+Runs `npm install dependency`, `yarn add dependency`, `pnpm add dependency` or `bun add dependency` in the background and reloads the buffer.
 
 </div>
 
@@ -218,11 +218,11 @@ require('package-info').setup()
     autostart = true, -- Whether to autostart when `package.json` is opened
     hide_up_to_date = false, -- It hides up to date versions when displaying virtual text
     hide_unstable_versions = false, -- It hides unstable versions from version list e.g next-11.1.3-canary3
-    -- Can be `npm`, `yarn`, or `pnpm`. Used for `delete`, `install` etc...
+    -- Can be `npm`, `yarn`, `pnpm` or `bun`. Used for `delete`, `install` etc...
     -- The plugin will try to auto-detect the package manager based on
-    -- `yarn.lock` or `package-lock.json`. If none are found it will use the
-    -- provided one, if nothing is provided it will use `yarn`
-    package_manager = 'yarn'
+    -- `yarn.lock`, `package-lock.json` or `bun.lock`. If none are found it will use the
+    -- provided one, if nothing is provided it will use `npm`
+    package_manager = 'npm'
 }
 ```
 

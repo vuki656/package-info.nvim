@@ -94,6 +94,17 @@ M.__register_package_manager = function()
         return
     end
 
+    local bun_lock = io.open(package_json_dir .. "/bun.lock", "r")
+
+    if bun_lock ~= nil then
+        M.options.package_manager = constants.PACKAGE_MANAGERS.bun
+
+        io.close(bun_lock)
+        state.is_in_project = true
+
+        return
+    end
+
     local pnpm_lock = io.open(package_json_dir .. "/pnpm-lock.yaml", "r")
 
     if pnpm_lock ~= nil then

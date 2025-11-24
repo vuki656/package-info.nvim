@@ -30,6 +30,10 @@ M.__get_command = function(dependency_name)
     if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
         return "pnpm update --latest " .. dependency_name
     end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
+        return "bun add " .. dependency_name .. "@latest"
+    end
 end
 
 --- Runs the update dependency action

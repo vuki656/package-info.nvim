@@ -26,6 +26,10 @@ M.__get_command = function(dependency_name)
     if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
         return "pnpm remove " .. dependency_name
     end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
+        return "bun remove " .. dependency_name
+    end
 end
 
 --- Runs the delete action

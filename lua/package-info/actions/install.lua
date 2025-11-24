@@ -28,6 +28,10 @@ M.__get_command = function(type, dependency_name)
         if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
             return "pnpm add -D " .. dependency_name
         end
+
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
+            return "bun add -d " .. dependency_name
+        end
     end
 
     if type == constants.DEPENDENCY_TYPE.production then
@@ -41,6 +45,10 @@ M.__get_command = function(type, dependency_name)
 
         if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
             return "pnpm add " .. dependency_name
+        end
+
+        if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
+            return "bun add " .. dependency_name
         end
     end
 end

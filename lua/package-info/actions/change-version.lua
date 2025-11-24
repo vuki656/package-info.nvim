@@ -33,6 +33,10 @@ M.__get_change_version_command = function(dependency_name, version)
     if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
         return "pnpm add " .. dependency_name .. "@" .. version
     end
+
+    if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
+        return "bun add " .. dependency_name .. "@" .. version
+    end
 end
 
 --- Returns available package versions command based on package manager
@@ -46,6 +50,7 @@ M.__get_version_list_command = function(dependency_name)
     if
         config.options.package_manager == constants.PACKAGE_MANAGERS.npm
         or config.options.package_manager == constants.PACKAGE_MANAGERS.yarn
+        or config.options.package_manager == constants.PACKAGE_MANAGERS.bun
     then
         return "npm view " .. dependency_name .. " versions --json"
     end

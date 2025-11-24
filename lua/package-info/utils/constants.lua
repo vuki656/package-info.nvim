@@ -10,6 +10,7 @@ M.PACKAGE_MANAGERS = {
     yarn = "yarn",
     npm = "npm",
     pnpm = "pnpm",
+    bun = "bun",
 }
 
 M.DEPENDENCY_TYPE = {
