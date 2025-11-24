@@ -68,7 +68,7 @@ describe("Config register_package_manager", function()
     it("should prioritize yarn when both yarn.lock and bun.lock exist", function()
         local package_json = file.create_package_json({ go = true })
         local dir = vim.fn.fnamemodify(package_json.path, ":h")
-        
+
         local yarn_lock = file.create({ name = dir .. "/yarn.lock" })
         local bun_lock = file.create({ name = dir .. "/bun.lock" })
 
@@ -84,7 +84,7 @@ describe("Config register_package_manager", function()
     it("should prioritize npm when both package-lock.json and bun.lock exist", function()
         local package_json = file.create_package_json({ go = true })
         local dir = vim.fn.fnamemodify(package_json.path, ":h")
-        
+
         local npm_lock = file.create({ name = dir .. "/package-lock.json" })
         local bun_lock = file.create({ name = dir .. "/bun.lock" })
 
@@ -100,7 +100,7 @@ describe("Config register_package_manager", function()
     it("should prioritize bun when both bun.lock and pnpm-lock.yaml exist", function()
         local package_json = file.create_package_json({ go = true })
         local dir = vim.fn.fnamemodify(package_json.path, ":h")
-        
+
         local bun_lock = file.create({ name = dir .. "/bun.lock" })
         local pnpm_lock = file.create({ name = dir .. "/pnpm-lock.yaml" })
 
