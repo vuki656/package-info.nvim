@@ -24,7 +24,13 @@ M.__display_on_line = function(line_number, dependency_name)
 
     local outdated_dependency = state.dependencies.outdated[dependency_name]
 
-    if outdated_dependency and outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current then
+    local is_catalog = string.match(state.dependencies.installed[dependency_name].current, "catalog:")
+
+    if
+        outdated_dependency
+        and outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current
+        and not is_catalog
+    then
         virtual_text = {
             group = constants.HIGHLIGHT_GROUPS.outdated,
             icon = config.options.icons.style.outdated,
@@ -38,6 +44,33 @@ M.__display_on_line = function(line_number, dependency_name)
             group = constants.HIGHLIGHT_GROUPS.invalid,
             icon = config.options.icons.style.invalid,
             version = error_dependency.diagnostic,
+        }
+    end
+
+    local default_catalog = state.dependencies.pnpm_workspace
+        and state.dependencies.pnpm_workspace.catalog
+        and state.dependencies.pnpm_workspace.catalog[dependency_name]
+
+    if default_catalog and is_catalog then
+        local is_outdated = outdated_dependency and outdated_dependency.latest ~= default_catalog
+        local version = clean_version(default_catalog) .. (is_outdated and (" - " .. outdated_dependency.latest) or "")
+        virtual_text = {
+            group = is_outdated and constants.HIGHLIGHT_GROUPS.outdated or constants.HIGHLIGHT_GROUPS.up_to_date,
+            icon = is_outdated and config.options.icons.style.outdated or config.options.icons.style.up_to_date,
+            version = version,
+        }
+    end
+
+    local catalog_name = string.match(state.dependencies.installed[dependency_name].current, "catalog:(.+)")
+
+    if catalog_name and state.dependencies.pnpm_workspace.catalogs[catalog_name] then
+        local raw_version = state.dependencies.pnpm_workspace.catalogs[catalog_name][dependency_name]
+        local is_outdated = outdated_dependency and outdated_dependency.latest ~= raw_version
+        local version = clean_version(raw_version) .. (is_outdated and (" - " .. outdated_dependency.latest) or "")
+        virtual_text = {
+            group = is_outdated and constants.HIGHLIGHT_GROUPS.outdated or constants.HIGHLIGHT_GROUPS.up_to_date,
+            icon = is_outdated and config.options.icons.style.outdated or config.options.icons.style.up_to_date,
+            version = version,
         }
     end
 

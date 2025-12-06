@@ -10,6 +10,8 @@ local M = {
 }
 
 M.dependencies = {
+    -- pnpm catalog
+    pnpm_workspace = {},
     -- Outdated dependencies from `npm outdated --json` as a list of
     -- [name]: {
     --     current: string - current dependency version

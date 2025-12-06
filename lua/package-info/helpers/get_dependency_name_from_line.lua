@@ -6,6 +6,10 @@ local clean_version = require("package-info.helpers.clean_version")
 -- @param value: string - value to check if conforms
 -- @return boolean
 local is_valid_dependency_version = function(value)
+    if string.find(value, "catalog:") ~= nil then
+        return true
+    end
+
     local cleaned_version = clean_version(value)
 
     if cleaned_version == nil then
