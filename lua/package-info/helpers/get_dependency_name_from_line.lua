@@ -1,12 +1,13 @@
 local state = require("package-info.state")
 local to_boolean = require("package-info.utils.to-boolean")
 local clean_version = require("package-info.helpers.clean_version")
+local pnpm = require("package-info.utils.pnpm")
 
 --- Checks if the given string conforms to 1.0.0 version format
 -- @param value: string - value to check if conforms
 -- @return boolean
 local is_valid_dependency_version = function(value)
-    if string.find(value, "catalog:") ~= nil then
+    if pnpm.is_catalog(value) then
         return true
     end
 
