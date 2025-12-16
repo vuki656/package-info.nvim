@@ -54,13 +54,13 @@ M.__display_on_line = function(line_number, dependency_name)
 
     if default_catalog_package and is_pnpm_catalog then
         virtual_text =
-            pnpm.create_pnpm_virtual_text(default_catalog_package, outdated_dependency and outdated_dependency.latest)
+            pnpm.create_virtual_text(default_catalog_package, outdated_dependency and outdated_dependency.latest)
     end
 
     local catalog_name = pnpm.find_catalog_name(state.dependencies.installed[dependency_name].current)
 
     if catalog_name and state.dependencies.pnpm_workspace.catalogs[catalog_name] then
-        virtual_text = pnpm.create_pnpm_virtual_text(
+        virtual_text = pnpm.create_virtual_text(
             state.dependencies.pnpm_workspace.catalogs[catalog_name],
             outdated_dependency and outdated_dependency.latest
         )
