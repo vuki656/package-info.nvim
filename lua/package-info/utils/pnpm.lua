@@ -25,7 +25,7 @@ end
 
 ---@param current string
 ---@param latest string|boolean
-M.create_pnpm_virtual_text = function(current, latest)
+M.create_virtual_text = function(current, latest)
     local is_outdated = latest and current ~= latest or false
     return {
         group = is_outdated and constants.HIGHLIGHT_GROUPS.outdated or constants.HIGHLIGHT_GROUPS.up_to_date,
