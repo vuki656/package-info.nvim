@@ -54,7 +54,7 @@ M.__display_on_line = function(line_number, dependency_name)
 
         local catalog_name = pnpm.find_catalog_name(state.dependencies.installed[dependency_name].current)
 
-        local current = catalog_name and state.dependencies.pnpm_workspace.catalogs[catalog_name]
+        local current = catalog_name and state.dependencies.pnpm_workspace.catalogs[catalog_name][dependency_name]
             or default_catalog_package
 
         local latest = outdated_dependency and outdated_dependency.latest
