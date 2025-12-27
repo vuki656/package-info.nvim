@@ -108,13 +108,12 @@ M.stop = function(id, message, level)
             [vim.log.levels.WARN] = "  ",
         }
 
-        local new_notif = vim.notify(message, level, {
+        vim.notify(message, level, {
             title = title,
             icon = level_icon[level],
             replace = M.state.notification,
             timeout = config.options.timeout,
         })
-        M.state.notification = new_notif
         M.state.notification = nil
     end
 
