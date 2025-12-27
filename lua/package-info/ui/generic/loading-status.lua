@@ -108,13 +108,12 @@ M.stop = function(id, message, level)
             [vim.log.levels.WARN] = "  ",
         }
 
-        local new_notif = vim.notify(message, level, {
+        vim.notify(message, level, {
             title = title,
             icon = level_icon[level],
             replace = M.state.notification,
             timeout = config.options.timeout,
         })
-        M.state.notification = new_notif
         M.state.notification = nil
     end
 
@@ -125,7 +124,9 @@ M.stop = function(id, message, level)
             table.insert(filtered_list, instance)
         end
     end
-
+    if #filtered_list == 0 then
+        M.reset_state()
+    end
     M.queue = filtered_list
 end
 
@@ -168,6 +169,10 @@ M.get = function()
             return instance.message
         end
     end
+    return ""
+end
+
+M.reset_state = function()
     M.state.is_running = false
     M.state.current_spinner = ""
     M.state.index = 1
@@ -183,7 +188,5 @@ M.get = function()
             })
         end)
     end
-    return ""
 end
-
 return M
