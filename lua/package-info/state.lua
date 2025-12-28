@@ -10,6 +10,16 @@ local M = {
 }
 
 M.dependencies = {
+    -- Information loaded from pnpm_workspace
+    -- catalog: {
+    --   ["dependency_name"] = "0.0.0 (version)"
+    -- }
+    -- catalogs: {
+    --   ["catalog_name"] = {
+    --     ["dependency_name"] = "0.0.0 (version)"
+    --   }
+    -- }
+    pnpm_workspace = {},
     -- Outdated dependencies from `npm outdated --json` as a list of
     -- [name]: {
     --     current: string - current dependency version

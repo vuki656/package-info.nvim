@@ -170,6 +170,7 @@ components.right.active[5] = {
 - Neovim >= 0.9.0
 - Npm
 - [Patched font](https://github.com/ryanoasis/nerd-fonts/tree/gh-pages) if you want icons
+- [`yq`](https://github.com/mikefarah/yq) for pnpm workspace support (optional)
 
 ## 📦 Installation
 
