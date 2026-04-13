@@ -47,18 +47,11 @@ M.__register_namespace = function()
     state.namespace.create()
 end
 
--- Check which lock file exists and set package manager accordingly
--- @return nil
-M.__register_package_manager = function()
-    -- Get the current package.json directory
-    local package_json_dir = vim.fn.expand("%:p:h")
-
-    -- If we're not in a package.json file, exit
-    if vim.fn.expand("%:t") ~= "package.json" then
-        return
-    end
-
-    local yarn_lock = io.open(package_json_dir .. "/yarn.lock", "r")
+--- Check which lock file exists and set package manager accordingly
+-- @param dir: string
+-- @return boolean
+local __detect_package_manager = function(dir)
+    local yarn_lock = io.open(dir .. "/yarn.lock", "r")
 
     if yarn_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.yarn
@@ -78,42 +71,57 @@ M.__register_package_manager = function()
         })
 
         io.close(yarn_lock)
-        state.is_in_project = true
-
-        return
+        return true
     end
 
-    local package_lock = io.open(package_json_dir .. "/package-lock.json", "r")
+    local package_lock = io.open(dir .. "/package-lock.json", "r")
 
     if package_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.npm
-
         io.close(package_lock)
-        state.is_in_project = true
-
-        return
+        return true
     end
 
-    local bun_lock = io.open(package_json_dir .. "/bun.lock", "r")
+    local bun_lock = io.open(dir .. "/bun.lock", "r")
 
     if bun_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.bun
-
         io.close(bun_lock)
-        state.is_in_project = true
-
-        return
+        return true
     end
 
-    local pnpm_lock = io.open(package_json_dir .. "/pnpm-lock.yaml", "r")
+    local pnpm_lock = io.open(dir .. "/pnpm-lock.yaml", "r")
 
     if pnpm_lock ~= nil then
         M.options.package_manager = constants.PACKAGE_MANAGERS.pnpm
-
         io.close(pnpm_lock)
-        state.is_in_project = true
+        return true
+    end
 
+    return false
+end
+
+--- Check lock file in the package json dir and the git root (for monorepos)
+-- @return nil
+M.__register_package_manager = function()
+    -- Get the current package.json directory
+    local package_json_dir = vim.fn.expand("%:p:h")
+
+    -- If we're not in a package.json file, exit
+    if vim.fn.expand("%:t") ~= "package.json" then
         return
+    end
+
+    if __detect_package_manager(package_json_dir) then
+        state.is_in_project = true
+        return
+    end
+
+    local git_root =
+        vim.fn.systemlist("git -C " .. vim.fn.shellescape(package_json_dir) .. " rev-parse --show-toplevel")[1]
+
+    if git_root and git_root ~= package_json_dir and __detect_package_manager(git_root) then
+        state.is_in_project = true
     end
 end
 
