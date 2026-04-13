@@ -175,6 +175,12 @@ M.__register_autostart = function()
     end
 end
 
+--- Register autocommand for detecting package manager on package.json entry
+-- @return nil
+M.__register_package_manager_initialization = function()
+    register_autocmd("BufEnter", "lua require('package-info.config').__register_package_manager()")
+end
+
 --- Sets the plugin colors after the user colorscheme is loaded
 -- @return nil
 M.__register_colorscheme_initialization = function()
@@ -208,9 +214,9 @@ end
 M.setup = function(user_options)
     M.__register_user_options(user_options)
 
-    M.__register_package_manager()
     M.__register_namespace()
     M.__prepare_augroup()
+    M.__register_package_manager_initialization()
     M.__register_start()
     M.__register_colorscheme_initialization()
     M.__register_autostart()
