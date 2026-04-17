@@ -6,6 +6,9 @@ local virtual_text = require("package-info.virtual_text")
 local reload = require("package-info.helpers.reload")
 
 local loading = require("package-info.ui.generic.loading-status")
+local pnpm = require("package-info.utils.pnpm")
+
+local is_pnpm_workspace = pnpm.is_workspace()
 
 local M = {}
 
@@ -32,7 +35,7 @@ M.run = function(options)
 
     job({
         json = true,
-        command = "npm outdated --json",
+        command = is_pnpm_workspace and "pnpm outdated --json" or "npm outdated --json",
         ignore_error = true,
         on_start = function()
             if not config.options.notifications then
@@ -58,6 +61,33 @@ M.run = function(options)
             loading.stop(id, loading_message, vim.log.levels.ERROR)
         end,
     })
+
+    if is_pnpm_workspace then
+        local workspace_message = "| 󰇚 Fetching pnpm workspace"
+        local workspace_id = loading.new(workspace_message)
+        job({
+            json = true,
+            command = "cat " .. pnpm.workspace_path() .. " | yq -o json",
+            ignore_error = true,
+            on_start = function()
+                if not config.options.notifications then
+                    return
+                end
+
+                loading.start(workspace_id)
+            end,
+            on_success = function(workspace)
+                state.dependencies.pnpm_workspace = workspace
+
+                loading.stop(workspace_id, workspace_message)
+
+                state.last_run.update()
+            end,
+            on_error = function()
+                loading.stop(workspace_id, workspace_message, vim.log.levels.ERROR)
+            end,
+        })
+    end
 end
 
 return M
