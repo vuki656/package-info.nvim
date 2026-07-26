@@ -217,13 +217,54 @@ end
 --- Register all plugin commands
 -- @return nil
 M.__register_commands = function()
-    vim.cmd("command! " .. constants.COMMANDS.show .. " lua require('package-info').show()")
-    vim.cmd("command! " .. constants.COMMANDS.show_force .. " lua require('package-info').show({ force = true })")
-    vim.cmd("command! " .. constants.COMMANDS.hide .. " lua require('package-info').hide()")
-    vim.cmd("command! " .. constants.COMMANDS.delete .. " lua require('package-info').delete()")
-    vim.cmd("command! " .. constants.COMMANDS.update .. " lua require('package-info').update()")
-    vim.cmd("command! " .. constants.COMMANDS.install .. " lua require('package-info').install()")
-    vim.cmd("command! " .. constants.COMMANDS.change_version .. " lua require('package-info').change_version()")
+    local commands = {
+        [constants.COMMANDS.show] = {
+            desc = "Show the latest version of each dependency",
+            callback = function()
+                require("package-info").show()
+            end,
+        },
+        [constants.COMMANDS.show_force] = {
+            desc = "Show the latest version of each dependency, ignoring the cache",
+            callback = function()
+                require("package-info").show({ force = true })
+            end,
+        },
+        [constants.COMMANDS.hide] = {
+            desc = "Hide the dependency versions",
+            callback = function()
+                require("package-info").hide()
+            end,
+        },
+        [constants.COMMANDS.delete] = {
+            desc = "Delete the dependency on the current line",
+            callback = function()
+                require("package-info").delete()
+            end,
+        },
+        [constants.COMMANDS.update] = {
+            desc = "Update the dependency on the current line",
+            callback = function()
+                require("package-info").update()
+            end,
+        },
+        [constants.COMMANDS.install] = {
+            desc = "Install a new dependency",
+            callback = function()
+                require("package-info").install()
+            end,
+        },
+        [constants.COMMANDS.change_version] = {
+            desc = "Change the version of the dependency on the current line",
+            callback = function()
+                require("package-info").change_version()
+            end,
+        },
+    }
+
+    for name, options in pairs(commands) do
+        vim.api.nvim_create_user_command(name, options.callback, { desc = options.desc })
+    end
 end
 
 --- Take all user options and setup the config
