@@ -1,4 +1,4 @@
-local spy = require("luassert.spy")
+local expect = MiniTest.expect
 
 local core = require("package-info.core")
 local state = require("package-info.state")
@@ -7,33 +7,33 @@ local to_boolean = require("package-info.utils.to-boolean")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
+local spy = require("package-info.tests.utils.spy")
 
-describe("Core load_plugin", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should return nil if not in package.json"] = function()
+    local is_loaded = to_boolean(core.load_plugin())
 
-    it("should return nil if not in package.json", function()
-        local is_loaded = to_boolean(core.load_plugin())
+    expect.equality(is_loaded, false)
+end
 
-        assert.is_false(is_loaded)
-    end)
+T["should load the plugin if in package.json"] = function()
+    local package_json = file.create_package_json({ go = true })
 
-    it("should load the plugin if in package.json", function()
-        local package_json = file.create_package_json({ go = true })
+    local parse_buffer = spy.on(parser, "parse_buffer")
+    local save = spy.on(state.buffer, "save")
 
-        spy.on(parser, "parse_buffer")
-        spy.on(state.buffer, "save")
+    core.load_plugin()
 
-        core.load_plugin()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(save.count, 1)
+    expect.equality(parse_buffer.count, 1)
+end
 
-        assert.spy(state.buffer.save).was_called(1)
-        assert.spy(parser.parse_buffer).was_called(1)
-    end)
-end)
+return T

@@ -1,21 +1,22 @@
+local expect = MiniTest.expect
+
 local config = require("package-info.config")
 local state = require("package-info.state")
 
 local reset = require("package-info.tests.utils.reset")
 
-describe("Config register_namespace", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should register namespace"] = function()
+    config.__register_namespace()
 
-    it("should register namespace", function()
-        config.__register_namespace()
+    expect.no_equality(state.namespace.id, nil)
+    expect.equality(vim.api.nvim_get_namespaces()["package-info"], state.namespace.id)
+end
 
-        assert.is_not_nil(state.namespace.id)
-        assert.are.equals(vim.api.nvim_get_namespaces()["package-info"], state.namespace.id)
-    end)
-end)
+return T

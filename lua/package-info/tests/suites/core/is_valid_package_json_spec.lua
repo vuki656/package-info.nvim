@@ -1,73 +1,74 @@
+local expect = MiniTest.expect
+
 local core = require("package-info.core")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
 
-describe("Core is_valid_package_json", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should return true for valid package.json"] = function()
+    local package_json = file.create_package_json({ go = true })
 
-    it("should return true for valid package.json", function()
-        local package_json = file.create_package_json({ go = true })
+    local is_valid = core.__is_valid_package_json()
 
-        local is_valid = core.__is_valid_package_json()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(is_valid, true)
+end
 
-        assert.is_true(is_valid)
-    end)
+T["should return false if buffer empty"] = function()
+    local is_valid = core.__is_valid_package_json()
 
-    it("should return false if buffer empty", function()
-        local is_valid = core.__is_valid_package_json()
+    expect.equality(is_valid, false)
+end
 
-        assert.is_false(is_valid)
-    end)
+T["should return false if file not called package.json"] = function()
+    local path = "some_random_file_that_is_dead.txt"
 
-    it("should return false if file not called package.json", function()
-        local path = "some_random_file_that_is_dead.txt"
+    file.create({
+        name = path,
+        go = true,
+    })
 
-        file.create({
-            name = path,
-            go = true,
-        })
+    local is_valid = core.__is_valid_package_json()
 
-        local is_valid = core.__is_valid_package_json()
+    file.delete(path)
 
-        file.delete(path)
+    expect.equality(is_valid, false)
+end
 
-        assert.is_false(is_valid)
-    end)
+T["should return false if the buffer is not a file on disk"] = function()
+    local buffer = vim.api.nvim_create_buf(true, false)
 
-    it("should return false if the buffer is not a file on disk", function()
-        local buffer = vim.api.nvim_create_buf(true, false)
+    vim.api.nvim_buf_set_name(buffer, "diffview:///home/user/project/.git/abc123/package.json")
+    vim.api.nvim_set_current_buf(buffer)
+    vim.api.nvim_buf_set_lines(buffer, 0, -1, false, { '{ "dependencies": { "react": "16.0.0" } }' })
 
-        vim.api.nvim_buf_set_name(buffer, "diffview:///home/user/project/.git/abc123/package.json")
-        vim.api.nvim_set_current_buf(buffer)
-        vim.api.nvim_buf_set_lines(buffer, 0, -1, false, { '{ "dependencies": { "react": "16.0.0" } }' })
+    local is_valid = core.__is_valid_package_json()
 
-        local is_valid = core.__is_valid_package_json()
+    vim.cmd("edit void")
+    vim.api.nvim_buf_delete(buffer, { force = true })
 
-        vim.cmd("edit void")
-        vim.api.nvim_buf_delete(buffer, { force = true })
+    expect.equality(is_valid, false)
+end
 
-        assert.is_false(is_valid)
-    end)
+T["should return false if json is invalid format"] = function()
+    local package_json = file.create_package_json({
+        content = '{ "name" = function () { }',
+        go = true,
+    })
 
-    it("should return false if json is invalid format", function()
-        local package_json = file.create_package_json({
-            content = '{ "name" = function () { }',
-            go = true,
-        })
+    local is_valid = core.__is_valid_package_json()
 
-        local is_valid = core.__is_valid_package_json()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(is_valid, false)
+end
 
-        assert.is_false(is_valid)
-    end)
-end)
+return T

@@ -1,4 +1,4 @@
-local spy = require("luassert.spy")
+local expect = MiniTest.expect
 
 local core = require("package-info.core")
 local state = require("package-info.state")
@@ -9,46 +9,46 @@ local virtual_text = require("package-info.virtual_text")
 
 local reset = require("package-info.tests.utils.reset")
 local file = require("package-info.tests.utils.file")
+local spy = require("package-info.tests.utils.spy")
 
-describe("Helpers reload", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    before_each(function()
-        reset.all()
-    end)
+T["should reload the buffer if it's package.json"] = function()
+    local package_json = file.create_package_json({ go = true })
 
-    it("should reload the buffer if it's package.json", function()
-        local package_json = file.create_package_json({ go = true })
+    local parse_buffer = spy.on(parser, "parse_buffer")
 
-        spy.on(parser, "parse_buffer")
+    core.load_plugin()
+    reload()
 
-        core.load_plugin()
-        reload()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(parse_buffer.count, 2)
+end
 
-        assert.spy(parser.parse_buffer).was_called(2)
-    end)
+T["should reload the buffer and re-render virtual text if it's displayed and in package.json"] = function()
+    state.is_virtual_text_displayed = true
 
-    it("should reload the buffer and re-render virtual text if it's displayed and in package.json", function()
-        state.is_virtual_text_displayed = true
+    local package_json = file.create_package_json({ go = true })
 
-        local package_json = file.create_package_json({ go = true })
+    local parse_buffer = spy.on(parser, "parse_buffer")
+    local display = spy.on(virtual_text, "display")
+    local clear = spy.on(virtual_text, "clear")
 
-        spy.on(parser, "parse_buffer")
-        spy.on(virtual_text, "display")
-        spy.on(virtual_text, "clear")
+    config.setup()
+    core.load_plugin()
+    reload()
 
-        config.setup()
-        core.load_plugin()
-        reload()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(display.count, 1)
+    expect.equality(clear.count, 1)
+    expect.equality(parse_buffer.count, 2)
+end
 
-        assert.spy(virtual_text.display).was_called(1)
-        assert.spy(virtual_text.clear).was_called(1)
-        assert.spy(parser.parse_buffer).was_called(2)
-    end)
-end)
+return T

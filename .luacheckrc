@@ -2,7 +2,7 @@ std = {
     globals = {
         "rawget",
         "next",
-        "before_each",
+        "MiniTest",
         "print",
         "pcall",
         "select",
@@ -19,5 +19,8 @@ std = {
         "string",
         "require",
         "math",
+        "debug",
     },
 }
+
+exclude_files = { ".tests", "temp" }

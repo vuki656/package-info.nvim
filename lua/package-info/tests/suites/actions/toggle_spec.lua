@@ -1,33 +1,33 @@
-local spy = require("luassert.spy")
-local toggle_action = require("package-info").toggle
+local expect = MiniTest.expect
 
+local toggle_action = require("package-info").toggle
 local config = require("package-info.config")
 local core = require("package-info.core")
 local virtual_text = require("package-info.virtual_text")
 
 local reset = require("package-info.tests.utils.reset")
 local file = require("package-info.tests.utils.file")
+local spy = require("package-info.tests.utils.spy")
 
-describe("Actions toggle", function()
-    before_each(function()
-        reset.all()
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
+
+T["should not throw"] = function()
+    file.create_package_json({ go = true })
+
+    spy.on(virtual_text, "clear")
+    spy.on(virtual_text, "display")
+
+    config.setup()
+    core.load_plugin()
+
+    expect.no_error(function()
+        toggle_action()
     end)
+end
 
-    after_each(function()
-        reset.all()
-    end)
-
-    it("should not throw", function()
-        file.create_package_json({ go = true })
-
-        spy.on(virtual_text, "clear")
-        spy.on(virtual_text, "display")
-
-        config.setup()
-        core.load_plugin()
-
-        assert.has_no.errors(function()
-            toggle_action()
-        end)
-    end)
-end)
+return T

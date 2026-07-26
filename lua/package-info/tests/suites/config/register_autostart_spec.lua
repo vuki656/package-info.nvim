@@ -1,38 +1,39 @@
+local expect = MiniTest.expect
+
 local config = require("package-info.config")
 local to_boolean = require("package-info.utils.to-boolean")
 
 local reset = require("package-info.tests.utils.reset")
 
-describe("Config register_autostart", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should register autostart if autostart option is true"] = function()
+    config.options.autostart = true
 
-    it("should register autostart if autostart option is true", function()
-        config.options.autostart = true
+    config.__register_autostart()
 
-        config.__register_autostart()
+    local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
 
-        local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
+    local is_registered = to_boolean(string.find(autocommands, "lua require('package-info').show()", 0, true))
 
-        local is_registered = to_boolean(string.find(autocommands, "lua require('package-info').show()", 0, true))
+    expect.equality(is_registered, true)
+end
 
-        assert.is_true(is_registered)
-    end)
+T["shouldn't register autostart if autostart option is false"] = function()
+    config.options.autostart = false
 
-    it("shouldn't register autostart if autostart option is false", function()
-        config.options.autostart = false
+    config.__register_autostart()
 
-        config.__register_autostart()
+    local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
 
-        local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
+    local is_registered = to_boolean(string.find(autocommands, "lua require('package-info').show()", 0, true))
 
-        local is_registered = to_boolean(string.find(autocommands, "lua require('package-info').show()", 0, true))
+    expect.equality(is_registered, false)
+end
 
-        assert.is_false(is_registered)
-    end)
-end)
+return T

@@ -1,4 +1,4 @@
-local spy = require("luassert.spy")
+local expect = MiniTest.expect
 
 local core = require("package-info.core")
 local state = require("package-info.state")
@@ -7,29 +7,29 @@ local virtual_text = require("package-info.virtual_text")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
+local spy = require("package-info.tests.utils.spy")
 
-describe("Virtual_text display", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should be called for each dependency in package.json"] = function()
+    local package_json = file.create_package_json({ go = true })
 
-    it("should be called for each dependency in package.json", function()
-        local package_json = file.create_package_json({ go = true })
+    config.setup()
+    core.load_plugin()
 
-        config.setup()
-        core.load_plugin()
+    local display_on_line = spy.on(virtual_text, "__display_on_line")
 
-        spy.on(virtual_text, "__display_on_line")
+    virtual_text.display()
 
-        virtual_text.display()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(display_on_line.count, package_json.total_count)
+    expect.equality(state.is_virtual_text_displayed, true)
+end
 
-        assert.spy(virtual_text.__display_on_line).was_called(package_json.total_count)
-        assert.is_true(state.is_virtual_text_displayed)
-    end)
-end)
+return T

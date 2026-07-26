@@ -1,18 +1,20 @@
+local expect = MiniTest.expect
+
 local state = require("package-info.state")
+
 local reset = require("package-info.tests.utils.reset")
 
-describe("State buffer", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should save buffer id"] = function()
+    state.buffer.save()
 
-    it("should save buffer id", function()
-        state.buffer.save()
+    expect.no_equality(state.buffer.id, nil)
+end
 
-        assert.is_not_nil(state.buffer.id)
-    end)
-end)
+return T

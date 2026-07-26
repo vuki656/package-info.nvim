@@ -1,3 +1,5 @@
+local expect = MiniTest.expect
+
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
 local state = require("package-info.state")
@@ -5,130 +7,129 @@ local state = require("package-info.state")
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
 
-describe("Config register_package_manager", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should detect npm package manager"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/package-lock.json"
+    local created_file = file.create({ name = lock_file_path })
 
-    it("should detect npm package manager", function()
-        local package_json = file.create_package_json({ go = true })
-        local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/package-lock.json"
-        local created_file = file.create({ name = lock_file_path })
+    config.__register_package_manager()
 
-        config.__register_package_manager()
+    file.delete(created_file.path)
+    file.delete(package_json.path)
 
-        file.delete(created_file.path)
-        file.delete(package_json.path)
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.npm)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.npm, config.options.package_manager)
-    end)
+T["should detect yarn package manager"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/yarn.lock"
+    local created_file = file.create({ name = lock_file_path })
 
-    it("should detect yarn package manager", function()
-        local package_json = file.create_package_json({ go = true })
-        local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/yarn.lock"
-        local created_file = file.create({ name = lock_file_path })
+    config.__register_package_manager()
 
-        config.__register_package_manager()
+    file.delete(created_file.path)
+    file.delete(package_json.path)
 
-        file.delete(created_file.path)
-        file.delete(package_json.path)
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.yarn)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.yarn, config.options.package_manager)
-    end)
+T["should detect pnpm package manager"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/pnpm-lock.yaml"
+    local created_file = file.create({ name = lock_file_path })
 
-    it("should detect pnpm package manager", function()
-        local package_json = file.create_package_json({ go = true })
-        local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/pnpm-lock.yaml"
-        local created_file = file.create({ name = lock_file_path })
+    config.__register_package_manager()
 
-        config.__register_package_manager()
+    file.delete(created_file.path)
+    file.delete(package_json.path)
 
-        file.delete(created_file.path)
-        file.delete(package_json.path)
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.pnpm)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.pnpm, config.options.package_manager)
-    end)
+T["should detect bun package manager"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/bun.lock"
+    local created_file = file.create({ name = lock_file_path })
 
-    it("should detect bun package manager", function()
-        local package_json = file.create_package_json({ go = true })
-        local lock_file_path = vim.fn.fnamemodify(package_json.path, ":h") .. "/bun.lock"
-        local created_file = file.create({ name = lock_file_path })
+    config.__register_package_manager()
 
-        config.__register_package_manager()
+    file.delete(created_file.path)
+    file.delete(package_json.path)
 
-        file.delete(created_file.path)
-        file.delete(package_json.path)
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.bun)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.bun, config.options.package_manager)
-    end)
+T["should prioritize yarn when both yarn.lock and bun.lock exist"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dir = vim.fn.fnamemodify(package_json.path, ":h")
 
-    it("should prioritize yarn when both yarn.lock and bun.lock exist", function()
-        local package_json = file.create_package_json({ go = true })
-        local dir = vim.fn.fnamemodify(package_json.path, ":h")
+    local yarn_lock = file.create({ name = dir .. "/yarn.lock" })
+    local bun_lock = file.create({ name = dir .. "/bun.lock" })
 
-        local yarn_lock = file.create({ name = dir .. "/yarn.lock" })
-        local bun_lock = file.create({ name = dir .. "/bun.lock" })
+    config.__register_package_manager()
 
-        config.__register_package_manager()
+    file.delete(yarn_lock.path)
+    file.delete(bun_lock.path)
+    file.delete(package_json.path)
 
-        file.delete(yarn_lock.path)
-        file.delete(bun_lock.path)
-        file.delete(package_json.path)
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.yarn)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.yarn, config.options.package_manager)
-    end)
+T["should prioritize npm when both package-lock.json and bun.lock exist"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dir = vim.fn.fnamemodify(package_json.path, ":h")
 
-    it("should prioritize npm when both package-lock.json and bun.lock exist", function()
-        local package_json = file.create_package_json({ go = true })
-        local dir = vim.fn.fnamemodify(package_json.path, ":h")
+    local npm_lock = file.create({ name = dir .. "/package-lock.json" })
+    local bun_lock = file.create({ name = dir .. "/bun.lock" })
 
-        local npm_lock = file.create({ name = dir .. "/package-lock.json" })
-        local bun_lock = file.create({ name = dir .. "/bun.lock" })
+    config.__register_package_manager()
 
-        config.__register_package_manager()
+    file.delete(npm_lock.path)
+    file.delete(bun_lock.path)
+    file.delete(package_json.path)
 
-        file.delete(npm_lock.path)
-        file.delete(bun_lock.path)
-        file.delete(package_json.path)
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.npm)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.npm, config.options.package_manager)
-    end)
+T["should prioritize bun when both bun.lock and pnpm-lock.yaml exist"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dir = vim.fn.fnamemodify(package_json.path, ":h")
 
-    it("should not register a package manager when the buffer is not a file on disk", function()
-        local buffer = vim.api.nvim_create_buf(true, false)
+    local bun_lock = file.create({ name = dir .. "/bun.lock" })
+    local pnpm_lock = file.create({ name = dir .. "/pnpm-lock.yaml" })
 
-        vim.api.nvim_buf_set_name(buffer, "diffview:///home/user/project/.git/abc123/package.json")
-        vim.api.nvim_set_current_buf(buffer)
+    config.__register_package_manager()
 
-        state.is_in_project = false
+    file.delete(bun_lock.path)
+    file.delete(pnpm_lock.path)
+    file.delete(package_json.path)
 
-        config.__register_package_manager()
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.bun)
+end
 
-        local is_in_project = state.is_in_project
+T["should not register a package manager when the buffer is not a file on disk"] = function()
+    local buffer = vim.api.nvim_create_buf(true, false)
 
-        vim.cmd("edit void")
-        vim.api.nvim_buf_delete(buffer, { force = true })
+    vim.api.nvim_buf_set_name(buffer, "diffview:///home/user/project/.git/abc123/package.json")
+    vim.api.nvim_set_current_buf(buffer)
 
-        assert.is_false(is_in_project)
-    end)
+    state.is_in_project = false
 
-    it("should prioritize bun when both bun.lock and pnpm-lock.yaml exist", function()
-        local package_json = file.create_package_json({ go = true })
-        local dir = vim.fn.fnamemodify(package_json.path, ":h")
+    config.__register_package_manager()
 
-        local bun_lock = file.create({ name = dir .. "/bun.lock" })
-        local pnpm_lock = file.create({ name = dir .. "/pnpm-lock.yaml" })
+    local is_in_project = state.is_in_project
 
-        config.__register_package_manager()
+    vim.cmd("edit void")
+    vim.api.nvim_buf_delete(buffer, { force = true })
 
-        file.delete(bun_lock.path)
-        file.delete(pnpm_lock.path)
-        file.delete(package_json.path)
+    expect.equality(is_in_project, false)
+end
 
-        assert.are.equals(constants.PACKAGE_MANAGERS.bun, config.options.package_manager)
-    end)
-end)
+return T

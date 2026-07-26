@@ -1,57 +1,50 @@
+local expect = MiniTest.expect
+
 local state = require("package-info.state")
+
 local reset = require("package-info.tests.utils.reset")
 
-describe("State last_run", function()
-    describe("update", function()
-        before_each(function()
-            reset.all()
-        end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-        after_each(function()
-            reset.all()
-        end)
+T["update"] = MiniTest.new_set()
 
-        it("should update last run time", function()
-            state.last_run.update()
+T["update"]["should update last run time"] = function()
+    state.last_run.update()
 
-            assert.is_true(state.last_run.time ~= nil)
-        end)
-    end)
+    expect.no_equality(state.last_run.time, nil)
+end
 
-    describe("should_skip", function()
-        before_each(function()
-            reset.all()
-        end)
+T["should_skip"] = MiniTest.new_set()
 
-        after_each(function()
-            reset.all()
-        end)
+T["should_skip"]["should return false if there was no last run"] = function()
+    state.last_run.time = nil
 
-        it("should return false if there was no last run", function()
-            state.last_run.time = nil
+    local should_skip = state.last_run.should_skip()
 
-            local should_skip = state.last_run.should_skip()
+    expect.equality(should_skip, false)
+end
 
-            assert.is_false(should_skip)
-        end)
+T["should_skip"]["should return true if there was a show action run within the past hour"] = function()
+    state.last_run.update()
 
-        it("should return true if there was a show action run within the past hour", function()
-            state.last_run.update()
+    local should_skip = state.last_run.should_skip()
 
-            local should_skip = state.last_run.should_skip()
+    expect.equality(should_skip, true)
+end
 
-            assert.is_true(should_skip)
-        end)
+T["should_skip"]["should return false if there was no show action run within the past hour"] = function()
+    local TWO_HOURS_IN_SECONDS = 7200
 
-        it("should return false if there was no show action run within the past hour", function()
-            local TWO_HOURS_IN_SECONDS = 7200
+    state.last_run.time = os.time() - TWO_HOURS_IN_SECONDS
 
-            -- Simulate 2 hour passing
-            state.last_run.time = os.time() - TWO_HOURS_IN_SECONDS
+    local should_skip = state.last_run.should_skip()
 
-            local should_skip = state.last_run.should_skip()
+    expect.equality(should_skip, false)
+end
 
-            assert.is_false(should_skip)
-        end)
-    end)
-end)
+return T

@@ -1,25 +1,26 @@
+local expect = MiniTest.expect
+
 local clean_version = require("package-info.helpers.clean_version")
 
 local reset = require("package-info.tests.utils.reset")
 
-describe("Helpers clean_version", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should return cleaned version"] = function()
+    local cleaned_version = clean_version("^1.0.0")
 
-    it("should return cleaned version", function()
-        local cleaned_version = clean_version("^1.0.0")
+    expect.equality(cleaned_version, "1.0.0")
+end
 
-        assert.are.equals("1.0.0", cleaned_version)
-    end)
+T["should return nil if falsy value passed in"] = function()
+    local cleaned_version = clean_version(nil)
 
-    it("should return nil if falsy value passed in", function()
-        local cleaned_version = clean_version(nil)
+    expect.equality(cleaned_version, nil)
+end
 
-        assert.is_nil(cleaned_version)
-    end)
-end)
+return T

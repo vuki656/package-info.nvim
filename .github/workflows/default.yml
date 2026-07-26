@@ -51,12 +51,6 @@ jobs:
           path: build/neovim/v0.11.0
           key: ${{ runner.os }}-appimage-0.11.0
 
-      - name: Fetch dependencies
-        run: |
-          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
-          git clone --depth 1 https://github.com/MunifTanjim/nui.nvim ~/.local/share/nvim/site/pack/vendor/start/nui.nvim
-
-          ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
       - name: Run Tests
         run: |
           test -d build/neovim/v0.11.0 || {
@@ -64,6 +58,4 @@ jobs:
             curl -Lo build/neovim/v0.11.0/nvim https://github.com/neovim/neovim/releases/download/v0.11.0/nvim-linux-x86_64.appimage
             chmod +x build/neovim/v0.11.0/nvim
           }
-          mkdir temp
-          build/neovim/v0.11.0/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
-          rm -rf temp
+          make test NVIM=build/neovim/v0.11.0/nvim

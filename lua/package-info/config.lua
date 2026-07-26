@@ -40,7 +40,7 @@ local M = {
 }
 
 -- Initialize default options
-M.options = M.__DEFAULT_OPTIONS
+M.options = vim.deepcopy(M.__DEFAULT_OPTIONS)
 
 --- Register namespace for usage for virtual text
 -- @return nil

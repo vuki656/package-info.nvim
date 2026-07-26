@@ -1,42 +1,42 @@
-local spy = require("luassert.spy")
-local hide_action = require("package-info.actions.hide")
+local expect = MiniTest.expect
 
+local hide_action = require("package-info.actions.hide")
 local config = require("package-info.config")
 local core = require("package-info.core")
 local virtual_text = require("package-info.virtual_text")
 
 local reset = require("package-info.tests.utils.reset")
 local file = require("package-info.tests.utils.file")
+local spy = require("package-info.tests.utils.spy")
 
-describe("Actions hide", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should call clear() if plugin is loaded"] = function()
+    file.create_package_json({ go = true })
 
-    it("should call clear() if plugin is loaded", function()
-        file.create_package_json({ go = true })
+    local clear = spy.on(virtual_text, "clear")
 
-        spy.on(virtual_text, "clear")
+    config.setup()
+    core.load_plugin()
 
-        config.setup()
-        core.load_plugin()
+    hide_action.run()
 
-        hide_action.run()
+    expect.equality(clear.count, 1)
+end
 
-        assert.spy(virtual_text.clear).was_called(1)
-    end)
+T["should do nothing if plugin isn't loaded"] = function()
+    file.create_package_json({ go = true })
 
-    it("should do nothing if plugin isn't loaded", function()
-        file.create_package_json({ go = true })
+    local clear = spy.on(virtual_text, "clear")
 
-        spy.on(virtual_text, "clear")
+    hide_action.run()
 
-        hide_action.run()
+    expect.equality(clear.count, 0)
+end
 
-        assert.spy(virtual_text.clear).was_called(0)
-    end)
-end)
+return T

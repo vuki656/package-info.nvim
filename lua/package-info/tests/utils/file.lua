@@ -9,7 +9,7 @@ M.generate_file = function(suffix)
     local path = "./temp/" .. id .. "/"
 
     os.execute("rm -rf " .. path)
-    os.execute("mkdir " .. path)
+    os.execute("mkdir -p " .. path)
 
     return "./temp/" .. id .. "/" .. (suffix or "")
 end

@@ -1,3 +1,5 @@
+local expect = MiniTest.expect
+
 local core = require("package-info.core")
 local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
@@ -7,146 +9,145 @@ local virtual_text = require("package-info.virtual_text")
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
 
-describe("Virtual_text display_on_line", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should set the virtual text in the correct position"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dependency = package_json.dependencies.eslint
 
-    it("should set the virtual text in the correct position", function()
-        local package_json = file.create_package_json({ go = true })
-        local dependency = package_json.dependencies.eslint
+    config.setup()
+    core.load_plugin()
 
-        config.setup()
-        core.load_plugin()
+    state.dependencies.outdated = {
+        [dependency.name] = {
+            latest = dependency.version.latest,
+            current = dependency.version.current,
+        },
+    }
 
-        state.dependencies.outdated = {
-            [dependency.name] = {
-                latest = dependency.version.latest,
-                current = dependency.version.current,
-            },
-        }
+    virtual_text.__display_on_line(dependency.position + 1, dependency.name)
 
-        virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+    local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
 
-        local virtual_text_positions = vim.api.nvim_buf_get_extmarks(state.buffer.id, state.namespace.id, 0, -1, {})
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(virtual_text_positions[1][2], dependency.position)
+end
 
-        assert.are.equals(dependency.position, virtual_text_positions[1][2])
-    end)
+T["should set the virtual text with no icon if icons are disabled"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dependency = package_json.dependencies.eslint
 
-    it("should set the virtual text with no icon if icons are disabled", function()
-        local package_json = file.create_package_json({ go = true })
-        local dependency = package_json.dependencies.eslint
+    config.setup({ icons = { enable = false } })
+    core.load_plugin()
 
-        config.setup({ icons = { enable = false } })
-        core.load_plugin()
+    state.dependencies.outdated = {
+        [dependency.name] = {
+            latest = dependency.version.latest,
+            current = dependency.version.current,
+        },
+    }
 
-        state.dependencies.outdated = {
-            [dependency.name] = {
-                latest = dependency.version.latest,
-                current = dependency.version.current,
-            },
-        }
+    local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
 
-        local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(dependency_metadata.icon, "")
+end
 
-        assert.are.equals("", dependency_metadata.icon)
-    end)
+T["shouldn't set the virtual text for up to date dependencies if hide_up_to_date is true"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dependency = package_json.dependencies.next
 
-    it("shouldn't set the virtual text for up to date dependencies if hide_up_to_date is true", function()
-        local package_json = file.create_package_json({ go = true })
-        local dependency = package_json.dependencies.next
+    config.setup({ hide_up_to_date = true })
+    core.load_plugin()
 
-        config.setup({ hide_up_to_date = true })
-        core.load_plugin()
+    state.dependencies.outdated = {
+        [dependency.name] = {
+            latest = dependency.version.latest,
+            current = dependency.version.current,
+        },
+    }
 
-        state.dependencies.outdated = {
-            [dependency.name] = {
-                latest = dependency.version.latest,
-                current = dependency.version.current,
-            },
-        }
+    local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
 
-        local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(dependency_metadata.icon, "")
+    expect.equality(dependency_metadata.version, "")
+end
 
-        assert.are.equals("", dependency_metadata.icon)
-        assert.are.equals("", dependency_metadata.version)
-    end)
+T["should display the latest version if the current one is out of date"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dependency = package_json.dependencies.react
 
-    it("should display the latest version if the current one is out of date", function()
-        local package_json = file.create_package_json({ go = true })
-        local dependency = package_json.dependencies.react
+    config.setup()
+    core.load_plugin()
 
-        config.setup()
-        core.load_plugin()
+    state.dependencies.outdated = {
+        [dependency.name] = {
+            latest = dependency.version.latest,
+            current = dependency.version.current,
+        },
+    }
 
-        state.dependencies.outdated = {
-            [dependency.name] = {
-                latest = dependency.version.latest,
-                current = dependency.version.current,
-            },
-        }
+    local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
 
-        local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(dependency_metadata.icon, config.options.icons.style.outdated)
+    expect.equality(dependency_metadata.version, dependency.version.latest)
+    expect.equality(dependency_metadata.group, constants.HIGHLIGHT_GROUPS.outdated)
+end
 
-        assert.are.equals(config.options.icons.style.outdated, dependency_metadata.icon)
-        assert.are.equals(dependency.version.latest, dependency_metadata.version)
-        assert.are.equals(constants.HIGHLIGHT_GROUPS.outdated, dependency_metadata.group)
-    end)
+T["should display the existing version when the latest is the same"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dependency = package_json.dependencies.next
 
-    it("should display the existing version when the latest is the same", function()
-        local package_json = file.create_package_json({ go = true })
-        local dependency = package_json.dependencies.next
+    config.setup()
+    core.load_plugin()
 
-        config.setup()
-        core.load_plugin()
+    state.dependencies.outdated = {
+        [dependency.name] = {
+            latest = dependency.version.latest,
+            current = dependency.version.current,
+        },
+    }
 
-        state.dependencies.outdated = {
-            [dependency.name] = {
-                latest = dependency.version.latest,
-                current = dependency.version.current,
-            },
-        }
+    local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
 
-        local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(dependency_metadata.icon, config.options.icons.style.up_to_date)
+    expect.equality(dependency_metadata.version, dependency.version.current)
+    expect.equality(dependency_metadata.group, constants.HIGHLIGHT_GROUPS.up_to_date)
+end
 
-        assert.are.equals(config.options.icons.style.up_to_date, dependency_metadata.icon)
-        assert.are.equals(dependency.version.current, dependency_metadata.version)
-        assert.are.equals(constants.HIGHLIGHT_GROUPS.up_to_date, dependency_metadata.group)
-    end)
+T["should display error diagnostics"] = function()
+    local package_json = file.create_package_json({ go = true })
+    local dependency = package_json.dependencies.next
 
-    it("should display error diagnostics", function()
-        local package_json = file.create_package_json({ go = true })
-        local dependency = package_json.dependencies.next
+    config.setup()
+    core.load_plugin()
 
-        config.setup()
-        core.load_plugin()
+    state.dependencies.invalid = {
+        [dependency.name] = {
+            diagnostic = "BAD",
+        },
+    }
 
-        state.dependencies.invalid = {
-            [dependency.name] = {
-                diagnostic = "BAD",
-            },
-        }
+    local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
 
-        local dependency_metadata = virtual_text.__display_on_line(dependency.position + 1, dependency.name)
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(dependency_metadata.icon, config.options.icons.style.invalid)
+    expect.equality(dependency_metadata.version, "BAD")
+    expect.equality(dependency_metadata.group, constants.HIGHLIGHT_GROUPS.invalid)
+end
 
-        assert.are.equals(config.options.icons.style.invalid, dependency_metadata.icon)
-        assert.are.equals("BAD", dependency_metadata.version)
-        assert.are.equals(constants.HIGHLIGHT_GROUPS.invalid, dependency_metadata.group)
-    end)
-end)
+return T

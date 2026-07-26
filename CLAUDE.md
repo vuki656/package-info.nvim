@@ -9,31 +9,26 @@ A Neovim plugin that shows npm/yarn/pnpm/bun dependency versions as virtual text
 ## Commands
 
 ```sh
-make test                       # full suite (plenary, sequential); creates and removes ./temp
+make test                                                       # full suite
+make test FILE=lua/package-info/tests/suites/actions            # one folder
+make test FILE=lua/package-info/tests/suites/actions/hide_spec.lua  # one file
+make lint                                                       # stylua + luacheck + prettier
+make clean                                                      # drop .tests and temp
 ```
-
-A subset — scope `test_directory` to a suite folder (verified working):
-
-```sh
-mkdir -p temp
-nvim --headless -c "lua require('plenary.test_harness').test_directory('lua/package-info/tests/suites/helpers', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
-```
-
-Do **not** use `nvim -u lua/package-info/tests/minimal.vim -c "PlenaryBustedFile <spec>"` — it hangs, because `minimal.vim` is the child init only and does not put plenary on the runtimepath outside CI's layout.
 
 Notes:
 
-- Tests write fixtures to `./temp/<uuid>/`; the directory must exist before the run and `make test` removes it afterwards.
-- The outer nvim runs with your normal config, so plenary.nvim and nui.nvim must be installed there. CI instead clones both into `~/.local/share/nvim/site/pack/vendor/start` and symlinks the repo next to them, which is what `minimal.vim`'s `rtp+=../plenary.nvim` is for.
-- Tests are `sequential = true` for a reason: they share `./temp`, one global state table, and the current buffer. Do not parallelise them, and don't run two suites at once.
-
-Lint has no make target — it only exists in `.github/workflows/default.yml`:
-
-```sh
-stylua --check .                # pinned to 0.17.0 in CI
-luacheck .
-prettier --check '**/*.md'
-```
+- The runner is **mini.test**, not plenary — plenary was archived, with critical-bug support ending 2026-06-30.
+- `lua/package-info/tests/minimal_init.lua` is the only entry point. It wipes the runtimepath down to `$VIMRUNTIME`, git-clones mini.test and nui.nvim into `.tests/site/pack/deps/start/` if missing, redirects the XDG dirs into `.tests/`, and calls `MiniTest.setup()` with a `find_files` that reads `$PI_TEST_PATH` (a directory is globbed for `**/*_spec.lua`, a file is used as-is). Your own nvim config is never involved and there is nothing to install by hand. `make clean` refreshes the deps.
+- CI runs the exact same `make test`, only with `NVIM=` pointed at a downloaded appimage. Do not re-type the nvim invocation anywhere.
+- `$PI_TEST_PATH` defaults to `lua/package-info/tests/suites`, never `.`, so the cloned dependencies' own spec files are not collected.
+- Spec files keep the `*_spec.lua` name but use mini.test structure: build a set with `MiniTest.new_set({ hooks = { pre_case = reset.all, post_case = reset.all } })`, assign cases as `T["name"] = function() ... end`, `return T`. Assertions are `MiniTest.expect.equality` / `no_equality` / `no_error`.
+- **All 29 files share one Neovim process.** mini.test has no per-file isolation, so anything global leaks between files unless `tests/utils/reset.lua` clears it — that is why it resets highlight groups and deep-copies `config.__DEFAULT_OPTIONS` rather than aliasing it.
+- mini.test has no spy facility. `tests/utils/spy.lua` provides `spy.on(module, key)` returning `{ count, calls }`, plus `was_called_with`. `reset.all()` calls `spy.revert_all()`, so spies never need manual teardown.
+- Tests write fixtures to `./temp/<uuid>/`, created on demand by `tests/utils/file.lua`; `make test` removes `./temp` afterwards, pass or fail. All fixture paths are relative, so nvim must run from the repo root.
+- Cases run sequentially and must stay that way: they share `./temp`, one global state table, and the current buffer.
+- A failing case makes `make test` exit non-zero and the remaining cases still run; failures are listed under `Fails` at the end. An error at spec **load** time would otherwise leave headless nvim hanging forever, which is why the Makefile wraps `MiniTest.run` in a `pcall` that falls back to `1cquit`.
+- `make lint` mirrors `.github/workflows/default.yml`. CI pins stylua to 0.17.0. `.tests/` is excluded from luacheck via `.luacheckrc` `exclude_files`; stylua skips dot-directories on its own, and prettier is fed the git-tracked markdown files so it never walks `.tests/` or untracked scratch directories.
 
 ## Architecture
 

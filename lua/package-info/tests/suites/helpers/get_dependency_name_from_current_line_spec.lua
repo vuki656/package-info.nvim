@@ -1,4 +1,4 @@
-local spy = require("luassert.spy")
+local expect = MiniTest.expect
 
 local core = require("package-info.core")
 local logger = require("package-info.utils.logger")
@@ -6,45 +6,45 @@ local get_dependency_name_from_current_line = require("package-info.helpers.get_
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
+local spy = require("package-info.tests.utils.spy")
 
-describe("Helpers get_dependency_name_from_current_line", function()
-    before_each(function()
-        reset.all()
-    end)
+local T = MiniTest.new_set({
+    hooks = {
+        pre_case = reset.all,
+        post_case = reset.all,
+    },
+})
 
-    after_each(function()
-        reset.all()
-    end)
+T["should get the name correctly"] = function()
+    local package_json = file.create_package_json({ go = true })
 
-    it("should get the name correctly", function()
-        local package_json = file.create_package_json({ go = true })
+    core.load_plugin()
 
-        core.load_plugin()
+    vim.cmd(tostring(package_json.dependencies.eslint.position))
 
-        vim.cmd(tostring(package_json.dependencies.eslint.position))
+    local dependency_name = get_dependency_name_from_current_line()
 
-        local dependency_name = get_dependency_name_from_current_line()
+    file.delete(package_json.path)
 
-        file.delete(package_json.path)
+    expect.equality(dependency_name, package_json.dependencies.eslint.name)
+end
 
-        assert.are.equals(package_json.dependencies.eslint.name, dependency_name)
-    end)
+T["should return nil if no valid dependency is on the current line"] = function()
+    local package_json = file.create_package_json({ go = true })
 
-    it("should return nil if no valid dependency is on the current line", function()
-        local package_json = file.create_package_json({ go = true })
+    core.load_plugin()
 
-        core.load_plugin()
+    local warn = spy.on(logger, "warn")
 
-        spy.on(logger, "warn")
+    vim.cmd("999")
 
-        vim.cmd("999")
+    local dependency_name = get_dependency_name_from_current_line()
 
-        local dependency_name = get_dependency_name_from_current_line()
+    expect.equality(dependency_name, nil)
+    expect.equality(warn.count, 1)
+    expect.equality(spy.was_called_with(warn, "No valid dependency on current line"), true)
 
-        assert.is_nil(dependency_name)
-        assert.spy(logger.warn).was_called(1)
-        assert.spy(logger.warn).was_called_with("No valid dependency on current line")
+    file.delete(package_json.path)
+end
 
-        file.delete(package_json.path)
-    end)
-end)
+return T
