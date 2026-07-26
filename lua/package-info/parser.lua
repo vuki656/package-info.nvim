@@ -1,6 +1,7 @@
 local json_parser = require("package-info.libs.json_parser")
 local state = require("package-info.state")
 local clean_version = require("package-info.helpers.clean_version")
+local is_valid_version_syntax = require("package-info.helpers.is_valid_version_syntax")
 
 local M = {}
 
@@ -46,6 +47,10 @@ M.parse_buffer = function()
         if intersection[name] ~= nil then
             errored_dependencies[name] = {
                 diagnostic = "DUPLICATED",
+            }
+        elseif not is_valid_version_syntax(version) then
+            errored_dependencies[name] = {
+                diagnostic = "INVALID VERSION",
             }
         end
     end

@@ -33,4 +33,31 @@ describe("Parser parse_buffer", function()
 
         assert.are.same(expected_dependency_list, state.dependencies.installed)
     end)
+
+    it("should flag dependencies with a templated version as invalid", function()
+        local package_json = file.create({
+            name = "package.json",
+            randomize = true,
+            go = true,
+            content = [[
+                {
+                    "name": "repo-name",
+                    "dependencies": {
+                        "react": "16.0.0",
+                        "next": "^12.0.3<% if (typescript) { %>"
+                    }
+                }
+            ]],
+        })
+
+        core.load_plugin()
+        parser.parse_buffer()
+
+        local invalid = state.dependencies.invalid
+
+        file.delete(package_json.path)
+
+        assert.are.equals(nil, invalid.react)
+        assert.are.equals("INVALID VERSION", invalid.next.diagnostic)
+    end)
 end)
