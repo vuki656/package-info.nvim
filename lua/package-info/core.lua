@@ -1,6 +1,5 @@
 -- TODO: if you have invalid json, then fix it, plugin still wont run
 
-local json_parser = require("package-info.libs.json_parser")
 local parser = require("package-info.parser")
 local state = require("package-info.state")
 local to_boolean = require("package-info.utils.to-boolean")
@@ -34,9 +33,7 @@ M.__is_valid_package_json = function()
 
     local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-    if pcall(function()
-        json_parser.decode(table.concat(buffer_content))
-    end) then
+    if pcall(vim.json.decode, table.concat(buffer_content)) then
         return true
     end
 

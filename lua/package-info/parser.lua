@@ -1,4 +1,3 @@
-local json_parser = require("package-info.libs.json_parser")
 local state = require("package-info.state")
 local clean_version = require("package-info.helpers.clean_version")
 local is_valid_version_syntax = require("package-info.helpers.is_valid_version_syntax")
@@ -31,7 +30,7 @@ end
 
 M.parse_buffer = function()
     local buffer_lines = vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
-    local buffer_json_value = json_parser.decode(table.concat(buffer_lines))
+    local buffer_json_value = vim.json.decode(table.concat(buffer_lines))
 
     local intersection = intersect(buffer_json_value["devDependencies"] or {}, buffer_json_value["dependencies"] or {})
     local all_dependencies_json =

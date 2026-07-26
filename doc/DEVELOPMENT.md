@@ -18,7 +18,6 @@
 
     ├── actions                             # Contains all user runnable plugin actions
     ├── helpers                             # Plugin specific helper functions
-    ├── libs                                # External libs like json parser
     ├── tests                               # Project tests for all the functionality
     ├── ui                                  # User interface components
     ├── utils                               # Generic helper variables and functions

@@ -1,6 +1,5 @@
 std = {
     globals = {
-        "rawget",
         "next",
         "MiniTest",
         "print",

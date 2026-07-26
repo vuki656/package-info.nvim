@@ -1,4 +1,3 @@
-local json_parser = require("package-info.libs.json_parser")
 local logger = require("package-info.utils.logger")
 local safe_call = require("package-info.utils.safe-call")
 
@@ -50,7 +49,7 @@ return function(props)
             end
 
             if props.json then
-                local ok, json_value = pcall(json_parser.decode, value)
+                local ok, json_value = pcall(vim.json.decode, value)
 
                 if ok then
                     props.on_success(json_value)
