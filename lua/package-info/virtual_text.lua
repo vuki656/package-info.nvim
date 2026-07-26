@@ -3,6 +3,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local clean_version = require("package-info.helpers.clean_version")
 local get_dependency_name_from_line = require("package-info.helpers.get_dependency_name_from_line")
+local pnpm = require("package-info.utils.pnpm")
 
 local M = {}
 
@@ -24,7 +25,13 @@ M.__display_on_line = function(line_number, dependency_name)
 
     local outdated_dependency = state.dependencies.outdated[dependency_name]
 
-    if outdated_dependency and outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current then
+    local is_pnpm_catalog = pnpm.is_catalog(state.dependencies.installed[dependency_name].current)
+
+    if
+        outdated_dependency
+        and outdated_dependency.latest ~= state.dependencies.installed[dependency_name].current
+        and not is_pnpm_catalog
+    then
         virtual_text = {
             group = constants.HIGHLIGHT_GROUPS.outdated,
             icon = config.options.icons.style.outdated,
@@ -38,6 +45,26 @@ M.__display_on_line = function(line_number, dependency_name)
             group = constants.HIGHLIGHT_GROUPS.invalid,
             icon = config.options.icons.style.invalid,
             version = error_dependency.diagnostic,
+        }
+    end
+
+    if is_pnpm_catalog and state.dependencies.pnpm_workspace then
+        local default_catalog_package = state.dependencies.pnpm_workspace.catalog
+            and state.dependencies.pnpm_workspace.catalog[dependency_name]
+
+        local catalog_name = pnpm.find_catalog_name(state.dependencies.installed[dependency_name].current)
+
+        local current = catalog_name and state.dependencies.pnpm_workspace.catalogs[catalog_name][dependency_name]
+            or default_catalog_package
+
+        local latest = outdated_dependency and outdated_dependency.latest
+
+        local is_outdated = latest and current ~= latest
+
+        virtual_text = {
+            group = is_outdated and constants.HIGHLIGHT_GROUPS.outdated or constants.HIGHLIGHT_GROUPS.up_to_date,
+            icon = is_outdated and config.options.icons.style.outdated or config.options.icons.style.up_to_date,
+            version = clean_version(current) .. (is_outdated and (" - " .. latest) or ""),
         }
     end
 
