@@ -4,11 +4,13 @@ local json_parser = require("package-info.libs.json_parser")
 local parser = require("package-info.parser")
 local state = require("package-info.state")
 local to_boolean = require("package-info.utils.to-boolean")
+local is_on_disk = require("package-info.helpers.is_on_disk")
 
 local M = {}
 
 --- Checks if the currently opened file
 ---    - Is a file named package.json
+---    - Exists on disk
 ---    - Has content
 ---    - JSON is in valid format
 -- @return boolean
@@ -17,6 +19,10 @@ M.__is_valid_package_json = function()
     local is_package_json = to_boolean(string.match(buffer_name, "package.json$"))
 
     if not is_package_json then
+        return false
+    end
+
+    if not is_on_disk(buffer_name) then
         return false
     end
 

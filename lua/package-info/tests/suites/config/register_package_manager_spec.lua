@@ -1,5 +1,6 @@
 local constants = require("package-info.utils.constants")
 local config = require("package-info.config")
+local state = require("package-info.state")
 
 local file = require("package-info.tests.utils.file")
 local reset = require("package-info.tests.utils.reset")
@@ -95,6 +96,24 @@ describe("Config register_package_manager", function()
         file.delete(package_json.path)
 
         assert.are.equals(constants.PACKAGE_MANAGERS.npm, config.options.package_manager)
+    end)
+
+    it("should not register a package manager when the buffer is not a file on disk", function()
+        local buffer = vim.api.nvim_create_buf(true, false)
+
+        vim.api.nvim_buf_set_name(buffer, "diffview:///home/user/project/.git/abc123/package.json")
+        vim.api.nvim_set_current_buf(buffer)
+
+        state.is_in_project = false
+
+        config.__register_package_manager()
+
+        local is_in_project = state.is_in_project
+
+        vim.cmd("edit void")
+        vim.api.nvim_buf_delete(buffer, { force = true })
+
+        assert.is_false(is_in_project)
     end)
 
     it("should prioritize bun when both bun.lock and pnpm-lock.yaml exist", function()

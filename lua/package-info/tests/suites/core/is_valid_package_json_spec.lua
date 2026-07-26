@@ -43,6 +43,21 @@ describe("Core is_valid_package_json", function()
         assert.is_false(is_valid)
     end)
 
+    it("should return false if the buffer is not a file on disk", function()
+        local buffer = vim.api.nvim_create_buf(true, false)
+
+        vim.api.nvim_buf_set_name(buffer, "diffview:///home/user/project/.git/abc123/package.json")
+        vim.api.nvim_set_current_buf(buffer)
+        vim.api.nvim_buf_set_lines(buffer, 0, -1, false, { '{ "dependencies": { "react": "16.0.0" } }' })
+
+        local is_valid = core.__is_valid_package_json()
+
+        vim.cmd("edit void")
+        vim.api.nvim_buf_delete(buffer, { force = true })
+
+        assert.is_false(is_valid)
+    end)
+
     it("should return false if json is invalid format", function()
         local package_json = file.create_package_json({
             content = '{ "name" = function () { }',

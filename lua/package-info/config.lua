@@ -4,6 +4,7 @@ local register_autocmd = require("package-info.utils.register-autocmd")
 local state = require("package-info.state")
 local job = require("package-info.utils.job")
 local logger = require("package-info.utils.logger")
+local is_on_disk = require("package-info.helpers.is_on_disk")
 
 local M = {
     __DEFAULT_OPTIONS = {
@@ -112,6 +113,10 @@ M.__register_package_manager = function()
         return
     end
 
+    if not is_on_disk(vim.fn.expand("%:p")) then
+        return
+    end
+
     if __detect_package_manager(package_json_dir) then
         state.is_in_project = true
         return
@@ -120,7 +125,12 @@ M.__register_package_manager = function()
     local git_root =
         vim.fn.systemlist("git -C " .. vim.fn.shellescape(package_json_dir) .. " rev-parse --show-toplevel")[1]
 
-    if git_root and git_root ~= package_json_dir and __detect_package_manager(git_root) then
+    if
+        git_root
+        and git_root ~= package_json_dir
+        and vim.fn.isdirectory(git_root) == 1
+        and __detect_package_manager(git_root)
+    then
         state.is_in_project = true
     end
 end

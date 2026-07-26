@@ -33,7 +33,11 @@ return function(props)
     -- If the file is a package.json then use the directory
     -- of the file as value for cwd
     if string.sub(file_path, -12) == "package.json" then
-        cwd = string.sub(file_path, 1, -13)
+        local package_json_dir = string.sub(file_path, 1, -13)
+
+        if vim.fn.isdirectory(package_json_dir) == 1 then
+            cwd = package_json_dir
+        end
     end
 
     vim.fn.jobstart(props.command, {
