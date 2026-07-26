@@ -51,6 +51,7 @@ M.parse_buffer = function()
     end
 
     state.buffer.lines = buffer_lines
+    state.buffer.package_name = buffer_json_value["name"]
     state.dependencies.installed = installed_dependencies
     state.dependencies.invalid = errored_dependencies
 end

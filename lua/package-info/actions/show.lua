@@ -4,6 +4,7 @@ local parser = require("package-info.parser")
 local job = require("package-info.utils.job")
 local virtual_text = require("package-info.virtual_text")
 local reload = require("package-info.helpers.reload")
+local normalize_outdated = require("package-info.helpers.normalize_outdated")
 
 local loading = require("package-info.ui.generic.loading-status")
 local pnpm = require("package-info.utils.pnpm")
@@ -45,7 +46,7 @@ M.run = function(options)
             loading.start(id)
         end,
         on_success = function(outdated_dependencies)
-            state.dependencies.outdated = outdated_dependencies
+            state.dependencies.outdated = normalize_outdated(outdated_dependencies)
 
             if vim.api.nvim_buf_is_valid(state.buffer.id) and vim.api.nvim_buf_is_loaded(state.buffer.id) then
                 parser.parse_buffer()

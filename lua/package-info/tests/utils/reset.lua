@@ -20,6 +20,7 @@ M.state = function()
     state.dependencies.invalid = {}
     state.buffer.id = nil
     state.buffer.lines = {}
+    state.buffer.package_name = nil
     state.last_run.time = nil
     state.namespace.id = nil
 end

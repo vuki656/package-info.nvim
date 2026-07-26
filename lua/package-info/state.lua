@@ -42,6 +42,7 @@ M.buffer = {
     id = nil,
     -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
     lines = {},
+    package_name = nil,
     --- Set the buffer id to current buffer id
     -- @return nil
     save = function()
