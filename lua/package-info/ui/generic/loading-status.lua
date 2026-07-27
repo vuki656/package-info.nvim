@@ -16,7 +16,6 @@ local M = {
     state = {
         current_spinner = "",
         index = 1,
-        is_running = false,
         notification = nil,
         timer = nil,
     },
@@ -30,14 +29,10 @@ local title = "package-info.nvim"
 local constants = require("package-info.utils.constants")
 
 -- snacks.notifier support
-local snacks_notifier = pcall(require, "snacks.notifier")
+local snacks_notifier, snacks = pcall(require, "snacks.notifier")
 
-local snacks = nil
-if snacks_notifier then
-    local ok, mod = pcall(require, "snacks.notifier")
-    if ok then
-        snacks = mod
-    end
+if not snacks_notifier then
+    snacks = nil
 end
 
 --- Spawn a new loading instance
@@ -162,10 +157,6 @@ end
 M.get = function()
     for _, instance in pairs(M.queue) do
         if instance.is_ready then
-            if M.state.is_running then
-                return instance.message
-            end
-            M.state.is_running = true
             return instance.message
         end
     end
@@ -173,7 +164,6 @@ M.get = function()
 end
 
 M.reset_state = function()
-    M.state.is_running = false
     M.state.current_spinner = ""
     M.state.index = 1
     if M.state.timer then

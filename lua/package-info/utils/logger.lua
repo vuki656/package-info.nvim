@@ -1,5 +1,20 @@
 local M = {}
 
+local LEVELS = {
+    ["InfoMsg"] = {
+        log_level = vim.log.levels.INFO,
+        log_symbol = "󰗠 ",
+    },
+    ["ErrorMsg"] = {
+        log_level = vim.log.levels.ERROR,
+        log_symbol = "󰅙 ",
+    },
+    ["WarningMsg"] = {
+        log_level = vim.log.levels.WARN,
+        log_symbol = " ",
+    },
+}
+
 -- Safely attempt to load the config to avoid circular dependency
 local function get_timeout()
     local ok, cfg = pcall(require, "package-info.config")
@@ -16,23 +31,9 @@ M.__print = function(message, highlight_group)
             highlight_group = "InfoMsg"
         end
 
-        local level = {
-            ["InfoMsg"] = {
-                log_level = vim.log.levels.INFO,
-                log_symbol = "󰗠 ",
-            },
-            ["ErrorMsg"] = {
-                log_level = vim.log.levels.ERROR,
-                log_symbol = "󰅙 ",
-            },
-            ["WarningMsg"] = {
-                log_level = vim.log.levels.WARN,
-                log_symbol = " ",
-            },
-        }
-        vim.notify(message, level[highlight_group].log_level, {
+        vim.notify(message, LEVELS[highlight_group].log_level, {
             title = "package-info.nvim",
-            icon = level[highlight_group].log_symbol,
+            icon = LEVELS[highlight_group].log_symbol,
             timeout = get_timeout(),
         })
     else

@@ -73,24 +73,4 @@ M.open = function(props)
     safe_call(props.on_success)
 end
 
---- Closes the input
--- @param props.on_success?: function - executed after successful input close
--- @param props.on_error?: function - executed if input instance not properly spawned or opened
--- @return nil
-M.close = function(props)
-    props = props or {}
-
-    if M.instance == nil then
-        logger.error("Failed to close dependency name input. Not spawned properly")
-
-        safe_call(props.on_error)
-
-        return
-    end
-
-    M.instance:unmount()
-
-    safe_call(props.on_success)
-end
-
 return M

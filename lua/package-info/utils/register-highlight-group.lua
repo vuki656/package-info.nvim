@@ -19,7 +19,6 @@ function M.set_hl(group, opts)
     if not success then
         logger.error("Error setting highlight: " .. result)
     end
-    return
 end
 
 return M

@@ -17,9 +17,7 @@ return function(props)
     local function on_error()
         logger.error("Error running " .. props.command .. ". Try running manually.")
 
-        if props.on_error ~= nil then
-            props.on_error()
-        end
+        safe_call(props.on_error)
     end
 
     -- Get the current cwd and use it as the value for

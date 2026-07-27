@@ -16,7 +16,7 @@
 
 ![License](https://img.shields.io/badge/License-GPL%20v3-brightgreen?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Beta-informational?style=flat-square)
-![Neovim](https://img.shields.io/badge/Neovim-0.5+-green.svg?style=flat-square&logo=Neovim&logoColor=white)
+![Neovim](https://img.shields.io/badge/Neovim-0.9+-green.svg?style=flat-square&logo=Neovim&logoColor=white)
 
 </div>
 
@@ -194,10 +194,11 @@ require('package-info').setup()
     autostart = true, -- Whether to autostart when `package.json` is opened
     hide_up_to_date = false, -- It hides up to date versions when displaying virtual text
     hide_unstable_versions = false, -- It hides unstable versions from version list e.g next-11.1.3-canary3
+    timeout = 3000, -- Time in ms before notifications are dismissed
     -- Can be `npm`, `yarn`, `pnpm` or `bun`. Used for `delete`, `install` etc...
     -- The plugin will try to auto-detect the package manager based on
-    -- `yarn.lock`, `package-lock.json` or `bun.lock`. If none are found it will use the
-    -- provided one, if nothing is provided it will use `npm`
+    -- `yarn.lock`, `package-lock.json`, `bun.lock` or `pnpm-lock.yaml`. If none are found it
+    -- will use the provided one, if nothing is provided it will use `npm`
     package_manager = 'npm'
 }
 ```
@@ -328,8 +329,8 @@ require("telescope").load_extension("package_info")
 
 | Highlight Group                | Default value              | Description                                     |
 | ------------------------------ | -------------------------- | ----------------------------------------------- |
-| **PackageInfoOutdatedVersion** | fg = #3C4048 ctermfg = 237 | Highlight out of date dependencies virtual text |
-| **PackageInfoUpToDateVersion** | fg = #d19a66 ctermfg = 173 | Highlight up of date dependencies virtual text  |
+| **PackageInfoOutdatedVersion** | fg = #d19a66 ctermfg = 173 | Highlight out of date dependencies virtual text |
+| **PackageInfoUpToDateVersion** | fg = #3C4048 ctermfg = 237 | Highlight up to date dependencies virtual text  |
 | **PackageInfoInErrorVersion**  | fg = #ee4b2b ctermfg = 196 | Highlight invalid dependencies virtual text     |
 
 <!-- hl_end -->

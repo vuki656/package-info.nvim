@@ -6,5 +6,5 @@ return function(value)
         return nil
     end
 
-    return value:gsub("%^", ""):gsub("~", "")
+    return value:gsub("[%^~]", "")
 end

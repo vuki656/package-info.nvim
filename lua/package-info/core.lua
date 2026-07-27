@@ -25,19 +25,13 @@ M.__is_valid_package_json = function()
         return false
     end
 
-    local has_content = to_boolean(vim.api.nvim_buf_get_lines(0, 0, -1, false))
+    local buffer_content = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false))
 
-    if not has_content then
+    if not to_boolean(buffer_content) then
         return false
     end
 
-    local buffer_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-
-    if pcall(vim.json.decode, table.concat(buffer_content)) then
-        return true
-    end
-
-    return false
+    return (pcall(vim.json.decode, buffer_content))
 end
 
 --- Parser current buffer if valid

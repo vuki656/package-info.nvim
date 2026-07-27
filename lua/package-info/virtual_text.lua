@@ -93,13 +93,7 @@ M.clear = function()
 end
 
 --- Handles virtual text displaying
--- @param outdated_dependencies?: table - outdated dependencies
--- {
---     [dependency_name]: {
---         current: string - currently installed version
---         latest: string - latest available version
---     }
--- }
+-- Reads outdated dependencies from state.dependencies.outdated
 -- @return nil
 M.display = function()
     for line_number, line_content in ipairs(state.buffer.lines) do
