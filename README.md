@@ -43,24 +43,14 @@ Runs `npm outdated --json` in the background and then compares the output with v
 #### Keybinding
 
 ```lua
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>ns",
-    "<cmd>lua require('package-info').show()<cr>",
-    { silent = true, noremap = true }
-)
+vim.keymap.set({ "n" }, "<leader>ns", "<cmd>PackageInfoShow<cr>", { silent = true, noremap = true })
 ```
 
 - **NOTE:** after the first outdated dependency fetch, it will show the cached results for the next hour instead of re-fetching every time.
-- If you would like to force re-fetching every time you can provide `force = true` like in the example below:
+- If you would like to force re-fetching every time, use `PackageInfoShowForce` like in the example below:
 
 ```lua
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>ns",
-    "<cmd>lua require('package-info').show({ force = true })<cr>",
-    { silent = true, noremap = true }
-)
+vim.keymap.set({ "n" }, "<leader>ns", "<cmd>PackageInfoShowForce<cr>", { silent = true, noremap = true })
 ```
 
 <div align="center">
@@ -76,12 +66,7 @@ Runs `yarn remove`, `npm uninstall`, `pnpm uninstall` or `bun remove` in the bac
 #### Keybinding
 
 ```lua
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>nd",
-    "<cmd>lua require('package-info').delete()<cr>",
-    { silent = true, noremap = true }
-)
+vim.keymap.set({ "n" }, "<leader>nd", "<cmd>PackageInfoDelete<cr>", { silent = true, noremap = true })
 ```
 
 <div align="center">
@@ -97,12 +82,7 @@ Runs `npm install dependency@version`, `yarn upgrade dependency@version`, `pnpm 
 #### Keybinding
 
 ```lua
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>np",
-    "<cmd>lua require('package-info').change_version()<cr>",
-    { silent = true, noremap = true }
-)
+vim.keymap.set({ "n" }, "<leader>np", "<cmd>PackageInfoChangeVersion<cr>", { silent = true, noremap = true })
 ```
 
 <div align="center">
@@ -118,12 +98,7 @@ Runs `npm install dependency`, `yarn add dependency`, `pnpm add dependency` or `
 #### Keybinding
 
 ```lua
-vim.api.nvim_set_keymap(
-    "n",
-    "<leader>ni",
-    "<cmd>lua require('package-info').install()<cr>",
-    { silent = true, noremap = true }
-)
+vim.keymap.set({ "n" }, "<leader>ni", "<cmd>PackageInfoInstall<cr>", { silent = true, noremap = true })
 ```
 
 <div align="center">
@@ -277,6 +252,19 @@ require("package-info").setup({
 })
 ```
 
+## 🤖 Commands
+
+| Command                     | Description                                                    |
+| --------------------------- | -------------------------------------------------------------- |
+| `:PackageInfoShow`          | Show the latest version of each dependency                     |
+| `:PackageInfoShowForce`     | Show the latest version of each dependency, ignoring the cache |
+| `:PackageInfoHide`          | Hide the dependency versions                                   |
+| `:PackageInfoToggle`        | Toggle the dependency versions                                 |
+| `:PackageInfoUpdate`        | Update the dependency on the current line                      |
+| `:PackageInfoDelete`        | Delete the dependency on the current line                      |
+| `:PackageInfoInstall`       | Install a new dependency                                       |
+| `:PackageInfoChangeVersion` | Change the version of the dependency on the current line       |
+
 ## ⌨️ All Keybindings
 
 **Plugin has no default Keybindings**.
@@ -285,25 +273,25 @@ You can copy the ones below:
 
 ```lua
 -- Show dependency versions
-vim.keymap.set({ "n" }, "<LEADER>ns", require("package-info").show, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>ns", "<cmd>PackageInfoShow<cr>", { silent = true, noremap = true })
 
 -- Hide dependency versions
-vim.keymap.set({ "n" }, "<LEADER>nc", require("package-info").hide, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>nc", "<cmd>PackageInfoHide<cr>", { silent = true, noremap = true })
 
 -- Toggle dependency versions
-vim.keymap.set({ "n" }, "<LEADER>nt", require("package-info").toggle, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>nt", "<cmd>PackageInfoToggle<cr>", { silent = true, noremap = true })
 
 -- Update dependency on the line
-vim.keymap.set({ "n" }, "<LEADER>nu", require("package-info").update, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>nu", "<cmd>PackageInfoUpdate<cr>", { silent = true, noremap = true })
 
 -- Delete dependency on the line
-vim.keymap.set({ "n" }, "<LEADER>nd", require("package-info").delete, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>nd", "<cmd>PackageInfoDelete<cr>", { silent = true, noremap = true })
 
 -- Install a new dependency
-vim.keymap.set({ "n" }, "<LEADER>ni", require("package-info").install, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>ni", "<cmd>PackageInfoInstall<cr>", { silent = true, noremap = true })
 
 -- Install a different dependency version
-vim.keymap.set({ "n" }, "<LEADER>np", require("package-info").change_version, { silent = true, noremap = true })
+vim.keymap.set({ "n" }, "<LEADER>np", "<cmd>PackageInfoChangeVersion<cr>", { silent = true, noremap = true })
 ```
 
 ## 🔭 Telescope

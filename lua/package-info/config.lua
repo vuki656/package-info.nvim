@@ -236,6 +236,12 @@ M.__register_commands = function()
                 require("package-info").hide()
             end,
         },
+        [constants.COMMANDS.toggle] = {
+            desc = "Toggle the dependency versions",
+            callback = function()
+                require("package-info").toggle()
+            end,
+        },
         [constants.COMMANDS.delete] = {
             desc = "Delete the dependency on the current line",
             callback = function()

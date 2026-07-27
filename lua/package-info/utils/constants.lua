@@ -22,6 +22,7 @@ M.COMMANDS = {
     show = "PackageInfoShow",
     show_force = "PackageInfoShowForce",
     hide = "PackageInfoHide",
+    toggle = "PackageInfoToggle",
     delete = "PackageInfoDelete",
     update = "PackageInfoUpdate",
     install = "PackageInfoInstall",
