@@ -25,6 +25,7 @@ M.state = function()
     state.dependencies.invalid = {}
     state.dependencies.pnpm_workspace = {}
     state.buffer.id = nil
+    state.buffer.path = nil
     state.buffer.lines = {}
     state.buffer.package_name = nil
     state.last_run.time = nil

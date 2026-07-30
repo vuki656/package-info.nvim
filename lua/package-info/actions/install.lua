@@ -3,7 +3,7 @@ local constants = require("package-info.utils.constants")
 local state = require("package-info.state")
 local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
-local reload = require("package-info.helpers.reload")
+local refresh = require("package-info.helpers.refresh")
 
 local dependency_type_select = require("package-info.ui.dependency-type-select")
 local dependency_name_input = require("package-info.ui.dependency-name-input")
@@ -71,7 +71,7 @@ M.__display_dependency_name_input = function(selected_dependency_type)
                     loading.start(id)
                 end,
                 on_success = function()
-                    reload()
+                    refresh()
 
                     loading.stop(id)
                 end,

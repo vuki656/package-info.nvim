@@ -36,4 +36,41 @@ T["should load the plugin if in package.json"] = function()
     expect.equality(parse_buffer.count, 1)
 end
 
+T["should drop the outdated dependencies of the previously loaded package.json"] = function()
+    local first_package_json = file.create_package_json({ go = true })
+
+    core.load_plugin()
+
+    state.dependencies.outdated = { react = { latest = "18.0.0" } }
+    state.last_run.update()
+
+    local second_package_json = file.create_package_json({ go = true })
+
+    core.load_plugin()
+
+    file.delete(first_package_json.path)
+    file.delete(second_package_json.path)
+
+    expect.equality(state.dependencies.outdated, {})
+    expect.equality(state.last_run.time, nil)
+end
+
+T["should keep the outdated dependencies of the same package.json"] = function()
+    local package_json = file.create_package_json({ go = true })
+
+    core.load_plugin()
+
+    local outdated = { react = { latest = "18.0.0" } }
+
+    state.dependencies.outdated = outdated
+    state.last_run.update()
+
+    core.load_plugin()
+
+    file.delete(package_json.path)
+
+    expect.equality(state.dependencies.outdated, outdated)
+    expect.no_equality(state.last_run.time, nil)
+end
+
 return T

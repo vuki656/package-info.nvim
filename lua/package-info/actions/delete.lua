@@ -5,7 +5,7 @@ local logger = require("package-info.utils.logger")
 local state = require("package-info.state")
 local constants = require("package-info.utils.constants")
 local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
-local reload = require("package-info.helpers.reload")
+local refresh = require("package-info.helpers.refresh")
 
 local loading = require("package-info.ui.generic.loading-status")
 
@@ -63,7 +63,7 @@ M.run = function()
                     loading.start(id)
                 end,
                 on_success = function()
-                    reload()
+                    refresh()
 
                     loading.stop(id, "|  Deleted " .. dependency_name .. " dependency", vim.log.levels.INFO)
                 end,

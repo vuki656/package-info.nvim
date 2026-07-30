@@ -19,6 +19,16 @@ T["update"]["should update last run time"] = function()
     expect.no_equality(state.last_run.time, nil)
 end
 
+T["reset"] = MiniTest.new_set()
+
+T["reset"]["should clear the last run time"] = function()
+    state.last_run.update()
+
+    state.last_run.reset()
+
+    expect.equality(state.last_run.time, nil)
+end
+
 T["should_skip"] = MiniTest.new_set()
 
 T["should_skip"]["should return false if there was no last run"] = function()

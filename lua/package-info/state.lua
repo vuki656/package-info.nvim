@@ -40,13 +40,16 @@ M.dependencies = {
 
 M.buffer = {
     id = nil,
+    -- Full path of the package.json the plugin is operating on
+    path = nil,
     -- String value of buffer from vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
     lines = {},
     package_name = nil,
-    --- Set the buffer id to current buffer id
+    --- Set the buffer id and path to the current buffer
     -- @return nil
     save = function()
         M.buffer.id = vim.fn.bufnr()
+        M.buffer.path = vim.api.nvim_buf_get_name(0)
     end,
 }
 
@@ -56,6 +59,11 @@ M.last_run = {
     -- @return nil
     update = function()
         M.last_run.time = os.time()
+    end,
+    --- Invalidate the cache so the next run refetches the outdated dependencies
+    -- @return nil
+    reset = function()
+        M.last_run.time = nil
     end,
     --- Determine if the next run should be skipped
     -- Skip if there was a run within the past hour

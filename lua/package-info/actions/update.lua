@@ -5,6 +5,7 @@ local state = require("package-info.state")
 local config = require("package-info.config")
 local constants = require("package-info.utils.constants")
 local reload = require("package-info.helpers.reload")
+local refresh = require("package-info.helpers.refresh")
 local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
 
 local loading = require("package-info.ui.generic.loading-status")
@@ -67,7 +68,7 @@ M.run = function()
                     loading.start(id)
                 end,
                 on_success = function()
-                    reload()
+                    refresh()
 
                     loading.stop(id, "| 󱦟 Updated " .. dependency_name .. " Dependency")
                 end,

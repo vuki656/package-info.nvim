@@ -17,4 +17,10 @@ T["should save buffer id"] = function()
     expect.no_equality(state.buffer.id, nil)
 end
 
+T["should save buffer path"] = function()
+    state.buffer.save()
+
+    expect.equality(state.buffer.path, vim.api.nvim_buf_get_name(0))
+end
+
 return T
