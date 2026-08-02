@@ -160,9 +160,7 @@ end
 --- Prepare a clean augroup for the plugin to use
 -- @return nil
 M.__prepare_augroup = function()
-    vim.cmd("augroup " .. constants.AUTOGROUP)
-    vim.cmd("autocmd!")
-    vim.cmd("augroup end")
+    vim.api.nvim_create_augroup(constants.AUTOGROUP, { clear = true })
 end
 
 --- Register autocommand for loading the plugin
@@ -189,7 +187,7 @@ end
 -- @return nil
 M.__register_colorscheme_initialization = function()
     M.__register_highlight_groups()
-    register_autocmd("ColorScheme", "lua require('package-info.config').__register_highlight_groups()")
+    register_autocmd("ColorScheme", "lua require('package-info.config').__register_highlight_groups()", "*")
 end
 
 --- Register all highlight groups

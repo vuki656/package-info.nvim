@@ -34,7 +34,7 @@ Notes:
 
 Entry flow, spread over several files:
 
-1. `config.setup()` registers everything: the plugin namespace, a clean `PackageInfoAutogroup`, and BufEnter autocmds. `utils/register-autocmd.lua` filters every autocmd to the `package.json` pattern.
+1. `config.setup()` registers everything: the plugin namespace, a clean `PackageInfoAutogroup`, and BufEnter autocmds. `utils/register-autocmd.lua` defaults every autocmd to the `package.json` pattern; the `ColorScheme` one passes `*` explicitly, since that event matches against the colorscheme name rather than the buffer name.
 2. On BufEnter: `config.__register_package_manager()` detects the manager, `core.load_plugin()` validates the buffer (name ends in `package.json`, non-empty, JSON decodes) and sets `state.is_loaded`, then `parser.parse_buffer()` fills `state.dependencies.installed` / `.invalid`.
 3. `actions/show.lua` runs `npm outdated --json` (or `pnpm outdated --json`) via `utils/job.lua` and writes `state.dependencies.outdated`.
 4. `virtual_text.display()` walks `state.buffer.lines`, resolves a dependency name per line, and sets an extmark.

@@ -27,6 +27,18 @@ T["should register colors"] = function()
     expect.equality(is_registered, true)
 end
 
+T["should register the colorscheme autocommand against every colorscheme"] = function()
+    config.__register_colorscheme_initialization()
+
+    local autocommands = vim.api.nvim_get_autocmds({
+        group = constants.AUTOGROUP,
+        event = "ColorScheme",
+    })
+
+    expect.equality(#autocommands, 1)
+    expect.equality(autocommands[1].pattern, "*")
+end
+
 T["should register colors if default theme is registered"] = function()
     vim.cmd('let g:colors_name="default"')
 
