@@ -7,8 +7,8 @@ jobs:
     name: Lint Code - Stylua
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: JohnnyMorganz/stylua-action@v2.0.0
+      - uses: actions/checkout@v7
+      - uses: JohnnyMorganz/stylua-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: 0.17.0
@@ -18,7 +18,7 @@ jobs:
     name: Lint Code - Luacheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: Jayrgo/luacheck-action@v1
 
   prettier:
@@ -26,9 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Run Prettier
-        uses: creyD/prettier_action@v4.3
+        uses: creyD/prettier_action@v4
         with:
           dry: true
           prettier_options: --check **/*.md
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Install libfuse2
         run: |
@@ -46,7 +46,7 @@ jobs:
           sudo apt install libfuse2
 
       - name: Get neovim v0.11.0
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: build/neovim/v0.11.0
           key: ${{ runner.os }}-appimage-0.11.0
