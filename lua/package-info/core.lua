@@ -43,9 +43,11 @@ M.load_plugin = function()
         return nil
     end
 
-    if state.buffer.path ~= vim.api.nvim_buf_get_name(0) then
-        state.dependencies.outdated = {}
-        state.last_run.reset()
+    local path = vim.api.nvim_buf_get_name(0)
+
+    if state.buffer.path ~= path then
+        state.cache.save()
+        state.cache.restore(path)
     end
 
     state.buffer.save()

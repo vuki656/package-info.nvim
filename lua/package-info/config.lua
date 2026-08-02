@@ -5,6 +5,7 @@ local state = require("package-info.state")
 local job = require("package-info.utils.job")
 local logger = require("package-info.utils.logger")
 local is_on_disk = require("package-info.helpers.is_on_disk")
+local find_upwards = require("package-info.utils.find-upwards")
 
 local M = {
     __DEFAULT_OPTIONS = {
@@ -102,12 +103,10 @@ local __detect_package_manager = function(dir)
     return false
 end
 
---- Check lock file in the package json dir and the git root (for monorepos)
+--- Check for a lock file in the package.json directory and every directory
+--- above it, so a package in a monorepo picks up the workspace root lock file
 -- @return nil
 M.__register_package_manager = function()
-    -- Get the current package.json directory
-    local package_json_dir = vim.fn.expand("%:p:h")
-
     -- If we're not in a package.json file, exit
     if vim.fn.expand("%:t") ~= "package.json" then
         return
@@ -117,20 +116,7 @@ M.__register_package_manager = function()
         return
     end
 
-    if __detect_package_manager(package_json_dir) then
-        state.is_in_project = true
-        return
-    end
-
-    local git_root =
-        vim.fn.systemlist("git -C " .. vim.fn.shellescape(package_json_dir) .. " rev-parse --show-toplevel")[1]
-
-    if
-        git_root
-        and git_root ~= package_json_dir
-        and vim.fn.isdirectory(git_root) == 1
-        and __detect_package_manager(git_root)
-    then
+    if find_upwards(vim.fn.expand("%:p:h"), __detect_package_manager) then
         state.is_in_project = true
     end
 end

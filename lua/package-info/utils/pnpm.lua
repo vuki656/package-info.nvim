@@ -1,3 +1,7 @@
+local find_upwards = require("package-info.utils.find-upwards")
+
+local WORKSPACE_FILE = "pnpm-workspace.yaml"
+
 local M = {}
 
 M.find_catalog_name = function(name)
@@ -11,12 +15,19 @@ M.is_catalog = function(value)
     return string.find(value, "catalog:") ~= nil
 end
 
-M.is_workspace = function()
-    return vim.fn.filereadable(M.workspace_path()) == 1
-end
+---Finds the workspace file the given directory belongs to
+---@param directory string - directory to search from, upwards
+---@return string? - path of the workspace file
+M.workspace_path = function(directory)
+    local workspace_directory = find_upwards(directory, function(candidate)
+        return vim.fn.filereadable(candidate .. "/" .. WORKSPACE_FILE) == 1
+    end)
 
-M.workspace_path = function()
-    return vim.fn.getcwd() .. "/pnpm-workspace.yaml"
+    if workspace_directory == nil then
+        return nil
+    end
+
+    return workspace_directory .. "/" .. WORKSPACE_FILE
 end
 
 return M

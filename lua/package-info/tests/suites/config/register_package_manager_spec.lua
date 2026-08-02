@@ -114,6 +114,26 @@ T["should prioritize bun when both bun.lock and pnpm-lock.yaml exist"] = functio
     expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.bun)
 end
 
+T["should detect a lock file above the package.json directory"] = function()
+    local root = vim.fn.fnamemodify(file.generate_file(), ":h")
+    local nested = root .. "/packages/website"
+
+    vim.fn.mkdir(nested, "p")
+
+    local lock_file = file.create({ name = root .. "/pnpm-lock.yaml" })
+    local package_json = file.create({ name = nested .. "/package.json", content = "{}", go = true })
+
+    config.__register_package_manager()
+
+    local is_in_project = state.is_in_project
+
+    file.delete(package_json.path)
+    file.delete(lock_file.path)
+
+    expect.equality(config.options.package_manager, constants.PACKAGE_MANAGERS.pnpm)
+    expect.equality(is_in_project, true)
+end
+
 T["should not register a package manager when the buffer is not a file on disk"] = function()
     local buffer = vim.api.nvim_create_buf(true, false)
 

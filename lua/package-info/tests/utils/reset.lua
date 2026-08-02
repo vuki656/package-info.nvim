@@ -29,6 +29,7 @@ M.state = function()
     state.buffer.lines = {}
     state.buffer.package_name = nil
     state.last_run.time = nil
+    state.cache.entries = {}
     state.namespace.id = nil
 end
 

@@ -48,24 +48,24 @@ M.__display_on_line = function(line_number, dependency_name)
         }
     end
 
-    if is_pnpm_catalog and state.dependencies.pnpm_workspace then
-        local default_catalog_package = state.dependencies.pnpm_workspace.catalog
-            and state.dependencies.pnpm_workspace.catalog[dependency_name]
-
+    if is_pnpm_catalog then
         local catalog_name = pnpm.find_catalog_name(state.dependencies.installed[dependency_name].current)
 
-        local current = catalog_name and state.dependencies.pnpm_workspace.catalogs[catalog_name][dependency_name]
-            or default_catalog_package
+        local current = catalog_name
+                and vim.tbl_get(state.dependencies.pnpm_workspace, "catalogs", catalog_name, dependency_name)
+            or vim.tbl_get(state.dependencies.pnpm_workspace, "catalog", dependency_name)
 
-        local latest = outdated_dependency and outdated_dependency.latest
+        if current then
+            local latest = outdated_dependency and outdated_dependency.latest
 
-        local is_outdated = latest and current ~= latest
+            local is_outdated = latest and current ~= latest
 
-        virtual_text = {
-            group = is_outdated and constants.HIGHLIGHT_GROUPS.outdated or constants.HIGHLIGHT_GROUPS.up_to_date,
-            icon = is_outdated and config.options.icons.style.outdated or config.options.icons.style.up_to_date,
-            version = clean_version(current) .. (is_outdated and (" - " .. latest) or ""),
-        }
+            virtual_text = {
+                group = is_outdated and constants.HIGHLIGHT_GROUPS.outdated or constants.HIGHLIGHT_GROUPS.up_to_date,
+                icon = is_outdated and config.options.icons.style.outdated or config.options.icons.style.up_to_date,
+                version = clean_version(current) .. (is_outdated and (" - " .. latest) or ""),
+            }
+        end
     end
 
     if not config.options.icons.enable then

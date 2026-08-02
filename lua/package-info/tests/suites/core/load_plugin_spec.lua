@@ -55,6 +55,31 @@ T["should drop the outdated dependencies of the previously loaded package.json"]
     expect.equality(state.last_run.time, nil)
 end
 
+T["should restore the outdated dependencies when going back to a package.json"] = function()
+    local first_package_json = file.create_package_json({ go = true })
+
+    core.load_plugin()
+
+    local outdated = { react = { latest = "18.0.0" } }
+
+    state.dependencies.outdated = outdated
+    state.last_run.update()
+
+    local second_package_json = file.create_package_json({ go = true })
+
+    core.load_plugin()
+
+    file.go(first_package_json.path)
+
+    core.load_plugin()
+
+    file.delete(first_package_json.path)
+    file.delete(second_package_json.path)
+
+    expect.equality(state.dependencies.outdated, outdated)
+    expect.no_equality(state.last_run.time, nil)
+end
+
 T["should keep the outdated dependencies of the same package.json"] = function()
     local package_json = file.create_package_json({ go = true })
 

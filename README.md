@@ -197,7 +197,9 @@ require('package-info').setup()
     timeout = 3000, -- Time in ms before notifications are dismissed
     -- Can be `npm`, `yarn`, `pnpm` or `bun`. Used for `delete`, `install` etc...
     -- The plugin will try to auto-detect the package manager based on
-    -- `yarn.lock`, `package-lock.json`, `bun.lock` or `pnpm-lock.yaml`. If none are found it
+    -- `yarn.lock`, `package-lock.json`, `bun.lock` or `pnpm-lock.yaml`, starting in the
+    -- directory of the `package.json` and walking up to the root of the repository, so a
+    -- package in a monorepo picks up the lock file of the workspace root. If none are found it
     -- will use the provided one, if nothing is provided it will use `npm`
     package_manager = 'npm'
 }
@@ -336,6 +338,16 @@ require("telescope").load_extension("package_info")
 <!-- hl_end -->
 
 </details>
+
+## 🏢 Monorepos
+
+- Commands run in the directory of the `package.json` you are in, so `npm`, `yarn`, `pnpm` and
+  `bun` install into that package instead of the workspace root
+- When the current file is not a `package.json`, commands run in the closest `package.json`
+  directory above it
+- The package manager is detected from the closest lock file above the `package.json`
+- `pnpm` catalogs are read from the closest `pnpm-workspace.yaml` above the `package.json`
+- Fetched versions are cached per `package.json`, so moving between packages doesn't refetch
 
 ## 📝 Notes
 

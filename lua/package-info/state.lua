@@ -61,9 +61,13 @@ M.last_run = {
         M.last_run.time = os.time()
     end,
     --- Invalidate the cache so the next run refetches the outdated dependencies
+    -- Dependencies are hoisted, so a change in one package.json can invalidate
+    -- the values stored for every other one
     -- @return nil
     reset = function()
         M.last_run.time = nil
+
+        M.cache.reset()
     end,
     --- Determine if the next run should be skipped
     -- Skip if there was a run within the past hour
@@ -76,6 +80,40 @@ M.last_run = {
         end
 
         return os.time() < M.last_run.time + HOUR_IN_SECONDS
+    end,
+}
+
+--- Values fetched for every package.json visited so far, so moving between
+--- the packages of a monorepo doesn't refetch what is already known
+M.cache = {
+    entries = {},
+    --- Store the fetched values of the currently loaded package.json
+    -- @return nil
+    save = function()
+        if M.buffer.path == nil then
+            return
+        end
+
+        M.cache.entries[M.buffer.path] = {
+            outdated = M.dependencies.outdated,
+            pnpm_workspace = M.dependencies.pnpm_workspace,
+            time = M.last_run.time,
+        }
+    end,
+    --- Load the values stored for the given package.json, clearing them if there are none
+    -- @param path: string - full path of the package.json to load the values of
+    -- @return nil
+    restore = function(path)
+        local entry = M.cache.entries[path] or {}
+
+        M.dependencies.outdated = entry.outdated or {}
+        M.dependencies.pnpm_workspace = entry.pnpm_workspace or {}
+        M.last_run.time = entry.time
+    end,
+    --- Drop the values stored for every package.json
+    -- @return nil
+    reset = function()
+        M.cache.entries = {}
     end,
 }
 

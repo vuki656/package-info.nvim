@@ -9,8 +9,6 @@ local normalize_outdated = require("package-info.helpers.normalize_outdated")
 local loading = require("package-info.ui.generic.loading-status")
 local pnpm = require("package-info.utils.pnpm")
 
-local is_pnpm_workspace = pnpm.is_workspace()
-
 local M = {}
 
 --- Runs the show outdated dependencies action
@@ -31,12 +29,22 @@ M.run = function(options)
         return
     end
 
+    local path = state.buffer.path
+    local workspace_path = pnpm.workspace_path(vim.fn.fnamemodify(path, ":h"))
+
+    --- Checks that the package.json the job was started for is still the loaded one,
+    --- so results arriving after a switch don't get stored under another package.json
+    -- @return boolean
+    local is_current_package_json = function()
+        return state.buffer.path == path
+    end
+
     local loading_message = "| 󰇚 Fetching latest versions"
     local id = loading.new(loading_message)
 
     job({
         json = true,
-        command = is_pnpm_workspace and "pnpm outdated --json" or "npm outdated --json",
+        command = workspace_path and "pnpm outdated --json" or "npm outdated --json",
         ignore_error = true,
         on_start = function()
             if not config.options.notifications then
@@ -46,6 +54,12 @@ M.run = function(options)
             loading.start(id)
         end,
         on_success = function(outdated_dependencies)
+            if not is_current_package_json() then
+                loading.stop(id, loading_message)
+
+                return
+            end
+
             state.dependencies.outdated = normalize_outdated(outdated_dependencies)
 
             if vim.api.nvim_buf_is_valid(state.buffer.id) and vim.api.nvim_buf_is_loaded(state.buffer.id) then
@@ -63,12 +77,12 @@ M.run = function(options)
         end,
     })
 
-    if is_pnpm_workspace then
+    if workspace_path then
         local workspace_message = "| 󰇚 Fetching pnpm workspace"
         local workspace_id = loading.new(workspace_message)
         job({
             json = true,
-            command = "cat " .. pnpm.workspace_path() .. " | yq -o json",
+            command = "cat " .. vim.fn.shellescape(workspace_path) .. " | yq -o json",
             ignore_error = true,
             on_start = function()
                 if not config.options.notifications then
@@ -78,6 +92,12 @@ M.run = function(options)
                 loading.start(workspace_id)
             end,
             on_success = function(workspace)
+                if not is_current_package_json() then
+                    loading.stop(workspace_id, workspace_message)
+
+                    return
+                end
+
                 state.dependencies.pnpm_workspace = workspace
 
                 loading.stop(workspace_id, workspace_message)
