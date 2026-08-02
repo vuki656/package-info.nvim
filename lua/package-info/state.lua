@@ -48,7 +48,7 @@ M.buffer = {
     --- Set the buffer id and path to the current buffer
     -- @return nil
     save = function()
-        M.buffer.id = vim.fn.bufnr()
+        M.buffer.id = vim.api.nvim_get_current_buf()
         M.buffer.path = vim.api.nvim_buf_get_name(0)
     end,
 }

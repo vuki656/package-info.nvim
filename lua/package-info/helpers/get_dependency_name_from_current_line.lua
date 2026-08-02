@@ -5,7 +5,7 @@ local get_dependency_name_from_line = require("package-info.helpers.get_dependen
 --- Gets dependency name from current line
 -- @return string?
 return function()
-    local current_line = vim.fn.getline(".")
+    local current_line = vim.api.nvim_get_current_line()
 
     local dependency_name = get_dependency_name_from_line(current_line)
 

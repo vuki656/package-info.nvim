@@ -5,11 +5,11 @@ local state = require("package-info.state")
 --- Reloads the buffer if it's package.json
 -- @return nil
 local reload_buffer = function()
-    local current_buffer_number = vim.fn.bufnr()
+    local current_buffer_number = vim.api.nvim_get_current_buf()
 
     if current_buffer_number == state.buffer.id then
         vim.bo.autoread = true
-        vim.cmd(":checktime")
+        vim.cmd.checktime()
     end
 end
 

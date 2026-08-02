@@ -20,7 +20,7 @@ T["should not throw"] = function()
     config.setup()
     core.load_plugin()
 
-    vim.cmd(tostring(package_json.dependencies.eslint.position))
+    vim.api.nvim_win_set_cursor(0, { package_json.dependencies.eslint.position, 0 })
 
     expect.no_error(function()
         change_version_action.run()

@@ -1,7 +1,6 @@
 local expect = MiniTest.expect
 
 local config = require("package-info.config")
-local to_boolean = require("package-info.utils.to-boolean")
 
 local reset = require("package-info.tests.utils.reset")
 
@@ -15,9 +14,15 @@ local T = MiniTest.new_set({
 T["should register load command"] = function()
     config.__register_start()
 
-    local autocommands = vim.api.nvim_exec("autocmd BufEnter", true)
+    local autocommands = vim.api.nvim_get_autocmds({ event = "BufEnter" })
 
-    local is_registered = to_boolean(string.find(autocommands, "require('package-info.core').load_plugin()", 0, true))
+    local is_registered = false
+
+    for _, autocommand in ipairs(autocommands) do
+        if autocommand.command == "lua require('package-info.core').load_plugin()" then
+            is_registered = true
+        end
+    end
 
     expect.equality(is_registered, true)
 end

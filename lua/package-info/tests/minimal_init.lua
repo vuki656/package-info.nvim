@@ -23,7 +23,7 @@ function M.load(plugin)
 end
 
 function M.setup()
-    vim.cmd([[set runtimepath=$VIMRUNTIME]])
+    vim.o.runtimepath = vim.env.VIMRUNTIME
     vim.opt.runtimepath:append(M.root())
     vim.opt.packpath = { M.root(".tests/site") }
 

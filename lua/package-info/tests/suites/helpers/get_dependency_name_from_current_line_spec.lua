@@ -20,7 +20,7 @@ T["should get the name correctly"] = function()
 
     core.load_plugin()
 
-    vim.cmd(tostring(package_json.dependencies.eslint.position))
+    vim.api.nvim_win_set_cursor(0, { package_json.dependencies.eslint.position, 0 })
 
     local dependency_name = get_dependency_name_from_current_line()
 
@@ -36,7 +36,7 @@ T["should return nil if no valid dependency is on the current line"] = function(
 
     local warn = spy.on(logger, "warn")
 
-    vim.cmd("999")
+    vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
 
     local dependency_name = get_dependency_name_from_current_line()
 
