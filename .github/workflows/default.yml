@@ -28,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Run Prettier
-        uses: creyD/prettier_action@v4
+        uses: creyD/prettier_action@v4.6
         with:
           dry: true
           prettier_options: --check **/*.md
