@@ -3,34 +3,13 @@ local job = require("package-info.utils.job")
 local config = require("package-info.config")
 local logger = require("package-info.utils.logger")
 local state = require("package-info.state")
-local constants = require("package-info.utils.constants")
 local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
 local refresh = require("package-info.helpers.refresh")
+local commands = require("package-info.utils.commands")
 
 local loading = require("package-info.ui.generic.loading-status")
 
 local M = {}
-
---- Returns the delete command based on package manager
--- @param dependency_name: string - dependency for which to get the command
--- @return string
-M.__get_command = function(dependency_name)
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-        return "yarn remove " .. dependency_name
-    end
-
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-        return "npm uninstall " .. dependency_name
-    end
-
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
-        return "pnpm remove " .. dependency_name
-    end
-
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
-        return "bun remove " .. dependency_name
-    end
-end
 
 --- Runs the delete action
 -- @return nil
@@ -54,7 +33,7 @@ M.run = function()
         on_submit = function()
             job({
                 json = false,
-                command = M.__get_command(dependency_name),
+                command = commands.delete(dependency_name),
                 on_start = function()
                     if not config.options.notifications then
                         return

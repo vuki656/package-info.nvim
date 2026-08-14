@@ -3,7 +3,7 @@ local prompt = require("package-info.ui.generic.prompt")
 local job = require("package-info.utils.job")
 local state = require("package-info.state")
 local config = require("package-info.config")
-local constants = require("package-info.utils.constants")
+local commands = require("package-info.utils.commands")
 local reload = require("package-info.helpers.reload")
 local refresh = require("package-info.helpers.refresh")
 local get_dependency_name_from_current_line = require("package-info.helpers.get_dependency_name_from_current_line")
@@ -11,31 +11,6 @@ local get_dependency_name_from_current_line = require("package-info.helpers.get_
 local loading = require("package-info.ui.generic.loading-status")
 
 local M = {}
-
---- Returns the update command based on package manager
--- @param dependency_name: string - dependency for which to get the command
--- @return string
-M.__get_command = function(dependency_name)
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
-        if state.has_old_yarn then
-            return "yarn upgrade " .. dependency_name .. " --latest"
-        end
-
-        return "yarn up " .. dependency_name
-    end
-
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.npm then
-        return "npm install " .. dependency_name .. "@latest"
-    end
-
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
-        return "pnpm update --latest " .. dependency_name
-    end
-
-    if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
-        return "bun add " .. dependency_name .. "@latest"
-    end
-end
 
 --- Runs the update dependency action
 -- @return nil
@@ -59,7 +34,7 @@ M.run = function()
         on_submit = function()
             job({
                 json = false,
-                command = M.__get_command(dependency_name),
+                command = commands.update(dependency_name),
                 on_start = function()
                     if not config.options.notifications then
                         return
