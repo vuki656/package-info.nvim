@@ -14,6 +14,17 @@ local T = MiniTest.new_set({
     },
 })
 
+T["should silence pnpm warnings that would otherwise corrupt the json payload"] = function()
+    expect.equality(
+        show_action.__get_outdated_command("./temp/pnpm-workspace.yaml"),
+        "pnpm --loglevel=error outdated --json"
+    )
+end
+
+T["should silence npm warnings that would otherwise corrupt the json payload"] = function()
+    expect.equality(show_action.__get_outdated_command(nil), "npm --loglevel=error outdated --json")
+end
+
 T["should not throw"] = function()
     file.create_package_json({ go = true })
 
