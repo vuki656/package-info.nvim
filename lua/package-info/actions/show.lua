@@ -11,6 +11,19 @@ local pnpm = require("package-info.utils.pnpm")
 
 local M = {}
 
+--- Returns the command that lists the outdated dependencies
+-- The log level is lowered because pnpm writes warnings to stdout even under --json,
+-- which puts them ahead of the payload and makes it impossible to decode
+-- @param workspace_path: string|nil - path to the pnpm workspace file, if there is one
+-- @return string
+M.__get_outdated_command = function(workspace_path)
+    if workspace_path then
+        return "pnpm --loglevel=error outdated --json"
+    end
+
+    return "npm --loglevel=error outdated --json"
+end
+
 --- Runs the show outdated dependencies action
 -- @return nil
 M.run = function(options)
@@ -44,7 +57,7 @@ M.run = function(options)
 
     job({
         json = true,
-        command = workspace_path and "pnpm outdated --json" or "npm outdated --json",
+        command = M.__get_outdated_command(workspace_path),
         ignore_error = true,
         on_start = function()
             if not config.options.notifications then
