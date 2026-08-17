@@ -16,7 +16,6 @@ local M = {
     state = {
         current_spinner = "",
         index = 1,
-        notification = nil,
         timer = nil,
     },
 }
@@ -29,10 +28,15 @@ local title = "package-info.nvim"
 local constants = require("package-info.utils.constants")
 
 -- snacks.notifier support
-local snacks_notifier, snacks = pcall(require, "snacks.notifier")
+local snacks_notifier = pcall(require, "snacks.notifier")
 
-if not snacks_notifier then
-    snacks = nil
+-- Whether a notification backend capable of replacing notifications is available
+M.__has_notify_backend = nvim_notify or snacks_notifier
+
+--- Check if notifications should be sent
+-- @return boolean
+M.__is_notifying = function()
+    return M.__has_notify_backend and config.options.notifications
 end
 
 --- Spawn a new loading instance
@@ -46,7 +50,7 @@ M.new = function(message)
         notification = nil,
     }
 
-    if (nvim_notify or snacks_notifier) and config.options.notifications then
+    if M.__is_notifying() then
         instance.notification = vim.notify(message, vim.log.levels.INFO, {
             title = title,
             icon = SPINNERS[1],
@@ -60,11 +64,24 @@ M.new = function(message)
     if not M.state.timer then
         M.state.timer = vim.loop.new_timer()
         M.state.timer:start(60, 60, function()
-            M.update_spinner(message)
+            M.update_spinner()
         end)
     end
 
     return instance.id
+end
+
+--- Get the instance with the given id
+-- @param id: number - id of the instance
+-- @return table|nil
+M.__get = function(id)
+    for _, instance in ipairs(M.queue) do
+        if instance.id == id then
+            return instance
+        end
+    end
+
+    return nil
 end
 
 --- Start the instance by given id by marking it as ready to run
@@ -74,7 +91,6 @@ M.start = function(id)
     for _, instance in ipairs(M.queue) do
         if instance.id == id then
             instance.is_ready = true
-            M.state.notification = instance.notification
         end
     end
 end
@@ -92,11 +108,9 @@ M.stop = function(id, message, level)
         level = vim.log.levels.INFO
     end
 
-    if snacks_notifier and snacks and M.state.notification then
-        snacks.hide()
-    end
+    local instance = M.__get(id)
 
-    if (nvim_notify or snacks_notifier) and M.state.notification then
+    if instance and instance.notification and M.__is_notifying() then
         local level_icon = {
             [vim.log.levels.INFO] = "󰗠 ",
             [vim.log.levels.ERROR] = "󰅙 ",
@@ -106,17 +120,20 @@ M.stop = function(id, message, level)
         vim.notify(message, level, {
             title = title,
             icon = level_icon[level],
-            replace = M.state.notification,
+            -- `replace` is read by nvim-notify, `id` by snacks.notifier
+            replace = instance.notification,
+            id = instance.notification,
             timeout = config.options.timeout,
         })
-        M.state.notification = nil
+
+        instance.notification = nil
     end
 
     local filtered_list = {}
 
-    for _, instance in ipairs(M.queue) do
-        if instance.id ~= id then
-            table.insert(filtered_list, instance)
+    for _, queued in ipairs(M.queue) do
+        if queued.id ~= id then
+            table.insert(filtered_list, queued)
         end
     end
     if #filtered_list == 0 then
@@ -127,20 +144,23 @@ end
 
 --- Update the spinner instance recursively
 -- @return nil
-M.update_spinner = function(message)
+M.update_spinner = function()
     M.state.current_spinner = SPINNERS[M.state.index]
 
     M.state.index = M.state.index % #SPINNERS + 1
 
-    if (nvim_notify or snacks_notifier) and M.state.notification then
-        local new_notif = vim.notify(message, vim.log.levels.INFO, {
-            title = title,
-            hide_from_history = true,
-            icon = M.state.current_spinner,
-            id = M.state.notification,
-            replace = M.state.notification,
-        })
-        M.state.notification = new_notif
+    if M.__is_notifying() then
+        for _, instance in ipairs(M.queue) do
+            if instance.notification then
+                instance.notification = vim.notify(instance.message, vim.log.levels.INFO, {
+                    title = title,
+                    hide_from_history = true,
+                    icon = M.state.current_spinner,
+                    id = instance.notification,
+                    replace = instance.notification,
+                })
+            end
+        end
     end
 
     -- this can be used to post updates (ex. refresh the statusline)
