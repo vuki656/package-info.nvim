@@ -62,10 +62,19 @@ M.new = function(message)
     table.insert(M.queue, instance)
 
     if not M.state.timer then
-        M.state.timer = vim.loop.new_timer()
-        M.state.timer:start(60, 60, function()
+        -- The timer ticks in a fast event context, where `vim.notify` is not allowed.
+        -- Notification backends open and close windows from it, which strands a floating
+        -- window nothing can close afterwards, so hop onto the main loop first.
+        local tick = vim.schedule_wrap(function()
+            if not M.state.timer then
+                return
+            end
+
             M.update_spinner()
         end)
+
+        M.state.timer = vim.loop.new_timer()
+        M.state.timer:start(60, 60, tick)
     end
 
     return instance.id

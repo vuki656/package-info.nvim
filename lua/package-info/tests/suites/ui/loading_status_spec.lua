@@ -26,7 +26,13 @@ local stub_notify = function()
             id = next_id
         end
 
-        table.insert(notifications, { message = message, level = level, opts = opts, id = id })
+        table.insert(notifications, {
+            message = message,
+            level = level,
+            opts = opts,
+            id = id,
+            is_fast_event = vim.in_fast_event(),
+        })
 
         return id
     end
@@ -127,6 +133,27 @@ T["update_spinner"]["should update every instance with its own message and handl
 
     expect.equality(find_notification("first").opts.id, first_handle)
     expect.equality(find_notification("second").opts.id, second_handle)
+end
+
+T["spinner timer"] = MiniTest.new_set()
+
+T["spinner timer"]["should not notify from a fast event context"] = function()
+    local id = loading.new("spinning")
+    loading.start(id)
+
+    notifications = {}
+
+    vim.wait(1000, function()
+        return #notifications > 0
+    end, 10)
+
+    expect.equality(#notifications > 0, true)
+
+    for _, notification in ipairs(notifications) do
+        expect.equality(notification.is_fast_event, false)
+    end
+
+    loading.stop(id, "done")
 end
 
 return T
