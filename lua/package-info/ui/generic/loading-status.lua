@@ -26,6 +26,7 @@ local config = require("package-info.config")
 local nvim_notify = pcall(require, "notify")
 local title = "package-info.nvim"
 local constants = require("package-info.utils.constants")
+local uv = vim.uv or vim.loop
 
 -- snacks.notifier support
 local snacks_notifier = pcall(require, "snacks.notifier")
@@ -73,7 +74,7 @@ M.new = function(message)
             M.update_spinner()
         end)
 
-        M.state.timer = vim.loop.new_timer()
+        M.state.timer = uv.new_timer()
         M.state.timer:start(60, 60, tick)
     end
 
